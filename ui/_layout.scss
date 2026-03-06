@@ -1,0 +1,39 @@
+// ==================================================================================
+// Layout
+//===================================================================================
+.even-columns {
+    display: grid;
+    gap: 1rem;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+}
+.grid-auto-fit {
+    display: grid;
+    grid-gap: var(--gap, 1rem);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--min, 15ch)), 1fr));
+}
+.grid-auto-fill {
+    display: grid;
+    grid-gap: var(--gap, 1rem);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--min, 15ch)), 1fr));
+}
+.cluster {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.flexbox-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap, 1rem);
+}
+.flexbox-grid > * {
+    flex: 1 1 var(--min, auto);
+}
+.stack {
+    display: grid;
+    grid-template-areas: "stack";
+}
+.stack > * {
+    grid-area: stack;
+}

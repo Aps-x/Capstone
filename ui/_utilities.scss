@@ -1,0 +1,92 @@
+// ==================================================================================
+// Utilities
+//===================================================================================
+.icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    margin-top: calc(1ex - 1cap);
+}
+.line-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: var(--lines, 3);
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}
+.flow > *:where(:not(:first-child)) {
+    margin-top: var(--flow-spacer, 1em);
+}
+.content-column {
+    width: min(var(--max-width, 1400px), calc(100% - var(--gutter, 2rem) * 2));
+    margin-inline: auto;
+}
+.container {
+    container-type: inline-size;
+}
+//------------------------------------------------------------------------------------
+// Font Family
+//------------------------------------------------------------------------------------
+.ff-system {
+    font-family: var(--ff-system);
+}
+//------------------------------------------------------------------------------------
+// Font Size
+//------------------------------------------------------------------------------------
+.fs-000 {
+    font-size: var(--fs-000);
+}
+.fs-100 {
+    font-size: var(--fs-100);
+}
+.fs-200 {
+    font-size: var(--fs-200);
+}
+.fs-300 {
+    font-size: var(--fs-300);
+}
+.fs-400 {
+    font-size: var(--fs-400);
+}
+.fs-500 {
+    font-size: var(--fs-500);
+}
+.fs-600 {
+    font-size: var(--fs-600);
+}
+.fs-700 {
+    font-size: var(--fs-700);
+}
+.fs-800 {
+    font-size: var(--fs-800);
+}
+.fs-900 {
+    font-size: var(--fs-900);
+}
+//------------------------------------------------------------------------------------
+// Font Weight
+//------------------------------------------------------------------------------------
+.fw-100 {
+    font-weight: var(--fw-100);
+}
+.fw-200 {
+    font-weight: var(--fw-200);
+}
+.fw-300 {
+    font-weight: var(--fw-300);
+}
+.fw-400 {
+    font-weight: var(--fw-400);
+}
+.fw-500 {
+    font-weight: var(--fw-500);
+}
+.fw-600 {
+    font-weight: var(--fw-600);
+}
+.fw-700 {
+    font-weight: var(--fw-700);
+}
+.fw-800 {
+    font-weight: var(--fw-800);
+}

@@ -1,0 +1,9 @@
+.app {
+    display: block;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 300px 1fr 300px;
+    grid-template-areas: 'left main right';
+    height: 100vh;
+    width: 100%;
+}
