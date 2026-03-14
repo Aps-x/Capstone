@@ -24,6 +24,42 @@
 .container {
     container-type: inline-size;
 }
+.square {
+    aspect-ratio: 1;
+}
+//------------------------------------------------------------------------------------
+// Display
+//------------------------------------------------------------------------------------
+.block {
+    display: block;
+}
+.inline-block {
+    display: inline-block;
+}
+.inline {
+    display: inline;
+}
+.hidden { 
+    display: none; 
+}
+.contents {
+    display: contents;
+}
+//------------------------------------------------------------------------------------
+// Text
+//------------------------------------------------------------------------------------
+.uppercase {
+    text-transform: uppercase;
+}
+.text-center {
+    text-align: center;
+}
+.text-left {
+    text-align: left;
+}
+.text-right {
+    text-align: right;
+}
 //------------------------------------------------------------------------------------
 // Font Family
 //------------------------------------------------------------------------------------
@@ -90,3 +126,56 @@
 .fw-800 {
     font-weight: var(--fw-800);
 }
+//------------------------------------------------------------------------------------
+// Margin & Padding
+//------------------------------------------------------------------------------------
+.my-auto {
+    margin-block: auto;
+}
+.mx-auto {
+    margin-inline: auto;
+}
+// $sizes: (
+//     1:  0.25rem,
+//     2:  0.5rem,
+//     3:  0.75rem,
+//     4:  1rem,
+//     5:  1.5rem,
+//     6:  2rem,
+//     7:  3rem,
+//     8:  4rem,
+//     9:  6rem,
+//     10: 8rem,
+//     11: 12rem,
+//     12: 16rem,
+//     13: 24rem,
+//     14: 32rem,
+//     15: 40rem,
+//     16: 48rem,
+// );
+// @each $size-name, $size-value in $sizes {
+//     .m {
+//         &-#{$size-name} {
+//             margin: $size-value;
+//         }
+//         &y-#{$size-name} {
+//             margin-block: $size-value;
+//         }
+//         &x-#{$size-name} {
+//             margin-inline: $size-value;
+//         }
+//     }
+// }
+// @each $size-name, $size-value in $sizes {
+//     .p {
+//         &-#{$size-name} {
+//             padding: $size-value;
+//         }
+//         &y-#{$size-name} {
+//             padding-block: $size-value;
+//         }
+//         &x-#{$size-name} {
+//             padding-inline: $size-value;
+//         }
+//     }
+// } 

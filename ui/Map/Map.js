@@ -1,4 +1,8 @@
-class Map extends HTMLElement {
+/**
+ * Facade for the mapping library. Provides an API for web map CRUD operations.
+ * @extends HTMLElement
+ */
+export default class Map extends HTMLElement {
     #map = null;
     #mapCenter = [134, -28];
     #busData = [];
@@ -109,4 +113,3 @@ class Map extends HTMLElement {
 }
 
 customElements.define('map-x', Map);
-export default Map;

@@ -170,6 +170,16 @@ a {
   grid-area: stack;
 }
 
+.app {
+  display: block;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 300px 1fr 300px;
+  grid-template-areas: "left main right";
+  height: 100vh;
+  width: 100%;
+}
+
 .map {
   display: block;
   grid-column: 2;
@@ -182,16 +192,6 @@ a {
   z-index: 1;
   grid-area: left;
   padding: 1rem;
-}
-
-.app {
-  display: block;
-  display: grid;
-  grid-template-rows: 1fr;
-  grid-template-columns: 300px 1fr 300px;
-  grid-template-areas: "left main right";
-  height: 100vh;
-  width: 100%;
 }
 
 .icon {
@@ -220,6 +220,46 @@ a {
 
 .container {
   container-type: inline-size;
+}
+
+.square {
+  aspect-ratio: 1;
+}
+
+.block {
+  display: block;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.inline {
+  display: inline;
+}
+
+.hidden {
+  display: none;
+}
+
+.contents {
+  display: contents;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
 }
 
 .ff-system {
@@ -296,4 +336,12 @@ a {
 
 .fw-800 {
   font-weight: var(--fw-800);
+}
+
+.my-auto {
+  margin-block: auto;
+}
+
+.mx-auto {
+  margin-inline: auto;
 }/*# sourceMappingURL=main.css.map */

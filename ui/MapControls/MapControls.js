@@ -1,4 +1,8 @@
-class MapControls extends HTMLElement {
+/**
+ * User Interface for filtering the map, as well as importing and exporting data.
+ * @extends HTMLElement
+ */
+export default class MapControls extends HTMLElement {
     #mapControlsForm = null;
     #map = null;
 
@@ -13,7 +17,7 @@ class MapControls extends HTMLElement {
     }
 
     #render() {
-        this.innerHTML = `
+        this.innerHTML = html`
         <form id="mapControlsForm">
             <div>
                 <label>Scale: <input name="scale" type="number" value="0.002" step="0.00001"></label>
@@ -48,4 +52,3 @@ class MapControls extends HTMLElement {
 }
 
 customElements.define('map-controls', MapControls);
-export default MapControls;
