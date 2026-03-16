@@ -1,15 +1,15 @@
 /**
- * User Interface for editing individual markers / buses.
+ * Description here
  * @extends HTMLElement
  */
-class MarkerControls extends HTMLElement {
+class Example extends HTMLElement {
 
     constructor() {
         super();
     }
 
     connectedCallback() {
-        this.classList.add('marker-controls');
+        this.classList.add('example');
         this.#render();
     }
 
@@ -20,4 +20,4 @@ class MarkerControls extends HTMLElement {
     }
 }
 
-customElements.define('marker-controls', MarkerControls);
+customElements.define('example-x', Example);

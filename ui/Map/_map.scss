@@ -1,7 +1,5 @@
 .map {
-    display: block;
-    grid-column: 2;
-    place-self: stretch;
+    grid-column: 1 / -1;
     height: 100vh;
     width: 100vw;
 }

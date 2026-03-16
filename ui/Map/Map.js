@@ -19,6 +19,7 @@ export default class Map extends HTMLElement {
 
     async #initialize() {
         this.#createMap();
+        this.classList.remove('maplibregl-map');
         this.#busData = await this.#fetchBusData('./data/XY Position.csv');
     }
 
@@ -28,6 +29,7 @@ export default class Map extends HTMLElement {
             center: this.#mapCenter,
             zoom: 4,
             container: this,
+            attributionControl: false,
         });
     }
 

@@ -1,6 +1,7 @@
 import "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js";
 import "./ui/Map/Map.js";
 import "./ui/MapControls/MapControls.js";
+import "./ui/MarkerControls/MarkerControls.js";
 
 /**
  * Application entry point.
@@ -18,11 +19,11 @@ class App extends HTMLElement {
     }
 
     #render() {
-        this.innerHTML = html`
+        this.innerHTML = /*html*/`
             <map-x></map-x>
             <map-controls></map-controls>
             <marker-controls></marker-controls>
-        `
+        `;
     }
 }
 
