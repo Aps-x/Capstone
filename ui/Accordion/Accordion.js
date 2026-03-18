@@ -12,6 +12,9 @@ class Accordion extends HTMLElement {
     }
 
     connectedCallback() {
+        // Nothing in this web app is going to be moved around.
+        // But just in case, checking for initialization will prevent content
+        // from being duplicated.
         if (this.#initialized === true) {
             return;
         }

@@ -3,4 +3,13 @@
     grid-area: left;
     padding: 1rem;
     background-color: light-dark(var(--clr-white), var(--clr-black));
+    &__title {
+        font-size: var(--fs-200);
+        font-weight: var(--fw-600);
+        color: var(--clr-blue-500);
+    }
+    &__input-group {
+        display: grid;
+        gap: 1rem;
+    }
 }

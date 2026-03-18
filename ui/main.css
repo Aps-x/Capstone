@@ -1,6 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 :root {
-  color-scheme: light dark;
   --clr-white: hsl(0, 0%, 100%);
   --clr-black: hsl(260, 7%, 8%);
   --clr-purple: hsl(300, 100%, 25%);
@@ -184,6 +183,15 @@ a {
   grid-area: left;
   padding: 1rem;
   background-color: light-dark(var(--clr-white), var(--clr-black));
+}
+.map-controls__title {
+  font-size: var(--fs-200);
+  font-weight: var(--fw-600);
+  color: var(--clr-blue-500);
+}
+.map-controls__input-group {
+  display: grid;
+  gap: 1rem;
 }
 
 .marker-controls {

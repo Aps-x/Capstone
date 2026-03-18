@@ -1,4 +1,5 @@
 import "../Accordion/Accordion.js";
+import "../LightDarkSelect/LightDarkSelect.js";
 
 /**
  * User Interface for filtering the map, as well as importing and exporting data.
@@ -23,22 +24,21 @@ export default class MapControls extends HTMLElement {
         <h2 class="map-controls__title">Map Controls</h2>
         <form class="map-controls__form">
             <accordion-x data-heading="Transform">
-                <div>
+                <div class="map-controls__input-group">
                     <label>Scale: <input name="scale" type="number" value="0.002" step="0.00001"></label>
-                </div>
-                <div>
                     <label>X Offset: <input name="offsetX" type="number" value="145" step="0.1"></label>
-                </div>
-                <div>
                     <label>Y Offset: <input name="offsetY" type="number" value="-30" step="0.1"></label>
                 </div>
-                <button type="submit">Apply & Re-render</button>
             </accordion-x>
+
+            <button type="submit">Apply</button>
         </form>
+        <light-dark-select></light-dark-select>
         `;
     }
 
     #initialize() {
+        // TODO: I don't think these need to be class level properties, but I'm tired rn...
         this.#mapControlsForm = this.querySelector('.map-controls__form');
         this.#map = document.querySelector('map-x');
 

@@ -24,6 +24,7 @@ export default class Map extends HTMLElement {
     }
 
     #createMap() {
+        // TODO: This needs to react to changes made by the LightDarkSelect component.
         const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
         let mapStyle;
         
