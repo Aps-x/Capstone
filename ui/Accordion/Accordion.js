@@ -46,32 +46,29 @@ class Accordion extends HTMLElement {
 
     #render() {
         this.innerHTML = /*html*/`
-        <article class="accordion__panel">
-            <h3 class="accordion__header">
-                <button class="accordion__trigger" 
-                        type="button" 
-                        aria-expanded="false" 
-                        aria-controls="sect-${this.#id}" 
-                        id="accordion-${this.#id}">
+        <h3 class="accordion__header">
+            <button class="accordion__trigger" 
+                    type="button" 
+                    aria-expanded="false" 
+                    aria-controls="sect-${this.#id}" 
+                    id="accordion-${this.#id}">
 
-                    <span>${this.dataset.heading}</span>
-                    <img class="accordion__arrow" src="../../img/icon-arrow.svg" alt="">
-                    
-                </button>
-            </h3>
+                <span>${this.dataset.heading}</span>
+                <svg class="accordion__arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="12"><path fill="none" stroke="currentColor" stroke-width="3" d="M1 1l8 8 8-8"/></svg>
+            </button>
+        </h3>
 
-            <div class="accordion__content" 
-                 id="sect-${this.#id}" 
-                 role="region" 
-                 aria-labelledby="accordion-${this.#id}" 
-                 aria-hidden="true">
-                <div>
-                    <slot>
+        <div class="accordion__content" 
+                id="sect-${this.#id}" 
+                role="region" 
+                aria-labelledby="accordion-${this.#id}" 
+                aria-hidden="true">
+            <div>
+                <slot>
 
-                    </slot>
-                </div>
+                </slot>
             </div>
-        </article>
+        </div>
         `;
     }
 }

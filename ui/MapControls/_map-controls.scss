@@ -2,5 +2,5 @@
     z-index: 1;
     grid-area: left;
     padding: 1rem;
-    background-color: white;
+    background-color: light-dark(var(--clr-white), var(--clr-black));
 }

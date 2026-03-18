@@ -24,8 +24,18 @@ export default class Map extends HTMLElement {
     }
 
     #createMap() {
+        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        let mapStyle;
+        
+        if (isDarkMode) {
+            mapStyle = "../../themes/dark.json";
+        }
+        else {
+            mapStyle = "https://tiles.openfreemap.org/styles/bright";
+        }
+
         this.#map = new maplibregl.Map({
-            style: "https://tiles.openfreemap.org/styles/bright",
+            style: mapStyle,
             center: this.#mapCenter,
             zoom: 4,
             container: this,

@@ -13,12 +13,12 @@ html {
     scroll-behavior: smooth;
 }
 body {
-    font-family: var(--body-ff);
-    font-weight: var(--body-fw);
-    font-size: var(--body-fs);
-    line-height: var(--body-lh);
-    color: var(--body-clr);
-    background-color: var(--body-bg);
+    font-family: var(--ff-poppins, --ff-system);
+    font-weight: var(--fw-400);
+    font-size: var(--fs-000);
+    line-height: 1.4;
+    color: light-dark(var(--clr-black), var(--clr-white));
+    background-color: light-dark(var(--clr-white), var(--clr-black));
     text-rendering: optimizeSpeed;
     min-height: 100vh;
 }
@@ -34,7 +34,7 @@ ul[role='list'], ol[role='list'] {
     list-style: none;
 }
 input {
-    accent-color: var(--clr-accent);
+    accent-color: var(--clr-blue-500);
 }
 h1, h2, h3, h4, h5, h6 {
     line-height: 1.1;
@@ -47,18 +47,18 @@ p {
 }
 a {
     text-decoration: none;
-    color: var(--link-clr);
+    color: var(--clr-black);
 }
 :where(a):hover {
     text-decoration: underline;
-    color: var(--link-clr-hover);
+    color: var(--clr-blue-500);
 }
 :target {
     scroll-padding-block-start: 2rem;
 }
 *:focus-visible {
     outline-offset: 4px;
-    outline: 4px solid var(--focus-clr) !important;
+    outline: 4px solid var(--clr-blue-500) !important;
 }
 // Remove all animations and transitions
 // for people that prefer not to see them 
