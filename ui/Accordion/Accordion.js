@@ -1,34 +1,32 @@
+//------------------------------------------------------------------------------------
 /**
  * Accordion component. Reveals content when the user clicks the trigger.
  * @extends HTMLElement
  */
+//------------------------------------------------------------------------------------
 class Accordion extends HTMLElement {
     static #idCounter = 0;
     #initialized = false;
-    #id;
+    #id = 0;
 
     constructor() {
         super();
     }
 
     connectedCallback() {
-        // Nothing in this web app is going to be moved around.
-        // But just in case, checking for initialization will prevent content
-        // from being duplicated.
+        // This component should never be moved, but just in case, check if component is initialized.
         if (this.#initialized === true) {
             return;
         }
 
-        // Aria requires the use of Ids to make elements more accessible.
-        // Each instance of an accordion cannot share the same Id.
-        // This code allows for the accordion to generate a unique id.
+        // Generate a unique Id for each accordion for Aria accessibility
         Accordion.#idCounter++;
         this.#id = Accordion.#idCounter;
 
         this.classList.add('accordion');
 
         // Rendering the accordion's HTML will replace any child content
-        // This juggles the content before rendering, and then inserts the content.
+        // This juggles the content before rendering.
         const slotContent = this.innerHTML;
         this.#render();
         this.querySelector("slot").innerHTML = slotContent;

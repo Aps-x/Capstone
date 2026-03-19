@@ -1,10 +1,11 @@
 import "../Accordion/Accordion.js";
 import "../LightDarkSelect/LightDarkSelect.js";
-
+//------------------------------------------------------------------------------------
 /**
  * User Interface for filtering the map, as well as importing and exporting data.
  * @extends HTMLElement
  */
+//------------------------------------------------------------------------------------
 export default class MapControls extends HTMLElement {
     #mapControlsForm = null;
     #map = null;

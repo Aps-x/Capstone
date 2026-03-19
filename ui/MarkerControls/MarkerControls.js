@@ -1,7 +1,9 @@
+//------------------------------------------------------------------------------------
 /**
  * User Interface for editing individual markers / buses.
  * @extends HTMLElement
  */
+//------------------------------------------------------------------------------------
 class MarkerControls extends HTMLElement {
 
     constructor() {

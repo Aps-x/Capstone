@@ -1,7 +1,9 @@
+//------------------------------------------------------------------------------------
 /**
  * Allows the user to set the color scheme of the website.
  * @extends HTMLElement
  */
+//------------------------------------------------------------------------------------
 class LightDarkSelect extends HTMLElement {
 
     constructor() {
@@ -17,7 +19,7 @@ class LightDarkSelect extends HTMLElement {
         // Check for saved preference
         let savedPreference = localStorage.getItem("color-scheme-preference");
 
-        if (savedPreference == null || savedPreference == undefined) {
+        if (savedPreference == null) {
             savedPreference = "light dark";
         }
 
@@ -45,16 +47,20 @@ class LightDarkSelect extends HTMLElement {
         </label>
         `;
     }
-
+    /**
+     * Sets the content of the color-scheme meta tag.
+     * 
+     * @param {"light" | "dark" | "light dark"} scheme - The preferred color theme.
+     * @returns {void}
+     */
     #applyScheme(scheme) {
-        const metaTag = document.querySelector('meta[name="color-scheme"]');
+        const colorSchemeMetaTag = document.querySelector('meta[name="color-scheme"]');
         
-        if (metaTag == null || metaTag == undefined) {
-            console.warn("Color scheme meta tag missing.");
+        if (colorSchemeMetaTag == null) {
             return;
         }
 
-        metaTag.content = scheme;
+        colorSchemeMetaTag.content = scheme;
     }
 }
 
