@@ -1,4 +1,4 @@
-import Bus from "/core/Bus.js";
+import Bus from "../../core/Bus.js";
 //------------------------------------------------------------------------------------
 /**
  * Facade for the mapping library. Provides an API for web map CRUD operations.
@@ -6,10 +6,16 @@ import Bus from "/core/Bus.js";
  */
 //------------------------------------------------------------------------------------
 export default class Map extends HTMLElement {
-    #map = null;
-    #mapCenter = [134, -28];
-    #busData = [];
+    /** @type {maplibregl.Map} */
+    #map;
+
+    /** @type {Bus[]} */
+    #busManifest = [];
+
+    /** @type {maplibregl.Marker[]} */
     #activeMarkers = [];
+
+    #mapCenter = [134, -28];
 
     constructor() {
         super();
@@ -22,13 +28,15 @@ export default class Map extends HTMLElement {
 
     async #initialize() {
         this.#createMap();
-        this.#observeColorThemeChanges();
         this.classList.remove('maplibregl-map');
-        this.#busData = await this.#fetchBusData('/data/XY Position.csv');
+
+        this.#observeColorThemeChanges();
+        
+        this.#busManifest = await this.#fetchBusData('/data/XY Position.csv');
     }
 
     /**
-     * Creates the web map. 
+     * Instantiates the web map. 
      * 
      * @returns {void}
      */
@@ -67,7 +75,7 @@ export default class Map extends HTMLElement {
     }
 
     /**
-     * Updates the web map style. 
+     * Updates the web map style based on current theme preferences.
      * 
      * @returns {void}
      */
@@ -77,13 +85,14 @@ export default class Map extends HTMLElement {
     }
 
     /**
-     * Determines the map style based on the user's color scheme preference.
+     * Determines the appropriate map style JSON path based on the user's color scheme preference
+     * or the browser's default theme.
      * 
-     * @returns {void}
+     * @returns {string} The URL/path to the map style JSON file.
      */
     #determineMapStyle() {
         const DARK_STYLE = "/themes/dark.json";
-        const LIGHT_STYLE = "https://tiles.openfreemap.org/styles/bright";
+        const LIGHT_STYLE = "/themes/bright.json";
 
         const userColorSchemePreference = document.querySelector('meta[name="color-scheme"]')?.getAttribute('content');
         
@@ -105,10 +114,10 @@ export default class Map extends HTMLElement {
     }
 
     /**
-     * Fetches bus data from a file and returns an array of buses.
+     * Fetches bus data from a CSV file and parses it into an array of Bus instances.
      * 
-     * @param {string} csvUrl 
-     * @returns {Array}
+     * @param {string} csvUrl The URL path to the CSV file.
+     * @returns {Promise<Bus[]>} A promise that resolves to an array of Bus objects.
      */
     async #fetchBusData(csvUrl) {
         try {
@@ -123,9 +132,10 @@ export default class Map extends HTMLElement {
     }
     
     /**
+     * Parses raw CSV text into structured Bus objects.
      * 
-     * @param {string} csv A csv of bus data
-     * @returns {Array} An array of BusData objects
+     * @param {string} csv Raw CSV string containing bus data.
+     * @returns {Bus[]} An array of instantiated Bus objects.
      */
     #parseBusData(csv) {
         // Gets lines from csv, splits lines into header and data
@@ -153,7 +163,8 @@ export default class Map extends HTMLElement {
     }
 
     /**
-     * Renders markers to the web map based on the current busData array.
+     * Renders markers to the web map based on the current `#busData` array,
+     * clearing any existing markers first.
      * 
      * @param {Number} scale Multiplier for each bus x and y value
      * @param {Number} offsetX Additional x offset
@@ -163,23 +174,23 @@ export default class Map extends HTMLElement {
     renderBusMarkers(scale, offsetX, offsetY) {
         this.#clearExistingMarkers();
 
-        this.#busData.forEach(bus => {
-            const transformedX = (bus.x * scale) + offsetX;
-            const transformedY = (bus.y * scale) + offsetY;
+        this.#busManifest.forEach(bus => {
+            const transformedLongitude = (bus.longitude * scale) + offsetX;
+            const transformedLatitude = (bus.latitude * scale) + offsetY;
 
             const popup = new maplibregl.Popup({ offset: 25 })
                 .setText(`
                     Bus: ${bus.id} |||
-                    X: ${bus.x} |||
-                    Y: ${bus.y} |||
-                    Long: ${transformedX} |||
-                    Lat: ${transformedY} |||
+                    X: ${bus.longitude} |||
+                    Y: ${bus.latitude} |||
+                    Long: ${transformedLongitude} |||
+                    Lat: ${transformedLatitude} |||
                 `);
 
             let markerColor = "#1433e6";
 
             const marker = new maplibregl.Marker({ color: markerColor })
-                .setLngLat([transformedX, transformedY])
+                .setLngLat([transformedLongitude, transformedLatitude])
                 .setPopup(popup)
                 .addTo(this.#map);
 
@@ -187,6 +198,11 @@ export default class Map extends HTMLElement {
         });
     }
 
+    /**
+     * Removes all active bus markers from the map and clears the tracking array.
+     * 
+     * @returns {void}
+     */
     #clearExistingMarkers() {
         this.#activeMarkers.forEach(marker => marker.remove());
         this.#activeMarkers.length = 0;

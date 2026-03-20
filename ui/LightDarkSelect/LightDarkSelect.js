@@ -17,16 +17,16 @@ class LightDarkSelect extends HTMLElement {
         const selectElement = this.querySelector('select');
 
         // Check for saved preference
-        let savedPreference = localStorage.getItem("color-scheme-preference");
+        let colorSchemePreference = localStorage.getItem("color-scheme-preference");
 
-        if (savedPreference == null) {
-            savedPreference = "light dark";
+        if (colorSchemePreference == null) {
+            colorSchemePreference = "light dark";
         }
 
-        selectElement.value = savedPreference;
+        selectElement.value = colorSchemePreference;
         
         // Apply the initial scheme
-        this.#applyScheme(savedPreference);
+        this.#applyScheme(colorSchemePreference);
 
         // Listen for user changes
         selectElement.addEventListener('change', (event) => {

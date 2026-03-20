@@ -9,6 +9,12 @@ class Accordion extends HTMLElement {
     #initialized = false;
     #id = 0;
 
+    /** @type {HTMLButtonElement} */
+    #triggerButton;
+    
+    /** @type {HTMLDivElement} */
+    #content;
+
     constructor() {
         super();
     }
@@ -19,11 +25,11 @@ class Accordion extends HTMLElement {
             return;
         }
 
+        this.classList.add('accordion');
+
         // Generate a unique Id for each accordion for Aria accessibility
         Accordion.#idCounter++;
         this.#id = Accordion.#idCounter;
-
-        this.classList.add('accordion');
 
         // Rendering the accordion's HTML will replace any child content
         // This juggles the content before rendering.
@@ -31,16 +37,12 @@ class Accordion extends HTMLElement {
         this.#render();
         this.querySelector("slot").innerHTML = slotContent;
 
-        // Listens for a click event on the accordion and then toggles the content visiblity.
-        const triggerButton = this.querySelector(".accordion__trigger");
-        const content = this.querySelector(".accordion__content");
+        // Reference the trigger button and content elements for toggling visibility.
+        this.#triggerButton = this.querySelector(".accordion__trigger");
+        this.#content = this.querySelector(".accordion__content");
 
-        triggerButton.addEventListener("click", () => {
-            const isExpanded = triggerButton.getAttribute("aria-expanded") === "true";
-
-            triggerButton.setAttribute("aria-expanded", String(!isExpanded));
-            content.setAttribute("aria-hidden", String(isExpanded));
-        });
+        // When the user clicks the trigger button, toggle accordion content visibility
+        this.#triggerButton.addEventListener("click", () => this.#toggleAccordionContentVisibility());
 
         this.#initialized = true;
     }
@@ -54,7 +56,7 @@ class Accordion extends HTMLElement {
                     aria-controls="sect-${this.#id}" 
                     id="accordion-${this.#id}">
 
-                <span>${this.dataset.heading}</span>
+                <span>${this.dataset.title}</span>
                 <svg class="accordion__arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="12"><path fill="none" stroke="currentColor" stroke-width="3" d="M1 1l8 8 8-8"/></svg>
             </button>
         </h3>
@@ -71,6 +73,18 @@ class Accordion extends HTMLElement {
             </div>
         </div>
         `;
+    }
+
+    /**
+     * Toggles the visibility of the accordion's content.
+     * 
+     * @returns {void}
+     */
+    #toggleAccordionContentVisibility() {
+        const isExpanded = this.#triggerButton.getAttribute("aria-expanded") === "true";
+
+        this.#triggerButton.setAttribute("aria-expanded", String(!isExpanded));
+        this.#content.setAttribute("aria-hidden", String(isExpanded));
     }
 }
 

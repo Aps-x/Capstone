@@ -1,7 +1,15 @@
+/**
+ * Models a physical Bus unit and its spatial data.
+ */
 export default class Bus {
-    constructor(id, x, y) {
+    /**
+     * @param {number} id Bus number with area prefix.
+     * @param {number} longitude X value.
+     * @param {number} latitude Y value.
+     */
+    constructor(id, longitude, latitude) {
         this.id = id;
-        this.x = x;
-        this.y = y;
+        this.longitude = longitude;
+        this.latitude = latitude;
     }
 }

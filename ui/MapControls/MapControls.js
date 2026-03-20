@@ -1,5 +1,3 @@
-import "../Accordion/Accordion.js";
-import "../LightDarkSelect/LightDarkSelect.js";
 //------------------------------------------------------------------------------------
 /**
  * User Interface for filtering the map, as well as importing and exporting data.
@@ -7,8 +5,8 @@ import "../LightDarkSelect/LightDarkSelect.js";
  */
 //------------------------------------------------------------------------------------
 export default class MapControls extends HTMLElement {
-    #mapControlsForm = null;
-    #map = null;
+    /** @type {Map} */
+    #map;
 
     constructor() {
         super();
@@ -24,12 +22,17 @@ export default class MapControls extends HTMLElement {
         this.innerHTML = /*html*/`
         <h2 class="map-controls__title">Map Controls</h2>
         <form class="map-controls__form">
-            <accordion-x data-heading="Transform">
+            
+            <accordion-x data-title="Transform">
                 <div class="map-controls__input-group">
                     <label>Scale: <input name="scale" type="number" value="0.002" step="0.00001"></label>
                     <label>X Offset: <input name="offsetX" type="number" value="145" step="0.1"></label>
                     <label>Y Offset: <input name="offsetY" type="number" value="-30" step="0.1"></label>
                 </div>
+            </accordion-x>
+
+            <accordion-x data-title="Generation Sources">
+
             </accordion-x>
 
             <button type="submit">Apply</button>
@@ -39,21 +42,22 @@ export default class MapControls extends HTMLElement {
     }
 
     #initialize() {
-        // TODO: I don't think these need to be class level properties, but I'm tired rn...
-        this.#mapControlsForm = this.querySelector('.map-controls__form');
+        const mapControlsForm = this.querySelector('.map-controls__form');
         this.#map = document.querySelector('map-x');
 
-        this.#mapControlsForm.addEventListener('submit', (event) => {
-            event.preventDefault();
+        mapControlsForm.addEventListener('submit', (event) => this.#handleFormSubmission(event));
+    }
 
-            const formData = new FormData(event.target);
+    #handleFormSubmission(event) {
+        event.preventDefault();
 
-            const scale = Number(formData.get('scale'));
-            const offsetX = Number(formData.get('offsetX'));
-            const offsetY = Number(formData.get('offsetY'));
+        const formData = new FormData(event.target);
 
-            this.#map.renderBusMarkers(scale, offsetX, offsetY);
-        });
+        const scale = Number(formData.get('scale'));
+        const offsetX = Number(formData.get('offsetX'));
+        const offsetY = Number(formData.get('offsetY'));
+
+        this.#map.renderBusMarkers(scale, offsetX, offsetY);
     }
 }
 

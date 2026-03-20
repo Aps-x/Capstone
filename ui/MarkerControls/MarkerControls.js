@@ -17,7 +17,7 @@ class MarkerControls extends HTMLElement {
 
     #render() {
         this.innerHTML = /*html*/`
-
+        
         `;
     }
 }
