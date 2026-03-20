@@ -32,7 +32,7 @@ export default class Map extends HTMLElement {
 
         this.#observeColorThemeChanges();
         
-        this.#busManifest = await this.#fetchBusData('/data/XY Position.csv');
+        this.#busManifest = await this.#fetchBusData('./data/XY Position.csv');
     }
 
     /**
