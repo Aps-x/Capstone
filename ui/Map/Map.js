@@ -91,8 +91,8 @@ export default class Map extends HTMLElement {
      * @returns {string} The URL/path to the map style JSON file.
      */
     #determineMapStyle() {
-        const DARK_STYLE = "../../themes/dark.json";
-        const LIGHT_STYLE = "../../themes/bright.json";
+        const DARK_STYLE = "./themes/dark.json";
+        const LIGHT_STYLE = "./themes/bright.json";
 
         const userColorSchemePreference = document.querySelector('meta[name="color-scheme"]')?.getAttribute('content');
         
