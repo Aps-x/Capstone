@@ -12,9 +12,6 @@ export default class Map extends HTMLElement {
     /** @type {Bus[]} */
     #busManifest = [];
 
-    /** @type {maplibregl.Marker[]} */
-    #activeMarkers = [];
-
     #mapCenter = [134, -28];
 
     constructor() {
@@ -81,7 +78,13 @@ export default class Map extends HTMLElement {
      */
     #updateMapStyle() {
         const mapStyle = this.#determineMapStyle();
+
         this.#map.setStyle(mapStyle);
+
+        // Setting the map style acts as a refresh, so markers need to be re-rendered.
+        this.#map.once('idle', () => { 
+            this.renderBusMarkers(0.002, 145, -30);
+        });
     }
 
     /**
@@ -163,7 +166,7 @@ export default class Map extends HTMLElement {
     }
 
     /**
-     * Renders markers to the web map based on the current `#busData` array,
+     * Renders markers to the web map based on the current `#busManifest` array,
      * clearing any existing markers first.
      * 
      * @param {Number} scale Multiplier for each bus x and y value
@@ -172,40 +175,60 @@ export default class Map extends HTMLElement {
      * @returns {void}
      */
     renderBusMarkers(scale, offsetX, offsetY) {
-        this.#clearExistingMarkers();
+        //
+        //TODO: This needs to be refactored. Function should take the GEOJson and map settings
+        //      objects as parameters.
+        //
 
-        this.#busManifest.forEach(bus => {
-            const transformedLongitude = (bus.longitude * scale) + offsetX;
-            const transformedLatitude = (bus.latitude * scale) + offsetY;
+        const SOURCE_ID = 'bus-markers-source';
+        const LAYER_ID = 'bus-markers-layer';
+        
+        const geojsonData = {
+            type: 'FeatureCollection',
+            features: this.#busManifest.map(bus => {
+                const transformedLongitude = (bus.longitude * scale) + offsetX;
+                const transformedLatitude = (bus.latitude * scale) + offsetY;
 
-            const popup = new maplibregl.Popup({ offset: 25 })
-                .setText(`
-                    Bus: ${bus.id} |||
-                    X: ${bus.longitude} |||
-                    Y: ${bus.latitude} |||
-                    Long: ${transformedLongitude} |||
-                    Lat: ${transformedLatitude} |||
-                `);
+                return {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [transformedLongitude, transformedLatitude]
+                    },
+                    properties: {
+                        id: bus.id,
+                        originalX: bus.longitude,
+                        originalY: bus.latitude,
+                        transLong: transformedLongitude,
+                        transLat: transformedLatitude
+                    }
+                };
+            })
+        };
 
-            let markerColor = "#1433e6";
+        const existingSource = this.#map.getSource(SOURCE_ID);
 
-            const marker = new maplibregl.Marker({ color: markerColor })
-                .setLngLat([transformedLongitude, transformedLatitude])
-                .setPopup(popup)
-                .addTo(this.#map);
+        if (existingSource) {
+            existingSource.setData(geojsonData);
+        } 
+        else {
+            this.#map.addSource(SOURCE_ID, {
+                type: 'geojson',
+                data: geojsonData
+            });
 
-            this.#activeMarkers.push(marker);
-        });
-    }
-
-    /**
-     * Removes all active bus markers from the map and clears the tracking array.
-     * 
-     * @returns {void}
-     */
-    #clearExistingMarkers() {
-        this.#activeMarkers.forEach(marker => marker.remove());
-        this.#activeMarkers.length = 0;
+            this.#map.addLayer({
+                id: LAYER_ID,
+                type: 'circle',
+                source: SOURCE_ID,
+                paint: {
+                    'circle-radius': 5,
+                    'circle-color': '#FFC107',
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#000000'
+                }
+            });
+        }
     }
 }
 
