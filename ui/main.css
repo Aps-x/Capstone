@@ -80,7 +80,6 @@ p {
 
 a {
   text-decoration: none;
-  color: var(--clr-black);
 }
 
 :where(a):hover {
@@ -171,6 +170,13 @@ a {
   max-height: 100vh;
   overflow: hidden;
 }
+@media only screen and (max-width: 768px) {
+  .app {
+    max-height: unset;
+    grid-template-columns: 1fr;
+    grid-template-areas: "main" "left" "right";
+  }
+}
 
 .map {
   grid-column: 1/-1;
@@ -178,20 +184,47 @@ a {
   width: 100vw;
 }
 
-.map-controls {
+.control-panel {
   z-index: 1;
   grid-area: left;
   padding: 1rem;
+  overflow: scroll;
   background-color: light-dark(var(--clr-white), var(--clr-black));
 }
-.map-controls__title {
+.control-panel__title {
   font-size: var(--fs-200);
   font-weight: var(--fw-600);
   color: var(--clr-blue-500);
 }
-.map-controls__input-group {
+.control-panel__form {
   display: grid;
   gap: 1rem;
+  width: 100%;
+  padding: 1rem;
+}
+.control-panel__form label {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 1rem;
+}
+.control-panel__form input {
+  min-width: 0;
+  width: 100%;
+}
+.control-panel__form input[type=checkbox] {
+  justify-self: end;
+  width: 1em;
+  height: 1em;
+}
+.control-panel__form--generation label {
+  display: grid;
+  grid-template-columns: auto 100px 1fr;
+  gap: 1rem;
+}
+.control-panel__form--generation img {
+  width: 1em;
+  height: 1em;
+  place-self: center;
 }
 
 .marker-controls {
@@ -230,10 +263,12 @@ a {
   display: grid;
   grid-template-rows: 0fr;
   transition: all 350ms;
+  visibility: hidden;
 }
 .accordion__content[aria-hidden=false] {
   grid-template-rows: 1fr;
   padding-bottom: 1rem;
+  visibility: visible;
 }
 .accordion__content[aria-hidden=false] > div {
   animation: reveal-overflow 350ms forwards;
@@ -250,6 +285,79 @@ a {
     overflow: visible;
   }
 }
+.button {
+  display: block;
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0px;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+}
+.button--primary {
+  --_btn-clr-bg: var(--clr-blue-500);
+  --_btn-clr-txt: var(--clr-white);
+  --_btn-fw: var(--fw-500);
+}
+.button__front {
+  display: block;
+  position: relative;
+  padding: 0.75rem 2rem;
+  border-radius: 0.75rem;
+  font-weight: var(--_btn-fw);
+  color: var(--_btn-clr-txt);
+  background: var(--_btn-clr-bg);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+.button__shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  background: hsla(0, 0%, 0%, 0.25);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+.button__edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  background: linear-gradient(to left, color-mix(in srgb, hsl(0, 0%, 20%) 70%, var(--_btn-clr-bg) 30%) 0%, color-mix(in srgb, hsl(0, 0%, 30%) 70%, var(--_btn-clr-bg) 30%) 8%, color-mix(in srgb, hsl(0, 0%, 30%) 70%, var(--_btn-clr-bg) 30%) 92%, color-mix(in srgb, hsl(0, 0%, 20%) 70%, var(--_btn-clr-bg) 30%) 100%);
+}
+.button:hover {
+  filter: brightness(110%);
+}
+.button:hover .button__front {
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+}
+.button:active .button__front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+.button:hover .button__shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(0.3, 0.7, 0.4, 1.5);
+}
+.button:active .button__shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+.button:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .icon {
   display: inline-block;
   width: 1em;
@@ -400,4 +508,164 @@ a {
 
 .mx-auto {
   margin-inline: auto;
+}
+
+.m-1 {
+  margin: 0.25rem;
+}
+.my-1 {
+  margin-block: 0.25rem;
+}
+.mx-1 {
+  margin-inline: 0.25rem;
+}
+
+.m-2 {
+  margin: 0.5rem;
+}
+.my-2 {
+  margin-block: 0.5rem;
+}
+.mx-2 {
+  margin-inline: 0.5rem;
+}
+
+.m-3 {
+  margin: 0.75rem;
+}
+.my-3 {
+  margin-block: 0.75rem;
+}
+.mx-3 {
+  margin-inline: 0.75rem;
+}
+
+.m-4 {
+  margin: 1rem;
+}
+.my-4 {
+  margin-block: 1rem;
+}
+.mx-4 {
+  margin-inline: 1rem;
+}
+
+.m-5 {
+  margin: 1.5rem;
+}
+.my-5 {
+  margin-block: 1.5rem;
+}
+.mx-5 {
+  margin-inline: 1.5rem;
+}
+
+.m-6 {
+  margin: 2rem;
+}
+.my-6 {
+  margin-block: 2rem;
+}
+.mx-6 {
+  margin-inline: 2rem;
+}
+
+.m-7 {
+  margin: 3rem;
+}
+.my-7 {
+  margin-block: 3rem;
+}
+.mx-7 {
+  margin-inline: 3rem;
+}
+
+.m-8 {
+  margin: 4rem;
+}
+.my-8 {
+  margin-block: 4rem;
+}
+.mx-8 {
+  margin-inline: 4rem;
+}
+
+.p-1 {
+  padding: 0.25rem;
+}
+.py-1 {
+  padding-block: 0.25rem;
+}
+.px-1 {
+  padding-inline: 0.25rem;
+}
+
+.p-2 {
+  padding: 0.5rem;
+}
+.py-2 {
+  padding-block: 0.5rem;
+}
+.px-2 {
+  padding-inline: 0.5rem;
+}
+
+.p-3 {
+  padding: 0.75rem;
+}
+.py-3 {
+  padding-block: 0.75rem;
+}
+.px-3 {
+  padding-inline: 0.75rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+.py-4 {
+  padding-block: 1rem;
+}
+.px-4 {
+  padding-inline: 1rem;
+}
+
+.p-5 {
+  padding: 1.5rem;
+}
+.py-5 {
+  padding-block: 1.5rem;
+}
+.px-5 {
+  padding-inline: 1.5rem;
+}
+
+.p-6 {
+  padding: 2rem;
+}
+.py-6 {
+  padding-block: 2rem;
+}
+.px-6 {
+  padding-inline: 2rem;
+}
+
+.p-7 {
+  padding: 3rem;
+}
+.py-7 {
+  padding-block: 3rem;
+}
+.px-7 {
+  padding-inline: 3rem;
+}
+
+.p-8 {
+  padding: 4rem;
+}
+.py-8 {
+  padding-block: 4rem;
+}
+.px-8 {
+  padding-inline: 4rem;
 }/*# sourceMappingURL=main.css.map */

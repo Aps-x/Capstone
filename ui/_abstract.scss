@@ -38,9 +38,6 @@
 //------------------------------------------------------------------------------------
 // Sass
 //------------------------------------------------------------------------------------
-    $breakpoint-desktop-small: 992px;
-    $breakpoint-tablet:        768px;
-
     // https://www.smashingmagazine.com/2024/01/css-border-image-property/
     @mixin overlay($dir: bottom, $clr-1: #0003, $clr-2: #000) {
         border-image: fill 0 linear-gradient(to $dir, $clr-1, $clr-2);

@@ -26,6 +26,7 @@ class Accordion extends HTMLElement {
         }
 
         this.classList.add('accordion');
+        this.setAttribute('role', 'article');
 
         // Generate a unique Id for each accordion for Aria accessibility
         Accordion.#idCounter++;
@@ -35,7 +36,7 @@ class Accordion extends HTMLElement {
         // This juggles the content before rendering.
         const slotContent = this.innerHTML;
         this.#render();
-        this.querySelector("slot").innerHTML = slotContent;
+        this.querySelector("slot").outerHTML = slotContent;
 
         // Reference the trigger button and content elements for toggling visibility.
         this.#triggerButton = this.querySelector(".accordion__trigger");

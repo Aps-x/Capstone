@@ -135,15 +135,15 @@
 .mx-auto {
     margin-inline: auto;
 }
-// $sizes: (
-//     1:  0.25rem,
-//     2:  0.5rem,
-//     3:  0.75rem,
-//     4:  1rem,
-//     5:  1.5rem,
-//     6:  2rem,
-//     7:  3rem,
-//     8:  4rem,
+$sizes: (
+    1:  0.25rem,
+    2:  0.5rem,
+    3:  0.75rem,
+    4:  1rem,
+    5:  1.5rem,
+    6:  2rem,
+    7:  3rem,
+    8:  4rem,
 //     9:  6rem,
 //     10: 8rem,
 //     11: 12rem,
@@ -152,30 +152,30 @@
 //     14: 32rem,
 //     15: 40rem,
 //     16: 48rem,
-// );
-// @each $size-name, $size-value in $sizes {
-//     .m {
-//         &-#{$size-name} {
-//             margin: $size-value;
-//         }
-//         &y-#{$size-name} {
-//             margin-block: $size-value;
-//         }
-//         &x-#{$size-name} {
-//             margin-inline: $size-value;
-//         }
-//     }
-// }
-// @each $size-name, $size-value in $sizes {
-//     .p {
-//         &-#{$size-name} {
-//             padding: $size-value;
-//         }
-//         &y-#{$size-name} {
-//             padding-block: $size-value;
-//         }
-//         &x-#{$size-name} {
-//             padding-inline: $size-value;
-//         }
-//     }
-// } 
+);
+@each $size-name, $size-value in $sizes {
+    .m {
+        &-#{$size-name} {
+            margin: $size-value;
+        }
+        &y-#{$size-name} {
+            margin-block: $size-value;
+        }
+        &x-#{$size-name} {
+            margin-inline: $size-value;
+        }
+    }
+}
+@each $size-name, $size-value in $sizes {
+    .p {
+        &-#{$size-name} {
+            padding: $size-value;
+        }
+        &y-#{$size-name} {
+            padding-block: $size-value;
+        }
+        &x-#{$size-name} {
+            padding-inline: $size-value;
+        }
+    }
+} 

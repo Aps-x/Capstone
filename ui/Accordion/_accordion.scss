@@ -28,15 +28,17 @@
         display: grid;
         grid-template-rows: 0fr;
         transition: all 350ms;
+        visibility: hidden;
         &[aria-hidden="false"] {
             grid-template-rows: 1fr;
             padding-bottom: 1rem;
+            visibility: visible;
             > div {
                 animation: reveal-overflow 350ms forwards; 
             }
         }
         > div {
-            overflow: hidden; 
+            overflow: hidden;
         }
     }
 }
