@@ -13,7 +13,7 @@ export default class Map extends HTMLElement {
     /** @type {Bus[]} */
     #busManifest = [];
 
-    #mapCenter = [134, -28];
+    #MAP_CENTER = [134, -28];
 
     constructor() {
         super();
@@ -23,7 +23,7 @@ export default class Map extends HTMLElement {
     }
 
     #handleUpdatedMapSettings(event) {
-        // TODO: Move this and refactor.
+        // TODO: Move this function and refactor.
         const formData = event.detail
 
         const scale = Number(formData.get('scale'));
@@ -55,7 +55,7 @@ export default class Map extends HTMLElement {
     #createMap() {
         this.#map = new maplibregl.Map({
             style: this.#determineMapStyle(),
-            center: this.#mapCenter,
+            center: this.#MAP_CENTER,
             zoom: 4,
             container: this,
             attributionControl: false,
@@ -196,8 +196,8 @@ export default class Map extends HTMLElement {
         // objects as parameters.
         //
 
-        const SOURCE_ID = 'bus-markers-source';
-        const LAYER_ID = 'bus-markers-layer';
+        const sourceId = 'bus-markers-source';
+        const layerId = 'bus-markers-layer';
         
         const geojsonData = {
             type: 'FeatureCollection',
@@ -222,21 +222,21 @@ export default class Map extends HTMLElement {
             })
         };
 
-        const existingSource = this.#map.getSource(SOURCE_ID);
+        const existingSource = this.#map.getSource(sourceId);
 
         if (existingSource) {
             existingSource.setData(geojsonData);
         } 
         else {
-            this.#map.addSource(SOURCE_ID, {
+            this.#map.addSource(sourceId, {
                 type: 'geojson',
                 data: geojsonData
             });
 
             this.#map.addLayer({
-                id: LAYER_ID,
+                id: layerId,
                 type: 'circle',
-                source: SOURCE_ID,
+                source: sourceId,
                 paint: {
                     'circle-radius': 5,
                     'circle-color': '#FFC107',

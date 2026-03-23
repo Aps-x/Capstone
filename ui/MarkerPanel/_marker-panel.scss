@@ -1,0 +1,36 @@
+.marker-panel {
+    z-index: 1;
+    grid-area: right;
+    background-color: light-dark(var(--clr-white), var(--clr-black));
+    padding: 16px;
+    &__table {
+        display: grid;
+        grid-template-columns: auto 1fr; 
+        
+        /* Container styling */
+        max-width: 600px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        overflow: hidden; /* Keeps rounded corners intact */
+        margin: 0;
+        font-family: sans-serif;
+        font-size: 16px;
+        dt, dd {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        dt:last-of-type, dd:last-of-type {
+            border-bottom: none;
+        }
+        dt {
+  background-color: #f8fafc;
+  font-weight: 600;
+  color: #334155;
+  border-right: 1px solid #e2e8f0; /* The vertical dividing line */
+}
+dd {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+    }
+}

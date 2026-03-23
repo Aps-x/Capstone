@@ -30,7 +30,7 @@ export default class ControlPanel extends HTMLElement {
         <div class="control-panel__content">
 
             <accordion-x data-title="Transform">
-                <form class="control-panel__form | control-panel__form--transform">
+                <form class="control-panel__form control-panel__form--transform">
                     <label>Scale: <input type="number" name="scale"  value="0.002" step="0.00001"></label>
                     <label>X Offset: <input type="number" name="offsetX" value="145" step="0.1"></label>
                     <label>Y Offset: <input type="number" name="offsetY" value="-30" step="0.1"></label>
@@ -43,7 +43,7 @@ export default class ControlPanel extends HTMLElement {
             </accordion-x>
 
             <accordion-x data-title="Generation Sources">
-                <form class="control-panel__form | control-panel__form--generation">
+                <form class="control-panel__form control-panel__form--generation">
                     <label>
                         <img src="./img/diesel.svg" alt="">
                         Diesel 
@@ -90,18 +90,20 @@ export default class ControlPanel extends HTMLElement {
         </div>
 
         <accordion-x data-title="Filter">
-            <form class="control-panel__form | control-panel__form--filter">
+            <form class="control-panel__form control-panel__form--filter">
                 <input type="search" placeholder="Search map...">
             </form>
         </accordion-x>
 
         <accordion-x data-title="Import Data">
-            <form class="control-panel__form | control-panel__form--data">
+            <form class="control-panel__form control-panel__form--data">
                 <input type="file" name="mapData" accept=".json, .csv">
             </form>
         </accordion-x>
 
-        <button-x data-id="control-panel-submit-button" data-text="Apply" data-classes="mx-auto"></button-x>
+        <div id="control-panel-submit-button">
+            <button-x data-type="primary" data-classes="mx-auto">Apply</button-x>
+        </div>
 
         <footer class="flow my-7">
             <p>Project developed as part of the University of Canberra's ITS Capstone Program.</p>
