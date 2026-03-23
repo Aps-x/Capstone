@@ -1,6 +1,7 @@
 import "../Accordion/Accordion.js";
 import "../LightDarkSelect/LightDarkSelect.js";
 import "../Button/Button.js";
+import { EVENT_BUS } from '../../core/EventBus.js';
 //------------------------------------------------------------------------------------
 /**
  * Primary user interface for interacting with the map.
@@ -8,8 +9,6 @@ import "../Button/Button.js";
  */
 //------------------------------------------------------------------------------------
 export default class ControlPanel extends HTMLElement {
-    /** @type {Map} */
-    #map;
 
     constructor() {
         super();
@@ -117,10 +116,7 @@ export default class ControlPanel extends HTMLElement {
     }
 
     #initialize() {
-        this.#map = document.querySelector('map-x');
-
         const submitButton = document.getElementById("control-panel-submit-button");
-
         submitButton.addEventListener('click', (event) => this.#handleFormSubmission(event));
     }
 
@@ -133,16 +129,11 @@ export default class ControlPanel extends HTMLElement {
     #handleFormSubmission(event) {
         event.preventDefault();
 
+        // TODO: Add the others forms and create a MapConfig object
         const transformForm = this.querySelector('.control-panel__form--transform');
-
-        // TODO: Add the others forms and create a MapConfig object, refactor renderbusmarkers
         const formData = new FormData(transformForm);
 
-        const scale = Number(formData.get('scale'));
-        const offsetX = Number(formData.get('offsetX'));
-        const offsetY = Number(formData.get('offsetY'));
-
-        this.#map.renderBusMarkers(scale, offsetX, offsetY);
+        EVENT_BUS.emit('user-updated-map-settings', formData);
     }
 }
 

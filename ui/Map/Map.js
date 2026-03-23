@@ -1,4 +1,5 @@
 import Bus from "../../core/Bus.js";
+import { EVENT_BUS } from '../../core/EventBus.js';
 //------------------------------------------------------------------------------------
 /**
  * Facade for the mapping library. Provides an API for web map CRUD operations.
@@ -16,6 +17,20 @@ export default class Map extends HTMLElement {
 
     constructor() {
         super();
+        // If you want to unsubscribe from the event, you will need to use function binding.
+        // this._boundHandleUpdatedMapSettings = this.#handleUpdatedMapSettings.bind(this);
+        EVENT_BUS.on('user-updated-map-settings', this.#handleUpdatedMapSettings.bind(this)); 
+    }
+
+    #handleUpdatedMapSettings(event) {
+        // TODO: Move this and refactor.
+        const formData = event.detail
+
+        const scale = Number(formData.get('scale'));
+        const offsetX = Number(formData.get('offsetX'));
+        const offsetY = Number(formData.get('offsetY'));
+        
+        this.renderBusMarkers(scale, offsetX, offsetY);
     }
 
     connectedCallback() {
@@ -94,25 +109,25 @@ export default class Map extends HTMLElement {
      * @returns {string} The URL/path to the map style JSON file.
      */
     #determineMapStyle() {
-        const DARK_STYLE = "./themes/dark.json";
-        const LIGHT_STYLE = "./themes/bright.json";
+        const darkStyle = "./themes/dark.json";
+        const lightStyle = "./themes/bright.json";
 
         const userColorSchemePreference = document.querySelector('meta[name="color-scheme"]')?.getAttribute('content');
         
         if (userColorSchemePreference === "dark") {
-            return DARK_STYLE;
+            return darkStyle;
         }
         if (userColorSchemePreference === "light") {
-            return LIGHT_STYLE;
+            return lightStyle;
         }
 
         const browserPrefersDarkTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
         if (browserPrefersDarkTheme) {
-            return DARK_STYLE;
+            return darkStyle;
         }
         else {
-            return LIGHT_STYLE;
+            return lightStyle;
         }
     }
 
@@ -176,8 +191,9 @@ export default class Map extends HTMLElement {
      */
     renderBusMarkers(scale, offsetX, offsetY) {
         //
-        //TODO: This needs to be refactored. Function should take the GEOJson and map settings
-        //      objects as parameters.
+        // TODO: 
+        // This needs to be refactored. Function should take the GEOJson and map settings
+        // objects as parameters.
         //
 
         const SOURCE_ID = 'bus-markers-source';
