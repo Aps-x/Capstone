@@ -8,12 +8,8 @@ class Accordion extends HTMLElement {
     static #idCounter = 0;
     #initialized = false;
     #id = 0;
-
-    /** @type {HTMLButtonElement} */
-    #triggerButton;
-    
-    /** @type {HTMLDivElement} */
-    #content;
+    /** @type {HTMLButtonElement} */ #triggerButton;
+    /** @type {HTMLDivElement} */ #content;
 
     constructor() {
         super();
@@ -28,7 +24,9 @@ class Accordion extends HTMLElement {
         this.classList.add('accordion');
         this.setAttribute('role', 'article');
 
-        // Generate a unique Id for each accordion for Aria accessibility
+        // Generate a unique Id for each accordion for Aria accessibility.
+        // Custom elements don't automatically scope their ids like web components.
+        // But the shadow DOM breaks aria labeling, so swings and roundabouts.
         Accordion.#idCounter++;
         this.#id = Accordion.#idCounter;
 
@@ -58,7 +56,7 @@ class Accordion extends HTMLElement {
                     id="accordion-${this.#id}">
 
                 <span>${this.dataset.title}</span>
-                <svg class="accordion__arrow" xmlns="http://www.w3.org/2000/svg" width="18" height="12"><path fill="none" stroke="currentColor" stroke-width="3" d="M1 1l8 8 8-8"/></svg>
+                <svg class="accordion__arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="12"><path fill="none" stroke="currentColor" stroke-width="3" d="M1 1l8 8 8-8"/></svg>
             </button>
         </h3>
 

@@ -1,18 +1,33 @@
 .marker-panel {
+    display: none;
     z-index: 1;
     grid-area: right;
     background-color: light-dark(var(--clr-white), var(--clr-black));
     padding: 16px;
+    &[aria-hidden="false"] {
+        display: block;
+        animation: appear 0.25s;
+    }
+    &__header {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 16px;
+    }
+    &__title {
+        font-size: var(--fs-200);
+        font-weight: var(--fw-600);
+        color: var(--clr-blue-500);
+        align-self: center;
+    }
     &__table {
         display: grid;
         grid-template-columns: auto 1fr; 
         
-        /* Container styling */
+        margin-top: 32px;
         max-width: 600px;
         border: 1px solid #e2e8f0;
         border-radius: 8px;
-        overflow: hidden; /* Keeps rounded corners intact */
-        margin: 0;
+        overflow: hidden;
         font-family: sans-serif;
         font-size: 16px;
         dt, dd {
@@ -23,14 +38,24 @@
             border-bottom: none;
         }
         dt {
-  background-color: #f8fafc;
-  font-weight: 600;
-  color: #334155;
-  border-right: 1px solid #e2e8f0; /* The vertical dividing line */
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #334155;
+            border-right: 1px solid #e2e8f0;
+            text-transform: capitalize;
+        }
+        dd {
+            background-color: #ffffff;
+            color: #0f172a;
+        }
+    }
 }
-dd {
-  background-color: #ffffff;
-  color: #0f172a;
-}
+
+@keyframes appear {
+    from {
+        transform: translateX(25vw);
+    }
+    to {
+        transform: unset;
     }
 }

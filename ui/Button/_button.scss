@@ -17,9 +17,10 @@
         border: 2px solid var(--clr-blue-500);
         color: var(--clr-blue-500);
         font-weight: var(--fw-500);
-        padding: 6px 12px;
+        padding: 6px 14px;
         border-radius: 12px;
-        &:hover {
+        &:hover,
+        &:focus-visible {
             background-color: var(--clr-blue-500);
             color: var(--clr-white);
         }

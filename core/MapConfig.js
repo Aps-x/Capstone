@@ -1,6 +1,8 @@
+//------------------------------------------------------------------------------------
 /**
  * Models the configuration data required for the Map.
  */
+//------------------------------------------------------------------------------------
 export default class MapConfig {
     // TODO: Define this later...
     /**

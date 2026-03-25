@@ -1,5 +1,6 @@
 import Bus from "../../core/Bus.js";
-import { EVENT_BUS } from '../../core/EventBus.js';
+import { EVENT_BUS } from "../../core/EventBus.js";
+import { EVENTS } from "../../core/Events.js";
 //------------------------------------------------------------------------------------
 /**
  * Facade for the mapping library. Provides an API for web map CRUD operations.
@@ -7,44 +8,57 @@ import { EVENT_BUS } from '../../core/EventBus.js';
  */
 //------------------------------------------------------------------------------------
 export default class Map extends HTMLElement {
-    /** @type {maplibregl.Map} */
-    #map;
-
-    /** @type {Bus[]} */
-    #busManifest = [];
-
     #MAP_CENTER = [134, -28];
+    #ZOOM_LEVEL = 4;
+    /** @type {maplibregl.Map} */ #webmap;
+    /** @type {Bus[]} */ #busManifest = [];
 
     constructor() {
         super();
-        // If you want to unsubscribe from the event, you will need to use function binding.
-        // this._boundHandleUpdatedMapSettings = this.#handleUpdatedMapSettings.bind(this);
-        EVENT_BUS.on('user-updated-map-settings', this.#handleUpdatedMapSettings.bind(this)); 
+        
+        EVENT_BUS.on(EVENTS.MAP_SETTINGS_UPDATED, (event) => this.#handleUpdatedMapSettings(event));
+        EVENT_BUS.on(EVENTS.COLOR_SCHEME_UPDATED, () => this.#handleUpdatedColorScheme());
+    }
+
+    connectedCallback() {
+        this.classList.add('map');
+        this.#createMap();
+        this.classList.remove('maplibregl-map');
+        this.#initialize();
+    }
+
+    async #initialize() {
+        // TODO: The Map should not be collecting data, this will eventually be removed.
+        this.#busManifest = await this.#fetchBusData('./data/XY Position.csv');
+    }
+
+    /**
+     * Reacts to updated color scheme by setting a new map style.
+     * 
+     * @returns {void}
+     */
+    #handleUpdatedColorScheme() {
+        const mapStyle = this.#determineMapStyle();
+
+        this.#webmap.setStyle(mapStyle);
+
+        // Setting the map style refreshes the map, removing any markers.
+        // Listen for the map to finish and then rerender.
+        this.#webmap.once('idle', () => {
+            // TODO: Render bus markers will eventually be refactored.
+            this.renderPoints(0.002, 145, -30);
+        });
     }
 
     #handleUpdatedMapSettings(event) {
-        // TODO: Move this function and refactor.
-        const formData = event.detail
+        // TODO: This will eventually receive a MapConfig object instead.
+        const formData = event.detail;
 
         const scale = Number(formData.get('scale'));
         const offsetX = Number(formData.get('offsetX'));
         const offsetY = Number(formData.get('offsetY'));
         
-        this.renderBusMarkers(scale, offsetX, offsetY);
-    }
-
-    connectedCallback() {
-        this.classList.add('map');
-        this.#initialize();
-    }
-
-    async #initialize() {
-        this.#createMap();
-        this.classList.remove('maplibregl-map');
-
-        this.#observeColorThemeChanges();
-        
-        this.#busManifest = await this.#fetchBusData('./data/XY Position.csv');
+        this.renderPoints(scale, offsetX, offsetY);
     }
 
     /**
@@ -53,52 +67,12 @@ export default class Map extends HTMLElement {
      * @returns {void}
      */
     #createMap() {
-        this.#map = new maplibregl.Map({
+        this.#webmap = new maplibregl.Map({
             style: this.#determineMapStyle(),
             center: this.#MAP_CENTER,
-            zoom: 4,
+            zoom: this.#ZOOM_LEVEL,
             container: this,
             attributionControl: false,
-        });
-    }
-
-    /**
-     * Commences observing the color-theme meta tag for changes to the color-theme.
-     * 
-     * @returns {void}
-     */
-    #observeColorThemeChanges() {
-        const colorSchemeMetaTag = document.querySelector('meta[name="color-scheme"]');
-        
-        if (colorSchemeMetaTag == null) {
-            return;
-        }
-
-        // Start observing the meta tag for attribute changes
-        const themeObserver = new MutationObserver((mutationsList) => {
-            for (const mutation of mutationsList) {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'content') {
-                    this.#updateMapStyle();
-                }
-            }
-        });
-
-        themeObserver.observe(colorSchemeMetaTag, { attributes: true });
-    }
-
-    /**
-     * Updates the web map style based on current theme preferences.
-     * 
-     * @returns {void}
-     */
-    #updateMapStyle() {
-        const mapStyle = this.#determineMapStyle();
-
-        this.#map.setStyle(mapStyle);
-
-        // Setting the map style acts as a refresh, so markers need to be re-rendered.
-        this.#map.once('idle', () => { 
-            this.renderBusMarkers(0.002, 145, -30);
         });
     }
 
@@ -138,6 +112,7 @@ export default class Map extends HTMLElement {
      * @returns {Promise<Bus[]>} A promise that resolves to an array of Bus objects.
      */
     async #fetchBusData(csvUrl) {
+        // TODO: This should be removed from this class.
         try {
             const response = await fetch(csvUrl);
             const csvData = await response.text();
@@ -156,6 +131,7 @@ export default class Map extends HTMLElement {
      * @returns {Bus[]} An array of instantiated Bus objects.
      */
     #parseBusData(csv) {
+        // TODO: This should be removed from this class.
         // Gets lines from csv, splits lines into header and data
         const lines = csv.trim().split(/\r?\n/);
         const headerLine = lines[0];
@@ -181,25 +157,74 @@ export default class Map extends HTMLElement {
     }
 
     /**
-     * Renders markers to the web map based on the current `#busManifest` array,
-     * clearing any existing markers first.
+     * Renders points to the web map based on the current `#busManifest` array.
      * 
      * @param {Number} scale Multiplier for each bus x and y value
      * @param {Number} offsetX Additional x offset
      * @param {Number} offsetY Additional y offset
      * @returns {void}
      */
-    renderBusMarkers(scale, offsetX, offsetY) {
-        //
-        // TODO: 
-        // This needs to be refactored. Function should take the GEOJson and map settings
-        // objects as parameters.
-        //
-
+    renderPoints(scale, offsetX, offsetY) {
         const sourceId = 'bus-markers-source';
         const layerId = 'bus-markers-layer';
         
-        const geojsonData = {
+        const geojsonData = this.#generateBusGeoJson(scale, offsetX, offsetY);
+
+        const existingSource = this.#webmap.getSource(sourceId);
+
+        if (existingSource) {
+            existingSource.setData(geojsonData);
+            return;
+        }
+
+        this.#webmap.addSource(sourceId, {
+            type: 'geojson',
+            data: geojsonData
+        });
+
+        this.#webmap.addLayer({
+            id: layerId,
+            type: 'circle',
+            source: sourceId,
+            paint: {
+                'circle-radius': 5,
+                'circle-color': '#FFC107',
+                'circle-stroke-width': 2,
+                'circle-stroke-color': '#000000'
+            }
+        });
+
+        this.#attachBusMarkerEvents(layerId);
+    }
+
+    /**
+     * Attaches click and hover events to the bus marker layer.
+     * 
+     * @param {String} layerId The ID of the layer to attach events to
+     */
+    #attachBusMarkerEvents(layerId) {
+        this.#webmap.on('click', layerId, (event) => {
+            const clickedFeature = event.features[0];
+            EVENT_BUS.emit(EVENTS.MAP_MARKER_CLICKED, clickedFeature.properties);
+        });
+
+        this.#webmap.on('mouseenter', layerId, () => {
+            this.#webmap.getCanvas().style.cursor = 'pointer';
+        });
+
+        this.#webmap.on('mouseleave', layerId, () => {
+            this.#webmap.getCanvas().style.cursor = '';
+        });
+    }
+
+    /**
+     * Transforms the current bus manifest into a GeoJSON FeatureCollection.
+     * 
+     * @returns {JSON}
+     */
+    #generateBusGeoJson(scale, offsetX, offsetY) {
+        // TODO: This might belong in another class.
+        return {
             type: 'FeatureCollection',
             features: this.#busManifest.map(bus => {
                 const transformedLongitude = (bus.longitude * scale) + offsetX;
@@ -221,30 +246,6 @@ export default class Map extends HTMLElement {
                 };
             })
         };
-
-        const existingSource = this.#map.getSource(sourceId);
-
-        if (existingSource) {
-            existingSource.setData(geojsonData);
-        } 
-        else {
-            this.#map.addSource(sourceId, {
-                type: 'geojson',
-                data: geojsonData
-            });
-
-            this.#map.addLayer({
-                id: layerId,
-                type: 'circle',
-                source: sourceId,
-                paint: {
-                    'circle-radius': 5,
-                    'circle-color': '#FFC107',
-                    'circle-stroke-width': 2,
-                    'circle-stroke-color': '#000000'
-                }
-            });
-        }
     }
 }
 

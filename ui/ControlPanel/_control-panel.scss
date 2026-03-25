@@ -1,7 +1,7 @@
 .control-panel {
     z-index: 1;
     grid-area: left;
-    padding: 1rem;
+    padding: 16px;
     overflow: scroll;
     background-color: light-dark(var(--clr-white), var(--clr-black));
     &__title {
@@ -14,13 +14,13 @@
     }
     &__form {
         display: grid;
-        gap: 1rem; 
+        gap: 16px; 
         width: 100%;
-        padding: 1rem;
+        padding: 16px;
         & label {
             display: grid;
             grid-template-columns: 100px 1fr;
-            gap: 1rem;
+            gap: 16px;
         }
         & input {
             min-width: 0;
@@ -36,7 +36,7 @@
             & label {
                 display: grid;
                 grid-template-columns: auto 100px 1fr;
-                gap: 1rem;
+                gap: 16px;
             }
             & img {
                 width: 1em;
@@ -45,5 +45,4 @@
             }
         }
     }
-    
 }

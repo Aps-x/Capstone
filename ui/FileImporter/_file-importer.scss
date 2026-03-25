@@ -1,0 +1,5 @@
+.file-importer {
+    & > input[type='file'] {
+        display: none;
+    }
+}

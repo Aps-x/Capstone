@@ -1,10 +1,12 @@
+import { EVENT_BUS } from "../../core/EventBus.js";
+import { EVENTS } from "../../core/Events.js";
 //------------------------------------------------------------------------------------
 /**
  * Allows the user to set the color scheme of the website.
  * @extends HTMLElement
  */
 //------------------------------------------------------------------------------------
-class LightDarkSelect extends HTMLElement {
+class ColorSchemeSelect extends HTMLElement {
 
     constructor() {
         super();
@@ -25,15 +27,11 @@ class LightDarkSelect extends HTMLElement {
 
         selectElement.value = colorSchemePreference;
         
-        // Apply the initial scheme
+        // Apply the initial color scheme
         this.#applyScheme(colorSchemePreference);
 
-        // Listen for user changes
-        selectElement.addEventListener('change', (event) => {
-            const newScheme = event.target.value;
-            localStorage.setItem("color-scheme-preference", newScheme);
-            this.#applyScheme(newScheme);
-        });
+        // Listen for changes to color scheme
+        selectElement.addEventListener('change', (event) => this.#handleColorSchemePreferenceChange(event));
     }
 
     #render() {
@@ -47,6 +45,18 @@ class LightDarkSelect extends HTMLElement {
         </label>
         `;
     }
+
+    /**
+     * Handles a change in the user's color scheme preference.
+     * 
+     * @param {event} event 
+     */
+    #handleColorSchemePreferenceChange(event) {
+        const newScheme = event.target.value;
+        localStorage.setItem("color-scheme-preference", newScheme);
+        this.#applyScheme(newScheme);
+    }
+
     /**
      * Sets the content of the color-scheme meta tag.
      * 
@@ -61,7 +71,9 @@ class LightDarkSelect extends HTMLElement {
         }
 
         colorSchemeMetaTag.content = scheme;
+
+        EVENT_BUS.emit(EVENTS.COLOR_SCHEME_UPDATED, scheme);
     }
 }
 
-customElements.define('light-dark-select', LightDarkSelect);
+customElements.define('color-scheme-select', ColorSchemeSelect);

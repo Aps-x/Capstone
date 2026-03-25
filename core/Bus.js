@@ -1,6 +1,8 @@
+//------------------------------------------------------------------------------------
 /**
  * Models a physical Bus unit and its spatial data.
  */
+//------------------------------------------------------------------------------------
 export default class Bus {
     /**
      * @param {number} id Bus number with area prefix.

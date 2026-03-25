@@ -187,7 +187,7 @@ a {
 .control-panel {
   z-index: 1;
   grid-area: left;
-  padding: 1rem;
+  padding: 16px;
   overflow: scroll;
   background-color: light-dark(var(--clr-white), var(--clr-black));
 }
@@ -198,14 +198,14 @@ a {
 }
 .control-panel__form {
   display: grid;
-  gap: 1rem;
+  gap: 16px;
   width: 100%;
-  padding: 1rem;
+  padding: 16px;
 }
 .control-panel__form label {
   display: grid;
   grid-template-columns: 100px 1fr;
-  gap: 1rem;
+  gap: 16px;
 }
 .control-panel__form input {
   min-width: 0;
@@ -219,7 +219,7 @@ a {
 .control-panel__form--generation label {
   display: grid;
   grid-template-columns: auto 100px 1fr;
-  gap: 1rem;
+  gap: 16px;
 }
 .control-panel__form--generation img {
   width: 1em;
@@ -228,20 +228,35 @@ a {
 }
 
 .marker-panel {
+  display: none;
   z-index: 1;
   grid-area: right;
   background-color: light-dark(var(--clr-white), var(--clr-black));
   padding: 16px;
 }
+.marker-panel[aria-hidden=false] {
+  display: block;
+  animation: appear 0.25s;
+}
+.marker-panel__header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+}
+.marker-panel__title {
+  font-size: var(--fs-200);
+  font-weight: var(--fw-600);
+  color: var(--clr-blue-500);
+  align-self: center;
+}
 .marker-panel__table {
   display: grid;
   grid-template-columns: auto 1fr;
-  /* Container styling */
+  margin-top: 32px;
   max-width: 600px;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  overflow: hidden; /* Keeps rounded corners intact */
-  margin: 0;
+  overflow: hidden;
   font-family: sans-serif;
   font-size: 16px;
 }
@@ -256,31 +271,40 @@ a {
   background-color: #f8fafc;
   font-weight: 600;
   color: #334155;
-  border-right: 1px solid #e2e8f0; /* The vertical dividing line */
+  border-right: 1px solid #e2e8f0;
+  text-transform: capitalize;
 }
 .marker-panel__table dd {
   background-color: #ffffff;
   color: #0f172a;
 }
 
+@keyframes appear {
+  from {
+    transform: translateX(25vw);
+  }
+  to {
+    transform: unset;
+  }
+}
 .accordion {
-  margin-top: 4rem;
+  margin-top: 64px;
 }
 .accordion__trigger {
-  padding-block: 1.5rem;
-  border: none;
-  background-color: unset;
   display: grid;
   grid-template-columns: repeat(2, auto);
   justify-items: start;
   align-items: center;
-  text-align: left;
   width: 100%;
-  cursor: pointer;
+  padding-block: 24px;
   font-weight: var(--fw-500);
   color: light-dark(var(--clr-black), var(--clr-white));
+  border: none;
+  background-color: unset;
+  text-align: left;
+  cursor: pointer;
 }
-.accordion__trigger:hover {
+.accordion__trigger:hover, .accordion__trigger:focus-visible {
   color: var(--clr-blue-500);
 }
 .accordion__trigger[aria-expanded=true] .accordion__arrow {
@@ -298,7 +322,7 @@ a {
 }
 .accordion__content[aria-hidden=false] {
   grid-template-rows: 1fr;
-  padding-bottom: 1rem;
+  padding-bottom: 16px;
   visibility: visible;
 }
 .accordion__content[aria-hidden=false] > div {
@@ -337,10 +361,10 @@ a {
   border: 2px solid var(--clr-blue-500);
   color: var(--clr-blue-500);
   font-weight: var(--fw-500);
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 12px;
 }
-.button--secondary:hover {
+.button--secondary:hover, .button--secondary:focus-visible {
   background-color: var(--clr-blue-500);
   color: var(--clr-white);
 }
@@ -404,6 +428,10 @@ a {
   outline: none;
 }
 
+.file-importer > input[type=file] {
+  display: none;
+}
+
 .icon {
   display: inline-block;
   width: 1em;
@@ -434,6 +462,10 @@ a {
 
 .square {
   aspect-ratio: 1;
+}
+
+.order-swap > *:nth-child(2) {
+  order: -1;
 }
 
 .block {

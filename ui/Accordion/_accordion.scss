@@ -1,19 +1,20 @@
 .accordion {
-    margin-top: 4rem;
+    margin-top: 64px;
     &__trigger {
-        padding-block: 1.5rem;
-        border: none;
-        background-color: unset;
         display: grid;
         grid-template-columns: repeat(2, auto);
         justify-items: start;
         align-items: center;
-        text-align: left;
         width: 100%;
-        cursor: pointer;
+        padding-block: 24px;
         font-weight: var(--fw-500);
         color: light-dark(var(--clr-black), var(--clr-white));
-        &:hover {
+        border: none;
+        background-color: unset;
+        text-align: left;
+        cursor: pointer;
+        &:hover,
+        &:focus-visible  {
             color: var(--clr-blue-500);
         }
         &[aria-expanded="true"] .accordion__arrow {
@@ -31,7 +32,7 @@
         visibility: hidden;
         &[aria-hidden="false"] {
             grid-template-rows: 1fr;
-            padding-bottom: 1rem;
+            padding-bottom: 16px;
             visibility: visible;
             > div {
                 animation: reveal-overflow 350ms forwards; 

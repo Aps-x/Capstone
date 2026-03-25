@@ -1,7 +1,9 @@
 import "../Accordion/Accordion.js";
-import "../LightDarkSelect/LightDarkSelect.js";
+import "../ColorSchemeSelect/ColorSchemeSelect.js";
 import "../Button/Button.js";
+import "../FileImporter/FileImporter.js"
 import { EVENT_BUS } from '../../core/EventBus.js';
+import { EVENTS } from "../../core/Events.js";
 //------------------------------------------------------------------------------------
 /**
  * Primary user interface for interacting with the map.
@@ -16,7 +18,7 @@ export default class ControlPanel extends HTMLElement {
 
     connectedCallback() {
         this.classList.add('control-panel');
-        this.setAttribute('role', 'aside');
+        this.setAttribute('role', 'complementary');
         this.#render();
         this.#initialize();
     }
@@ -38,8 +40,10 @@ export default class ControlPanel extends HTMLElement {
             </accordion-x>
 
             <accordion-x data-title="Appearance">
-                <form>Heatmap or Points</form>
-                <light-dark-select></light-dark-select>
+                <form class="control-panel__form control-panel__form--appearance">
+                    Heatmap or Points
+                    <color-scheme-select></color-scheme-select>
+                </form>
             </accordion-x>
 
             <accordion-x data-title="Generation Sources">
@@ -90,20 +94,23 @@ export default class ControlPanel extends HTMLElement {
         </div>
 
         <accordion-x data-title="Filter">
-            <form class="control-panel__form control-panel__form--filter">
-                <input type="search" placeholder="Search map...">
-            </form>
+            <search>
+                <form class="control-panel__form control-panel__form--filter">
+                    <input type="search" placeholder="Search map...">
+                </form>
+            </search>
         </accordion-x>
 
         <accordion-x data-title="Import Data">
             <form class="control-panel__form control-panel__form--data">
-                <input type="file" name="mapData" accept=".json, .csv">
+                <file-importer></file-importer>
             </form>
         </accordion-x>
 
-        <div id="control-panel-submit-button">
-            <button-x data-type="primary" data-classes="mx-auto">Apply</button-x>
-        </div>
+        <button-x id="control-panel-submit-button"
+                data-type="primary" 
+                data-classes="mx-auto"
+                type="submit">Apply</button-x>
 
         <footer class="flow my-7">
             <p>Project developed as part of the University of Canberra's ITS Capstone Program.</p>
@@ -135,7 +142,7 @@ export default class ControlPanel extends HTMLElement {
         const transformForm = this.querySelector('.control-panel__form--transform');
         const formData = new FormData(transformForm);
 
-        EVENT_BUS.emit('user-updated-map-settings', formData);
+        EVENT_BUS.emit(EVENTS.MAP_SETTINGS_UPDATED, formData);
     }
 }
 
