@@ -8,6 +8,7 @@
     outline-offset: 4px;
     transition: filter 250ms;
     max-width: fit-content;
+    font-size: var(--fs-050);
     &--primary {
         --_btn-clr-bg: var(--clr-blue-500);
         --_btn-clr-txt: var(--clr-white);
@@ -16,7 +17,7 @@
     &--secondary {
         border: 2px solid var(--clr-blue-500);
         color: var(--clr-blue-500);
-        font-weight: var(--fw-500);
+        font-weight: var(--fw-medium);
         padding: 6px 14px;
         border-radius: 12px;
         &:hover,

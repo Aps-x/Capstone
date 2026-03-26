@@ -9,9 +9,10 @@
     @media only screen and (max-width: 768px) {
             max-height: unset;
             grid-template-columns: 1fr;
+            grid-template-rows: 350px 300px auto;
             grid-template-areas:
+                "right"
                 "main"
-                "left"
-                "right";
+                "left";
     }
 }

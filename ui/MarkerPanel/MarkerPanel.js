@@ -26,18 +26,18 @@ class MarkerPanel extends HTMLElement {
         
     #render() {
         this.innerHTML = /*html*/`
-        <header class="marker-panel__header | order-swap">
-            <h2 class="marker-panel__title">Marker Controls</h2>
+            <header class="marker-panel__header | order-swap">
+                <h2 class="marker-panel__title">Marker Controls</h2>
 
-            <button-x data-type="secondary"
-                    type="button" 
-                    aria-label="Close marker controls">
-                <span aria-hidden="true">X</span>
-            </button-x>
-        </header>
+                <button-x data-type="secondary"
+                        type="button" 
+                        aria-label="Close marker controls">
+                    <span aria-hidden="true">X</span>
+                </button-x>
+            </header>
 
-        <dl class="marker-panel__table">
-        </dl>
+            <dl class="marker-panel__table">
+            </dl>
         `;
     }
 
@@ -45,9 +45,14 @@ class MarkerPanel extends HTMLElement {
         this.#descriptionList = this.querySelector('dl');
         this.#closeButton = this.querySelector('button');
 
-        this.#closeButton.addEventListener('click', (event) => this.#closeMarkerPanel(event))
+        this.#closeButton.addEventListener('click', () => this.#closeMarkerPanel())
     }
 
+    /**
+     * Renders a description list of marker info when a marker is clicked.
+     * @param {event} event The click event
+     * @returns {void}
+     */
     #handleMapMarkerClicked(event) {
         this.setAttribute("aria-hidden", "false");
 
@@ -71,7 +76,11 @@ class MarkerPanel extends HTMLElement {
         }
     }
 
-    #closeMarkerPanel(event) {
+    /**
+     * Toggles the visibility of the marker panel when the close button is clicked.
+     * @returns {void}
+     */
+    #closeMarkerPanel() {
         this.setAttribute("aria-hidden", "true");
     }
 }

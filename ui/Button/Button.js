@@ -24,20 +24,20 @@ class Button extends HTMLElement {
         switch (type) {
         case "primary":
             this.outerHTML = /*html*/`
-            <button class="button button--primary | ${classes}" ${passedAttributes}>
-                <span class="button__shadow"></span>
-                <span class="button__edge"></span>
-                <span class="button__front">${this.content}</span>
-            </button>
+                <button class="button button--primary | ${classes}" ${passedAttributes}>
+                    <span class="button__shadow"></span>
+                    <span class="button__edge"></span>
+                    <span class="button__front">${this.content}</span>
+                </button>
             `;
             break;
 
         case "secondary":
         default:
             this.outerHTML = /*html*/`
-            <button class="button button--secondary | ${classes}" ${passedAttributes}>
-                ${this.content}
-            </button>
+                <button class="button button--secondary | ${classes}" ${passedAttributes}>
+                    ${this.content}
+                </button>
             `;
             break;
 

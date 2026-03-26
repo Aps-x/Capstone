@@ -1,0 +1,23 @@
+.color-scheme-select {
+    & label {
+        display: grid;
+        gap: 16px;
+    }
+    & span {
+        align-self: center;
+    }
+    & select {
+        justify-self: start;
+        border: 2px solid var(--clr-blue-500);
+        color: var(--clr-blue-500);
+        font-weight: var(--fw-medium);
+        padding: 6px 14px;
+        border-radius: 12px;
+        background-color: transparent;
+        &:hover,
+        &:focus-visible {
+            background-color: var(--clr-blue-500);
+            color: var(--clr-white);
+        }
+    }
+}

@@ -1,0 +1,17 @@
+.map-search {
+    & search {
+        background-color: var(--clr-slate-50);
+        border: 1px solid var(--clr-slate-200);
+        border-radius: 100vmax; 
+        padding: 0.5rem 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
+    }
+
+    & input[type="search"] {
+        width: 100%;
+        border: none;
+        background: transparent;
+        color: var(--clr-slate-800);
+        padding: 0.25rem 0;
+    }
+}

@@ -3,7 +3,7 @@ import "./ui/Map/Map.js";
 import "./ui/ControlPanel/ControlPanel.js";
 import "./ui/MarkerPanel/MarkerPanel.js";
 import { DATABASE } from './core/Database.js';
-import { STORE_NAMES, STORE_CONFIGS} from './core/DatabaseConfig.js'
+import { DATABASE_SCHEMA } from './core/DatabaseConfig.js'
 //------------------------------------------------------------------------------------
 /**
  * Application entry point.
@@ -21,13 +21,17 @@ class App extends HTMLElement {
         this.setAttribute('role', 'main');
 
         try {
-            await DATABASE.open(STORE_CONFIGS);
-            this.#render(); 
+            await DATABASE.open(DATABASE_SCHEMA); 
         } 
         catch (error) {
             console.error("Failed to initialize app:", error);
-            this.innerHTML = `<h2>Fatal Error: Could not connect to database.</h2>`;
+            this.innerHTML = /*html*/`
+                <h2>Fatal Error: Could not connect to database.</h2>
+            `;
+            return;
         }
+
+        this.#render(); 
     }
 
     #render() {

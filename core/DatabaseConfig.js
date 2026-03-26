@@ -4,7 +4,7 @@
  * @enum {string}
  */
 //------------------------------------------------------------------------------------
-export const STORE_NAMES = Object.freeze({
+export const OBJECT_STORES = Object.freeze({
     IMPORTED_FILES: 'imported_files',
 });
 
@@ -14,6 +14,6 @@ export const STORE_NAMES = Object.freeze({
  * @type {Array<Object>}
  */
 //------------------------------------------------------------------------------------
-export const STORE_CONFIGS = [
-    { name: STORE_NAMES.IMPORTED_FILES, keyPath: 'id', autoIncrement: true }
+export const DATABASE_SCHEMA = [
+    { name: OBJECT_STORES.IMPORTED_FILES, keyPath: 'id' }
 ];

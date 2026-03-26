@@ -1,37 +1,36 @@
 import "../Button/Button.js";
 import { DATABASE } from "../../core/Database.js";
+import { OBJECT_STORES } from "../../core/DatabaseConfig.js";
 // ------------------------------------------------------------------------------------
 /**
- * Imports files
+ * User interface and logic for allowing the user to enter and remove data.
  * @extends HTMLElement
  */
 // ------------------------------------------------------------------------------------
-// TODO: Change name to DataImporter
-class FileImporter extends HTMLElement {
+class DataImporter extends HTMLElement {
     /** @type {HTMLInputElement} */ #fileInput;
     /** @type {HTMLButtonElement} */ #browseButton;
     /** @type {HTMLUListElement} */ #fileList;
-    #storeName = 'imported_files';
 
     constructor() {
         super();
     }
 
     connectedCallback() {
-        this.classList.add('file-importer');
+        this.classList.add('data-importer');
         this.#render();
         this.#initialize();
     }
 
     #render() {
         this.innerHTML = /*html*/`
-        <input class="file-importer__file-input" type="file" multiple accept=".json, .csv">
+            <input class="file-importer__file-input" type="file" multiple accept=".json, .csv">
 
-        <button-x data-type="secondary" type="button">Browse...</button-x>
+            <button-x data-type="secondary" type="button">Browse...</button-x>
 
-        <ul class="file-importer__file-list" role="list">
+            <ul class="file-importer__file-list" role="list">
 
-        </ul>
+            </ul>
         `;
     }
 
@@ -48,7 +47,7 @@ class FileImporter extends HTMLElement {
 
     async #loadSavedFiles() {
         try {
-            const files = await DATABASE.getAll(this.#storeName);
+            const files = await DATABASE.getAll(OBJECT_STORES.IMPORTED_FILES);
 
             for (const item of files) {
                 this.#createFileListItem(item.file.name, item.id);
@@ -77,7 +76,7 @@ class FileImporter extends HTMLElement {
                 // Create a unique ID and store the native File object
                 const fileId = `${file.name}-${Date.now()}`;
                 
-                await DATABASE.put(this.#storeName, { 
+                await DATABASE.put(OBJECT_STORES.IMPORTED_FILES, { 
                     id: fileId, 
                     file: file
                 });
@@ -93,6 +92,7 @@ class FileImporter extends HTMLElement {
         this.#fileInput.value = '';
     }
 
+    // TODO: This code is ugly as balls
     #createFileListItem(fileName, fileId) {
         const li = document.createElement('li');
         li.dataset.fileId = fileId;
@@ -111,7 +111,7 @@ class FileImporter extends HTMLElement {
         // Add the delete logic
         deleteButton.addEventListener('click', async () => {
             try {
-                await DATABASE.delete(this.#storeName, fileId);
+                await DATABASE.delete(OBJECT_STORES.IMPORTED_FILES, fileId);
                 li.remove();
             } 
             catch (error) {
@@ -124,4 +124,4 @@ class FileImporter extends HTMLElement {
     }
 }
 
-customElements.define('file-importer', FileImporter);
+customElements.define('data-importer', DataImporter);

@@ -13,7 +13,7 @@ class ColorSchemeSelect extends HTMLElement {
     }
 
     connectedCallback() {
-        this.classList.add('light-dark-select');
+        this.classList.add('color-scheme-select');
         this.#render();
 
         const selectElement = this.querySelector('select');
@@ -36,13 +36,14 @@ class ColorSchemeSelect extends HTMLElement {
 
     #render() {
         this.innerHTML = /*html*/`
-        <label>Color Scheme:
-            <select>
-                <option value="light dark">Auto</option>
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-            </select>
-        </label>
+            <label>
+                <span>Color Scheme:</span>
+                <select>
+                    <option value="light dark">Auto</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </label>
         `;
     }
 

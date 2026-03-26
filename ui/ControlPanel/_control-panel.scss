@@ -1,38 +1,59 @@
 .control-panel {
     z-index: 1;
     grid-area: left;
-    padding: 16px;
     overflow: scroll;
     background-color: light-dark(var(--clr-white), var(--clr-black));
+    padding: 16px;
     &__title {
         font-size: var(--fs-200);
-        font-weight: var(--fw-600);
+        font-weight: var(--fw-semi-bold);
         color: var(--clr-blue-500);
     }
     &__content {
         
     }
     &__form {
-        display: grid;
-        gap: 16px; 
-        width: 100%;
-        padding: 16px;
-        & label {
-            display: grid;
-            grid-template-columns: 100px 1fr;
-            gap: 16px;
-        }
-        & input {
-            min-width: 0;
+        &--transform {
+            display: flex;
+            flex-direction: column;
             width: 100%;
-            
+            background-color: var(--clr-slate-100);
+            border-radius: 12px;
+            border: 1px solid var(--clr-slate-300);
+            overflow: hidden;
+            & label {
+                display: grid;
+                grid-template-columns: 150px 1fr;
+                font-weight: var(--fw-semi-bold);
+                border-bottom: 1px solid var(--clr-slate-200); 
+                &:last-child {
+                    border-bottom: none;
+                }
+            }
+            & span {
+                padding: 12px 16px;
+                display: flex;
+                align-items: center;
+            }
+            & input {
+                font-weight: var(--fw-normal);
+                background-color: #ffffff;
+                border: none;
+                border-left: 1px solid var(--clr-slate-200); 
+                padding: 12px 16px;
+            }
         }
-        & input[type='checkbox'] {
-            justify-self: end;
-            width: 1em;
-            height: 1em;
+        &--appearance {
+            display: grid;
+            gap: 16px;
+            & label {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                font-weight: var(--fw-semi-bold);
+            }
         }
         &--generation {
+            font-size: var(--fs-050);
             & label {
                 display: grid;
                 grid-template-columns: auto 100px 1fr;
@@ -43,6 +64,15 @@
                 height: 1em;
                 place-self: center;
             }
+        }
+    }
+    &__input {
+        min-width: 0;
+        width: 100%;
+        &[type='checkbox'] {
+            justify-self: end;
+            width: 1em;
+            height: 1em;
         }
     }
 }

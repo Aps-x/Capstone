@@ -14,10 +14,10 @@ html {
 }
 body {
     font-family: var(--ff-poppins, --ff-system);
-    font-weight: var(--fw-400);
+    font-weight: var(--fw-normal);
     font-size: var(--fs-000);
     line-height: 1.4;
-    color: light-dark(var(--clr-black), var(--clr-white));
+    color: light-dark(var(--clr-slate-900), var(--clr-white));
     background-color: light-dark(var(--clr-white), var(--clr-black));
     text-rendering: optimizeSpeed;
     min-height: 100vh;
@@ -56,6 +56,7 @@ a {
     scroll-padding-block-start: 2rem;
 }
 *:focus-visible {
+    position: relative;
     outline-offset: 4px;
     outline: 4px solid var(--clr-blue-500) !important;
 }

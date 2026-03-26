@@ -48,29 +48,29 @@ class Accordion extends HTMLElement {
 
     #render() {
         this.innerHTML = /*html*/`
-        <h3 class="accordion__header">
-            <button class="accordion__trigger" 
-                    type="button" 
-                    aria-expanded="false" 
-                    aria-controls="sect-${this.#id}" 
-                    id="accordion-${this.#id}">
+            <h3 class="accordion__header">
+                <button class="accordion__trigger" 
+                        type="button" 
+                        aria-expanded="false" 
+                        aria-controls="sect-${this.#id}" 
+                        id="accordion-${this.#id}">
 
-                <span>${this.dataset.title}</span>
-                <svg class="accordion__arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="12"><path fill="none" stroke="currentColor" stroke-width="3" d="M1 1l8 8 8-8"/></svg>
-            </button>
-        </h3>
+                    <span>${this.dataset.title}</span>
+                    <svg class="accordion__arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="12"><path fill="none" stroke="currentColor" stroke-width="3" d="M1 1l8 8 8-8"/></svg>
+                </button>
+            </h3>
 
-        <div class="accordion__content" 
-                id="sect-${this.#id}" 
-                role="region" 
-                aria-labelledby="accordion-${this.#id}" 
-                aria-hidden="true">
-            <div>
-                <slot>
+            <div class="accordion__content" 
+                    id="sect-${this.#id}" 
+                    role="region" 
+                    aria-labelledby="accordion-${this.#id}" 
+                    aria-hidden="true">
+                <div>
+                    <slot>
 
-                </slot>
+                    </slot>
+                </div>
             </div>
-        </div>
         `;
     }
 

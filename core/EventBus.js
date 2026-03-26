@@ -17,8 +17,8 @@ class EventBus extends EventTarget {
 
     /**
      * Adds a one-time event listener.
-     * @param {EVENTS} type - The event to listen for.
-     * @param {Function} listener - The callback function.
+     * @param {EVENTS} type The event to listen for.
+     * @param {Function} listener The callback function.
      */
     once(type, listener) {
         this.addEventListener(type, listener, { once: true });
@@ -26,7 +26,7 @@ class EventBus extends EventTarget {
 
     /**
      * Removes a registered event listener.
-     * @param {EVENTS} type - The event to remove the listener from.
+     * @param {EVENTS} type The event to remove the listener from.
      * @param {EventListenerOrEventListenerObject|Function} listener - The callback function to remove.
      */
     off(type, listener) {
@@ -35,8 +35,8 @@ class EventBus extends EventTarget {
 
     /**
      * Emits a custom event, triggering all registered listeners.
-     * @param {EVENTS} type - The event to emit.
-     * @param {*} [data] - Optional data payload to pass to the listeners via `event.detail`.
+     * @param {EVENTS} type The event to emit.
+     * @param {*} [data] Optional data payload to pass to the listeners via `event.detail`.
      */
     emit(type, data) {
         const customEvent = new CustomEvent(type, { detail: data });

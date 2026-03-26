@@ -7,8 +7,9 @@
         align-items: center;
         width: 100%;
         padding-block: 24px;
-        font-weight: var(--fw-500);
-        color: light-dark(var(--clr-black), var(--clr-white));
+        font-weight: var(--fw-medium);
+        font-size: var(--fs-050);
+        color: light-dark(var(--clr-slate-900), var(--clr-white));
         border: none;
         background-color: unset;
         text-align: left;
