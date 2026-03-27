@@ -21,17 +21,15 @@ class App extends HTMLElement {
         this.setAttribute('role', 'main');
 
         try {
-            await DATABASE.open(DATABASE_SCHEMA); 
+            await DATABASE.open(DATABASE_SCHEMA);
+            this.#render();
         } 
         catch (error) {
             console.error("Failed to initialize app:", error);
             this.innerHTML = /*html*/`
                 <h2>Fatal Error: Could not connect to database.</h2>
             `;
-            return;
-        }
-
-        this.#render(); 
+        }      
     }
 
     #render() {

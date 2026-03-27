@@ -520,6 +520,36 @@ a {
   padding: 0.25rem 0;
 }
 
+.layer-list__ul {
+  display: grid;
+  gap: 16px;
+}
+.layer-list__list-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+}
+.layer-list__file-text {
+  align-self: center;
+  display: flex;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+}
+.layer-list__file-text > span {
+  overflow: hidden;
+  flex: 0 1 auto;
+}
+.layer-list__file-text > span:nth-child(1) {
+  flex-shrink: 1;
+  text-overflow: ellipsis;
+}
+.layer-list__file-text > span:nth-child(2) {
+  min-width: -moz-fit-content;
+  min-width: fit-content;
+  flex: 1;
+}
+
 .icon {
   display: inline-block;
   width: 1em;

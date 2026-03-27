@@ -1,0 +1,30 @@
+.layer-list {
+    &__ul {
+        display: grid;
+        gap: 16px;
+    }
+    &__list-item {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 16px;
+    }
+    &__file-text {
+        align-self: center;
+        display: flex;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 100%;
+        & > span {
+            overflow: hidden;
+            flex: 0 1 auto;
+        }
+        & > span:nth-child(1) {
+            flex-shrink: 1;
+            text-overflow: ellipsis;
+        }
+        & > span:nth-child(2) {
+            min-width: fit-content;
+            flex: 1;
+        }
+    }
+}

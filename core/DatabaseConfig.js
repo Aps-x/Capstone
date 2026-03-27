@@ -5,7 +5,7 @@
  */
 //------------------------------------------------------------------------------------
 export const OBJECT_STORES = Object.freeze({
-    IMPORTED_FILES: 'imported_files',
+    SPATIAL_LAYERS: 'spatial_layers',
 });
 
 //------------------------------------------------------------------------------------
@@ -15,5 +15,5 @@ export const OBJECT_STORES = Object.freeze({
  */
 //------------------------------------------------------------------------------------
 export const DATABASE_SCHEMA = [
-    { name: OBJECT_STORES.IMPORTED_FILES, keyPath: 'id' }
+    { name: OBJECT_STORES.SPATIAL_LAYERS, keyPath: 'id', autoIncrement: true }
 ];
