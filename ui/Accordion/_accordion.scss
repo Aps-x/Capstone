@@ -16,7 +16,7 @@
         cursor: pointer;
         &:hover,
         &:focus-visible  {
-            color: var(--clr-blue-500);
+            color: light-dark(var(--clr-blue-500), var(--clr-blue-300));
         }
         &[aria-expanded="true"] .accordion__arrow {
             transform: rotate(180deg);

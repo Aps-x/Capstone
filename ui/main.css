@@ -23,6 +23,7 @@
   --clr-slate-700: hsl(215, 25%, 27%);
   --clr-slate-800: hsl(217, 33%, 17%);
   --clr-slate-900: hsl(222, 47%, 11%);
+  --clr-slate-950: hsl(224, 45%, 6%);
   --ff-system: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   --ff-poppins: "Poppins", sans-serif;
   --fw-thin: 100;
@@ -211,28 +212,28 @@ a {
   z-index: 1;
   grid-area: left;
   overflow: scroll;
-  background-color: light-dark(var(--clr-white), var(--clr-black));
+  background-color: light-dark(var(--clr-white), var(--clr-slate-950));
   padding: 16px;
 }
 .control-panel__title {
   font-size: var(--fs-200);
   font-weight: var(--fw-semi-bold);
-  color: var(--clr-blue-500);
+  color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
 }
 .control-panel__form--transform {
   display: flex;
   flex-direction: column;
   width: 100%;
-  background-color: var(--clr-slate-100);
+  background-color: light-dark(var(--clr-slate-100), var(--clr-slate-900));
   border-radius: 12px;
-  border: 1px solid var(--clr-slate-300);
+  border: 1px solid light-dark(var(--clr-slate-300), var(--clr-slate-700));
   overflow: hidden;
 }
 .control-panel__form--transform label {
   display: grid;
   grid-template-columns: 150px 1fr;
   font-weight: var(--fw-semi-bold);
-  border-bottom: 1px solid var(--clr-slate-200);
+  border-bottom: 1px solid light-dark(var(--clr-slate-200), var(--clr-slate-700));
 }
 .control-panel__form--transform label:last-child {
   border-bottom: none;
@@ -244,9 +245,9 @@ a {
 }
 .control-panel__form--transform input {
   font-weight: var(--fw-normal);
-  background-color: #ffffff;
+  background-color: light-dark(var(--clr-white), var(--clr-slate-800));
   border: none;
-  border-left: 1px solid var(--clr-slate-200);
+  border-left: 1px solid light-dark(var(--clr-slate-200), var(--clr-slate-700));
   padding: 12px 16px;
 }
 .control-panel__form--appearance {
@@ -259,7 +260,9 @@ a {
   font-weight: var(--fw-semi-bold);
 }
 .control-panel__form--generation {
-  font-size: var(--fs-050);
+  display: grid;
+  gap: 16px;
+  font-size: var(--fs-000);
 }
 .control-panel__form--generation label {
   display: grid;
@@ -285,7 +288,7 @@ a {
   display: none;
   z-index: 1;
   grid-area: right;
-  background-color: light-dark(var(--clr-white), var(--clr-black));
+  background-color: light-dark(var(--clr-white), var(--clr-slate-950));
   padding: 16px;
 }
 .marker-panel[aria-hidden=false] {
@@ -300,7 +303,7 @@ a {
 .marker-panel__title {
   font-size: var(--fs-200);
   font-weight: var(--fw-semi-bold);
-  color: var(--clr-blue-500);
+  color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
   align-self: center;
 }
 .marker-panel__table {
@@ -308,7 +311,7 @@ a {
   grid-template-columns: auto 1fr;
   margin-top: 32px;
   max-width: 600px;
-  border: 1px solid var(--clr-slate-200);
+  border: 1px solid light-dark(var(--clr-slate-300), var(--clr-slate-700));
   border-radius: 8px;
   overflow: hidden;
   font-family: sans-serif;
@@ -316,16 +319,16 @@ a {
 }
 .marker-panel__table dt, .marker-panel__table dd {
   padding: 12px 16px;
-  border-bottom: 1px solid var(--clr-slate-200);
+  border-bottom: 1px solid light-dark(var(--clr-slate-200), var(--clr-slate-700));
 }
 .marker-panel__table dt:last-of-type, .marker-panel__table dd:last-of-type {
   border-bottom: none;
 }
 .marker-panel__table dt {
-  background-color: var(--clr-slate-50);
+  background-color: light-dark(var(--clr-slate-50), var(--clr-slate-800));
   font-weight: var(--fw-semi-bold);
   color: var(clr-slate-700);
-  border-right: 1px solid var(--clr-slate-200);
+  border-right: 1px solid light-dark(var(--clr-slate-200), var(--clr-slate-700));
   text-transform: capitalize;
 }
 
@@ -356,7 +359,7 @@ a {
   cursor: pointer;
 }
 .accordion__trigger:hover, .accordion__trigger:focus-visible {
-  color: var(--clr-blue-500);
+  color: light-dark(var(--clr-blue-500), var(--clr-blue-300));
 }
 .accordion__trigger[aria-expanded=true] .accordion__arrow {
   transform: rotate(180deg);
@@ -506,8 +509,8 @@ a {
 }
 
 .map-search search {
-  background-color: var(--clr-slate-50);
-  border: 1px solid var(--clr-slate-200);
+  background-color: light-dark(var(--clr-slate-50), var(--clr-slate-900));
+  border: 1px solid light-dark(var(--clr-slate-200), var(--clr-slate-700));
   border-radius: 100vmax;
   padding: 0.5rem 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -516,8 +519,8 @@ a {
   width: 100%;
   border: none;
   background: transparent;
-  color: var(--clr-slate-800);
   padding: 0.25rem 0;
+  color: light-dark(var(--clr-slate-800), var(--clr-slate-200));
 }
 
 .layer-list__ul {

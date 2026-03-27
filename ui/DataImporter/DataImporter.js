@@ -40,7 +40,7 @@ class DataImporter extends HTMLElement {
         this.#fileInput.addEventListener('change', (event) => this.#handleFileSelection(event));
         this.#layerList.addEventListener('delete-layer', (event) => this.#handleDeleteLayer(event));
 
-        await this.#loadSavedSpatialLayers();
+        this.#loadSavedSpatialLayers();
     }
 
     /**
@@ -50,7 +50,7 @@ class DataImporter extends HTMLElement {
     async #loadSavedSpatialLayers() {
         try {
             const layers = await DATABASE.getAll(OBJECT_STORES.SPATIAL_LAYERS);
-            
+
             for (const item of layers) {
                 this.#layerList.createListItem(item.file.name, item.id);
             }
