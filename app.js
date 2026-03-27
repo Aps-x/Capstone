@@ -1,4 +1,4 @@
-import "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js";
+import "./lib/maplibre/maplibre-gl.js";
 import "./ui/Map/Map.js";
 import "./ui/ControlPanel/ControlPanel.js";
 import "./ui/MarkerPanel/MarkerPanel.js";
