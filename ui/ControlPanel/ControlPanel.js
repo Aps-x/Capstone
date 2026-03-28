@@ -5,6 +5,7 @@ import "../DataImporter/DataImporter.js";
 import "../MapSearch/MapSearch.js";
 import { EVENT_BUS } from '../../core/EventBus.js';
 import { EVENTS } from "../../core/Events.js";
+import MapSettings from "../../core/MapSettings.js";
 //------------------------------------------------------------------------------------
 /**
  * Primary user interface for interacting with the map.
@@ -47,7 +48,7 @@ export default class ControlPanel extends HTMLElement {
                             <span class="control-panel__label-text">X Offset</span>
                             <input class="control-panel__input"
                                     type="number" 
-                                    name="offsetX" 
+                                    name="xOffset" 
                                     value="145" 
                                     step="0.1">
                         </label>
@@ -56,7 +57,7 @@ export default class ControlPanel extends HTMLElement {
                             <span class="control-panel__label-text">Y Offset</span>
                             <input class="control-panel__input"
                                     type="number" 
-                                    name="offsetY" 
+                                    name="yOffset" 
                                     value="-30" 
                                     step="0.1">
                         </label>
@@ -154,29 +155,42 @@ export default class ControlPanel extends HTMLElement {
                     <a href="https://www.openmaptiles.org/" target="_blank">© OpenMapTiles</a> Data from 
                     <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>
                 </p>
+                <p>This project is <a href="https://github.com/Aps-x/Capstone">open source</a></p>
             <footer>
         `;
     }
 
     #initialize() {
         const submitButton = document.getElementById("control-panel-submit-button");
+        
         submitButton.addEventListener('click', (event) => this.#handleFormSubmission(event));
     }
 
     /**
-     * Creates the formData object and signals the Map to render the bus markers.
-     * 
-     * @param {event} event
+     * Assembles form data, creates a MapSettings DTO, and emits a MAP_SETTINGS_UPDATED event 
+     * -- attaching the MapSettings DTO payload.
+     * @param {Event} event Apply button clicked.
      * @returns {void}
      */
     #handleFormSubmission(event) {
         event.preventDefault();
+        
+        // Assemble form data
+        const transfromData = new FormData(this.querySelector('.control-panel__form--transform'));
+        const appearanceData = new FormData(this.querySelector('.control-panel__form--appearance'));
 
-        // TODO: Add the others forms and create a MapConfig object
-        const transformForm = this.querySelector('.control-panel__form--transform');
-        const formData = new FormData(transformForm);
+        // Create MapSettings data transfer object
+        const mapSettings = new MapSettings(
+            transfromData.get('scale'),
+            transfromData.get('xOffset'),
+            transfromData.get('yOffset'),
+            appearanceData.get('points'),
+            appearanceData.get('lines'),
+            appearanceData.get('heatmap'),
+        );
 
-        EVENT_BUS.emit(EVENTS.MAP_SETTINGS_UPDATED, formData);
+        // Signal that the map settings were updated and attach MapSettings DTO payload
+        EVENT_BUS.emit(EVENTS.MAP_SETTINGS_UPDATED, mapSettings);
     }
 }
 

@@ -22,7 +22,6 @@
     &__table {
         display: grid;
         grid-template-columns: auto 1fr; 
-        
         margin-top: 32px;
         max-width: 600px;
         border: 1px solid light-dark(var(--clr-slate-300), var(--clr-slate-700));

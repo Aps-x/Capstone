@@ -1,6 +1,8 @@
-import Bus from "../../core/Bus.js";
+import { DATABASE } from "../../core/Database.js";
+import { OBJECT_STORES } from "../../core/DatabaseConfig.js";
 import { EVENT_BUS } from "../../core/EventBus.js";
 import { EVENTS } from "../../core/Events.js";
+import MapSettings from "../../core/MapSettings.js";
 //------------------------------------------------------------------------------------
 /**
  * Facade for the mapping library. Provides an API for web map CRUD operations.
@@ -8,10 +10,8 @@ import { EVENTS } from "../../core/Events.js";
  */
 //------------------------------------------------------------------------------------
 export default class Map extends HTMLElement {
-    #MAP_CENTER = [134, -28];
-    #ZOOM_LEVEL = 4;
     /** @type {maplibregl.Map} */ #webmap;
-    /** @type {Bus[]} */ #busManifest = [];
+    /** @type {MapSettings} */ #mapSettings;
 
     constructor() {
         super();
@@ -24,53 +24,20 @@ export default class Map extends HTMLElement {
         this.classList.add('map');
         this.#createMap();
         this.classList.remove('maplibregl-map');
-        this.#initialize();
-    }
-
-    async #initialize() {
-        // TODO: The Map should not be collecting data, this will eventually be removed.
-        this.#busManifest = await this.#fetchBusData('./data/XY Position.csv');
-    }
-
-    /**
-     * Reacts to updated color scheme by setting a new map style.
-     * 
-     * @returns {void}
-     */
-    #handleUpdatedColorScheme() {
-        const mapStyle = this.#determineMapStyle();
-
-        this.#webmap.setStyle(mapStyle);
-
-        // Setting the map style refreshes the map, removing any markers.
-        // Listen for the map to finish and then rerender.
-        this.#webmap.once('idle', () => {
-            // TODO: Render bus markers will eventually be refactored.
-            this.renderPoints(0.002, 145, -30);
-        });
-    }
-
-    #handleUpdatedMapSettings(event) {
-        // TODO: This will eventually receive a MapConfig object instead.
-        const formData = event.detail;
-
-        const scale = Number(formData.get('scale'));
-        const offsetX = Number(formData.get('offsetX'));
-        const offsetY = Number(formData.get('offsetY'));
-        
-        this.renderPoints(scale, offsetX, offsetY);
     }
 
     /**
      * Instantiates the web map. 
-     * 
      * @returns {void}
      */
     #createMap() {
+        const mapCenter = [134, -28];
+        const zoomLevel = 4;
+
         this.#webmap = new maplibregl.Map({
             style: this.#determineMapStyle(),
-            center: this.#MAP_CENTER,
-            zoom: this.#ZOOM_LEVEL,
+            center: mapCenter,
+            zoom: zoomLevel,
             container: this,
             attributionControl: false,
         });
@@ -79,7 +46,6 @@ export default class Map extends HTMLElement {
     /**
      * Determines the appropriate map style JSON path based on the user's color scheme preference
      * or the browser's default theme.
-     * 
      * @returns {string} The URL/path to the map style JSON file.
      */
     #determineMapStyle() {
@@ -91,7 +57,7 @@ export default class Map extends HTMLElement {
         if (userColorSchemePreference === "dark") {
             return darkStyle;
         }
-        if (userColorSchemePreference === "light") {
+        else if (userColorSchemePreference === "light") {
             return lightStyle;
         }
 
@@ -106,147 +72,174 @@ export default class Map extends HTMLElement {
     }
 
     /**
-     * Fetches bus data from a CSV file and parses it into an array of Bus instances.
-     * 
-     * @param {string} csvUrl The URL path to the CSV file.
-     * @returns {Promise<Bus[]>} A promise that resolves to an array of Bus objects.
-     */
-    async #fetchBusData(csvUrl) {
-        // TODO: This should be removed from this class.
-        try {
-            const response = await fetch(csvUrl);
-            const csvData = await response.text();
-            return this.#parseBusData(csvData);
-        }
-        catch (error) {
-            console.error("Failed to load or process bus data:", error);
-            return [];
-        }
-    }
-    
-    /**
-     * Parses raw CSV text into structured Bus objects.
-     * 
-     * @param {string} csv Raw CSV string containing bus data.
-     * @returns {Bus[]} An array of instantiated Bus objects.
-     */
-    #parseBusData(csv) {
-        // TODO: This should be removed from this class.
-        // Gets lines from csv, splits lines into header and data
-        const lines = csv.trim().split(/\r?\n/);
-        const headerLine = lines[0];
-        const dataLines = lines.slice(1);
-
-        // Individual headers
-        const headers = headerLine.split(',');
-
-        const busIndex = headers.indexOf('BUS#');
-        const xIndex = headers.indexOf('x');
-        const yIndex = headers.indexOf('y');
-
-        return dataLines
-            .filter(Boolean)
-            .map(line => {
-                const row = line.split(',');
-                return new Bus(
-                    row[busIndex],           
-                    parseFloat(row[xIndex]), 
-                    parseFloat(row[yIndex]) 
-                );
-            });
-    }
-
-    /**
-     * Renders points to the web map based on the current `#busManifest` array.
-     * 
-     * @param {Number} scale Multiplier for each bus x and y value
-     * @param {Number} offsetX Additional x offset
-     * @param {Number} offsetY Additional y offset
+     * Reacts to the updated color scheme by setting a new map style. Then rerenders the map.
      * @returns {void}
      */
-    renderPoints(scale, offsetX, offsetY) {
-        const sourceId = 'bus-markers-source';
-        const layerId = 'bus-markers-layer';
-        
-        const geojsonData = this.#generateBusGeoJson(scale, offsetX, offsetY);
+    #handleUpdatedColorScheme() {
+        const mapStyle = this.#determineMapStyle();
 
-        const existingSource = this.#webmap.getSource(sourceId);
+        this.#webmap.setStyle(mapStyle);
 
-        if (existingSource) {
-            existingSource.setData(geojsonData);
+        // Setting the map style refreshes the map, removing any rendered map data.
+        // Listen for the map to finish and then rerender.
+        this.#webmap.once('idle', () => {
+            this.#renderMapData();
+        });
+    }
+
+    /**
+     * Accepts the new MapSettings event payload and then rerenders the map.
+     * @param {Event} event Map settings updated by ControlPanel.
+     */
+    #handleUpdatedMapSettings(event) {
+        const updatedMapSettings = event.detail;
+
+        if (!updatedMapSettings instanceof MapSettings) {
             return;
         }
 
-        this.#webmap.addSource(sourceId, {
-            type: 'geojson',
-            data: geojsonData
-        });
-
-        this.#webmap.addLayer({
-            id: layerId,
-            type: 'circle',
-            source: sourceId,
-            paint: {
-                'circle-radius': 5,
-                'circle-color': '#FFC107',
-                'circle-stroke-width': 2,
-                'circle-stroke-color': '#000000'
-            }
-        });
-
-        this.#attachBusMarkerEvents(layerId);
+        this.#mapSettings = updatedMapSettings;
+        this.#renderMapData();
     }
 
-    /**
-     * Attaches click and hover events to the bus marker layer.
-     * 
-     * @param {String} layerId The ID of the layer to attach events to
-     */
-    #attachBusMarkerEvents(layerId) {
-        this.#webmap.on('click', layerId, (event) => {
-            const clickedFeature = event.features[0];
-            EVENT_BUS.emit(EVENTS.MAP_MARKER_CLICKED, clickedFeature.properties);
-        });
 
+    async #renderMapData() {
+        try {
+            // Retrieve all spatial layers from IndexedDB
+            const spatialLayers = await DATABASE.getAll(OBJECT_STORES.SPATIAL_LAYERS);
+
+            for (const layer of spatialLayers) {
+                const layerKey = layer.id; 
+                const file = layer.file;
+
+                if (!file) {
+                    console.warn(`Skipping layer ${layerKey}: No file found in DB object.`);
+                    continue;
+                }
+
+                // 2. Read the File object and parse it into GeoJSON
+                let geojsonData;
+                try {
+                    // Extract the raw text from the file
+                    const fileText = await file.text(); 
+                    // Convert the text into a JavaScript Object
+                    geojsonData = JSON.parse(fileText); 
+                } 
+                catch (parseError) {
+                    console.error(`Failed to parse GeoJSON for layer ${layerKey} (${file.name}):`, parseError);
+                    continue; // Skip to the next layer if this file is corrupted or not JSON
+                }
+
+                const sourceId = `spatial-source-${layerKey}`;
+                const layerId = `spatial-layer-${layerKey}`;
+
+                // 3. Validate GeoJSON before proceeding
+                if (!geojsonData || !geojsonData.features || geojsonData.features.length === 0) {
+                    console.warn(`Skipping layer ${layerKey} (${file.name}): No valid features found.`);
+                    continue;
+                }
+
+                const existingSource = this.#webmap.getSource(sourceId);
+
+                // 4. Update existing source or create a new one
+                if (existingSource) {
+                    existingSource.setData(geojsonData);
+                } 
+                else {
+                    this.#webmap.addSource(sourceId, {
+                        type: 'geojson',
+                        data: geojsonData 
+                    });
+
+                    // Generate layer config based on geometry (Point vs. Line)
+                    const layerConfig = this.#generateLayerConfig(layerId, sourceId, geojsonData);
+                    
+                    if (layerConfig) {
+                        this.#webmap.addLayer(layerConfig);
+                        
+                        // Attach interaction events ONLY to point layers
+                        if (layerConfig.type === 'circle') {
+                            this.#attachLayerEvents(layerId); 
+                        }
+                    }
+                }
+            }
+        } 
+        catch (error) {
+            console.error('Failed to render spatial layers from DB:', error);
+        }
+    }
+
+    #generateLayerConfig(layerId, sourceId, geojsonData) {
+        // Inspect the first feature to determine the geometry type
+        const geometryType = geojsonData.features[0].geometry.type;
+
+        const baseConfig = {
+            id: layerId,
+            source: sourceId,
+        };
+
+        // Render nodes/points (e.g., buses, stations)
+        if (geometryType === 'Point' || geometryType === 'MultiPoint') {
+            return {
+                ...baseConfig,
+                type: 'circle',
+                paint: {
+                    'circle-radius': 5,
+                    'circle-color': '#FFC107',
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#000000'
+                }
+            };
+        } 
+        
+        // Render grid lines/edges (e.g., power lines, routes)
+        if (geometryType === 'LineString' || geometryType === 'MultiLineString') {
+            return {
+                ...baseConfig,
+                type: 'line',
+                layout: {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                paint: {
+                    'line-color': '#2196F3',
+                    'line-width': 3
+                }
+            };
+        }
+
+        console.warn(`Unsupported geometry type: ${geometryType} for layer ${layerId}`);
+        return null; 
+    }
+
+    #attachLayerEvents(layerId) {
+        // Change cursor to pointer when hovering over a point
         this.#webmap.on('mouseenter', layerId, () => {
             this.#webmap.getCanvas().style.cursor = 'pointer';
         });
 
+        // Revert cursor when leaving the point
         this.#webmap.on('mouseleave', layerId, () => {
             this.#webmap.getCanvas().style.cursor = '';
         });
+
+        // Handle clicks on the point
+        this.#webmap.on('click', layerId, (e) => {
+            const featureProperties = e.features[0].properties;
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            
+            console.log(`Point clicked on ${layerId}:`, featureProperties);
+
+            // Ensure the popup appears over the correct copy of the feature if the map is zoomed out
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+
+            // Ready for MapLibre Popup integration here
+        });
     }
 
-    /**
-     * Transforms the current bus manifest into a GeoJSON FeatureCollection.
-     * 
-     * @returns {JSON}
-     */
-    #generateBusGeoJson(scale, offsetX, offsetY) {
-        // TODO: This might belong in another class.
-        return {
-            type: 'FeatureCollection',
-            features: this.#busManifest.map(bus => {
-                const transformedLongitude = (bus.longitude * scale) + offsetX;
-                const transformedLatitude = (bus.latitude * scale) + offsetY;
-
-                return {
-                    type: 'Feature',
-                    geometry: {
-                        type: 'Point',
-                        coordinates: [transformedLongitude, transformedLatitude]
-                    },
-                    properties: {
-                        id: bus.id,
-                        originalX: bus.longitude,
-                        originalY: bus.latitude,
-                        transLong: transformedLongitude,
-                        transLat: transformedLatitude
-                    }
-                };
-            })
-        };
-    }
 }
 
 customElements.define('map-x', Map);

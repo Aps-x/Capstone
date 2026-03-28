@@ -31,6 +31,11 @@ class MapSearch extends HTMLElement {
         searchInput.addEventListener('keydown', (event) => this.#handleSearch(event));
     }
 
+    /**
+     * Validates the user's search query when the enter key is pressed, then emits a map search event.
+     * @param {Event} event 
+     * @returns {void}
+     */
     #handleSearch(event) {
         if (event.key !== 'Enter') {
             return;
