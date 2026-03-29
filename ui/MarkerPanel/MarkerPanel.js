@@ -7,7 +7,6 @@ import { EVENTS } from '../../core/Events.js';
  * @extends HTMLElement
  */
 //------------------------------------------------------------------------------------
-// TODO: Might rename this to InfoPanel... maybe.
 class MarkerPanel extends HTMLElement {
     /** @type {HTMLButtonElement} */ #closeButton;
     /** @type {HTMLDListElement} */ #descriptionList;
@@ -83,6 +82,7 @@ class MarkerPanel extends HTMLElement {
      */
     #closeMarkerPanel() {
         this.setAttribute("aria-hidden", "true");
+        EVENT_BUS.emit(EVENTS.MARKER_PANEL_CLOSED);
     }
 }
 

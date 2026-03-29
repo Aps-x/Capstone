@@ -15,23 +15,7 @@ class ColorSchemeSelect extends HTMLElement {
     connectedCallback() {
         this.classList.add('color-scheme-select');
         this.#render();
-
-        const selectElement = this.querySelector('select');
-
-        // Check for saved preference
-        let colorSchemePreference = localStorage.getItem("color-scheme-preference");
-
-        if (colorSchemePreference == null) {
-            colorSchemePreference = "light dark";
-        }
-
-        selectElement.value = colorSchemePreference;
-        
-        // Apply the initial color scheme
-        this.#applyScheme(colorSchemePreference);
-
-        // Listen for changes to color scheme
-        selectElement.addEventListener('change', (event) => this.#handleColorSchemePreferenceChange(event));
+        this.#initialize();
     }
 
     #render() {
@@ -47,20 +31,37 @@ class ColorSchemeSelect extends HTMLElement {
         `;
     }
 
+    #initialize() {
+        const selectElement = this.querySelector('select');
+
+        // Check for saved preference
+        let colorSchemePreference = localStorage.getItem("color-scheme-preference");
+
+        if (colorSchemePreference == null) {
+            colorSchemePreference = "light dark";
+        }
+
+        selectElement.value = colorSchemePreference;
+        
+        this.#applyScheme(colorSchemePreference);
+
+        selectElement.addEventListener('change', (event) => this.#handleColorSchemePreferenceChange(event));
+    }
+
     /**
      * Handles a change in the user's color scheme preference.
-     * 
-     * @param {event} event 
+     * @param {Event} event Select element value changed.
      */
     #handleColorSchemePreferenceChange(event) {
         const newScheme = event.target.value;
+
         localStorage.setItem("color-scheme-preference", newScheme);
+
         this.#applyScheme(newScheme);
     }
 
     /**
      * Sets the content of the color-scheme meta tag.
-     * 
      * @param {"light" | "dark" | "light dark"} scheme - The preferred color theme.
      * @returns {void}
      */

@@ -17,7 +17,7 @@ class Accordion extends HTMLElement {
 
     connectedCallback() {
         // This component should never be moved, but just in case, check if component is initialized.
-        if (this.#initialized === true) {
+        if (this.#initialized) {
             return;
         }
 
@@ -36,14 +36,7 @@ class Accordion extends HTMLElement {
         this.#render();
         this.querySelector("slot").outerHTML = slotContent;
 
-        // Reference the trigger button and content elements for toggling visibility.
-        this.#triggerButton = this.querySelector(".accordion__trigger");
-        this.#content = this.querySelector(".accordion__content");
-
-        // When the user clicks the trigger button, toggle accordion content visibility
-        this.#triggerButton.addEventListener("click", () => this.#toggleAccordionContentVisibility());
-
-        this.#initialized = true;
+        this.#initialize();
     }
 
     #render() {
@@ -74,9 +67,17 @@ class Accordion extends HTMLElement {
         `;
     }
 
+    #initialize() {
+        this.#triggerButton = this.querySelector(".accordion__trigger");
+        this.#content = this.querySelector(".accordion__content");
+
+        this.#triggerButton.addEventListener("click", () => this.#toggleAccordionContentVisibility());
+
+        this.#initialized = true;
+    }
+
     /**
      * Toggles the visibility of the accordion's content.
-     * 
      * @returns {void}
      */
     #toggleAccordionContentVisibility() {

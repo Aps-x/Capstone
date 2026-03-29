@@ -2,6 +2,7 @@ import "./lib/maplibre/maplibre-gl.js";
 import "./ui/Map/Map.js";
 import "./ui/ControlPanel/ControlPanel.js";
 import "./ui/MarkerPanel/MarkerPanel.js";
+import "./ui/Toaster/Toaster.js";
 import { DATABASE } from './core/Database.js';
 import { DATABASE_SCHEMA } from './core/DatabaseConfig.js'
 //------------------------------------------------------------------------------------
@@ -37,6 +38,7 @@ class App extends HTMLElement {
             <control-panel></control-panel>
             <map-x></map-x>
             <marker-panel></marker-panel>
+            <toaster-x></toaster-x>
         `;
     }
 }

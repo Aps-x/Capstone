@@ -13,12 +13,17 @@ class Example extends HTMLElement {
     connectedCallback() {
         this.classList.add('example');
         this.#render();
+        this.#initialize();
     }
 
     #render() {
         this.innerHTML = /*html*/`
 
         `;
+    }
+
+    #initialize() {
+
     }
 }
 

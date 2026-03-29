@@ -33,7 +33,7 @@ class MapSearch extends HTMLElement {
 
     /**
      * Validates the user's search query when the enter key is pressed, then emits a map search event.
-     * @param {Event} event 
+     * @param {KeyboardEvent} event Keydown within search input.
      * @returns {void}
      */
     #handleSearch(event) {

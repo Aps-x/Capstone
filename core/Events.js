@@ -10,4 +10,6 @@ export const EVENTS = Object.freeze({
     COLOR_SCHEME_UPDATED: 'color-scheme-updated',
     MAP_MARKER_CLICKED: 'map-marker-clicked',
     MAP_SEARCH_INITIATED: 'map-search-initiated',
+    MARKER_PANEL_CLOSED: 'marker-panel-closed',
+    NOTIFICATION_ISSUED: 'notification-issued',
 });

@@ -12,12 +12,14 @@ import MapSettings from "../../core/MapSettings.js";
 export default class Map extends HTMLElement {
     /** @type {maplibregl.Map} */ #webmap;
     /** @type {MapSettings} */ #mapSettings;
+    /** @type {maplibregl.Marker} */ #activeMarker;
 
     constructor() {
         super();
-        
-        EVENT_BUS.on(EVENTS.MAP_SETTINGS_UPDATED, (event) => this.#handleUpdatedMapSettings(event));
         EVENT_BUS.on(EVENTS.COLOR_SCHEME_UPDATED, () => this.#handleUpdatedColorScheme());
+        EVENT_BUS.on(EVENTS.MAP_SETTINGS_UPDATED, (event) => this.#handleUpdatedMapSettings(event));
+        EVENT_BUS.on(EVENTS.MAP_SEARCH_INITIATED, (event) => this.#handleSearchQuery(event));
+        EVENT_BUS.on(EVENTS.MARKER_PANEL_CLOSED, () => this.#handleMarkerPanelClosed());
     }
 
     connectedCallback() {
@@ -53,7 +55,7 @@ export default class Map extends HTMLElement {
         const lightStyle = "./themes/bright.json";
 
         const userColorSchemePreference = document.querySelector('meta[name="color-scheme"]')?.getAttribute('content');
-        
+
         if (userColorSchemePreference === "dark") {
             return darkStyle;
         }
@@ -83,7 +85,7 @@ export default class Map extends HTMLElement {
         // Setting the map style refreshes the map, removing any rendered map data.
         // Listen for the map to finish and then rerender.
         this.#webmap.once('idle', () => {
-            this.#renderMapData();
+            this.#renderSpatialLayersToMap();
         });
     }
 
@@ -99,87 +101,87 @@ export default class Map extends HTMLElement {
         }
 
         this.#mapSettings = updatedMapSettings;
-        this.#renderMapData();
+        this.#renderSpatialLayersToMap();
     }
 
-
-    async #renderMapData() {
+    /**
+     * Retrieves spatial layers from IndexedDB and renders them onto the web map.
+     * @returns {Promise<void>}
+     */
+    async #renderSpatialLayersToMap() {
         try {
-            // Retrieve all spatial layers from IndexedDB
             const spatialLayers = await DATABASE.getAll(OBJECT_STORES.SPATIAL_LAYERS);
 
+            if (spatialLayers.length === 0) {
+                console.warn(`No spatial layers found in the database`);
+                return;
+            }
+
             for (const layer of spatialLayers) {
-                const layerKey = layer.id; 
-                const file = layer.file;
+                const layerKey = layer.id;
+                const layerGeojson = layer.data;
 
-                if (!file) {
-                    console.warn(`Skipping layer ${layerKey}: No file found in DB object.`);
+                if (layerGeojson == null) {
+                    console.warn(`Skipping layer ${layerKey}: No geojson found in database object`);
                     continue;
-                }
-
-                // 2. Read the File object and parse it into GeoJSON
-                let geojsonData;
-                try {
-                    // Extract the raw text from the file
-                    const fileText = await file.text(); 
-                    // Convert the text into a JavaScript Object
-                    geojsonData = JSON.parse(fileText); 
-                } 
-                catch (parseError) {
-                    console.error(`Failed to parse GeoJSON for layer ${layerKey} (${file.name}):`, parseError);
-                    continue; // Skip to the next layer if this file is corrupted or not JSON
                 }
 
                 const sourceId = `spatial-source-${layerKey}`;
                 const layerId = `spatial-layer-${layerKey}`;
 
-                // 3. Validate GeoJSON before proceeding
-                if (!geojsonData || !geojsonData.features || geojsonData.features.length === 0) {
-                    console.warn(`Skipping layer ${layerKey} (${file.name}): No valid features found.`);
-                    continue;
-                }
-
                 const existingSource = this.#webmap.getSource(sourceId);
 
-                // 4. Update existing source or create a new one
+                // Update existing source or create a new one
                 if (existingSource) {
-                    existingSource.setData(geojsonData);
-                } 
+                    existingSource.setData(layerGeojson);
+                }
                 else {
                     this.#webmap.addSource(sourceId, {
                         type: 'geojson',
-                        data: geojsonData 
+                        data: layerGeojson
                     });
 
                     // Generate layer config based on geometry (Point vs. Line)
-                    const layerConfig = this.#generateLayerConfig(layerId, sourceId, geojsonData);
-                    
+                    const layerConfig = this.#generateLayerConfig(layerId, sourceId, layerGeojson);
+
                     if (layerConfig) {
                         this.#webmap.addLayer(layerConfig);
-                        
+
                         // Attach interaction events ONLY to point layers
                         if (layerConfig.type === 'circle') {
-                            this.#attachLayerEvents(layerId); 
+                            this.#attachLayerEvents(layerId);
                         }
                     }
                 }
             }
-        } 
+        }
         catch (error) {
-            console.error('Failed to render spatial layers from DB:', error);
+            console.error('Encountered an error when fetching spatial layers from the database:', error);
         }
     }
 
+    /**
+     * Generates a layer configuration object based on the GeoJSON geometry type.
+     * @param {string} layerId The unique identifier to assign to the new layer.
+     * @param {string} sourceId The identifier of the data source this layer will use.
+     * @param {Object} geojsonData The GeoJSON FeatureCollection.
+     * @returns {Object|null} The configuration object for `addLayer`, or `null` if the geometry type is unsupported.
+     */
     #generateLayerConfig(layerId, sourceId, geojsonData) {
         // Inspect the first feature to determine the geometry type
         const geometryType = geojsonData.features[0].geometry.type;
+
+        if (!geometryType) {
+            console.warn(`Skipping layer config for ${layerId}: First feature is missing a valid geometry type.`);
+            return null;
+        }
 
         const baseConfig = {
             id: layerId,
             source: sourceId,
         };
 
-        // Render nodes/points (e.g., buses, stations)
+        // Render nodes/points (e.g., buses, substations)
         if (geometryType === 'Point' || geometryType === 'MultiPoint') {
             return {
                 ...baseConfig,
@@ -191,8 +193,8 @@ export default class Map extends HTMLElement {
                     'circle-stroke-color': '#000000'
                 }
             };
-        } 
-        
+        }
+
         // Render grid lines/edges (e.g., power lines, routes)
         if (geometryType === 'LineString' || geometryType === 'MultiLineString') {
             return {
@@ -210,36 +212,105 @@ export default class Map extends HTMLElement {
         }
 
         console.warn(`Unsupported geometry type: ${geometryType} for layer ${layerId}`);
-        return null; 
+        return null;
     }
 
+    /**
+     * Attaches mouse interaction events to a specific map layer.
+     * @private
+     * @param {string} layerId The unique identifier of the map layer to attach events to.
+     * @returns {void}
+     */
     #attachLayerEvents(layerId) {
-        // Change cursor to pointer when hovering over a point
         this.#webmap.on('mouseenter', layerId, () => {
             this.#webmap.getCanvas().style.cursor = 'pointer';
         });
 
-        // Revert cursor when leaving the point
         this.#webmap.on('mouseleave', layerId, () => {
             this.#webmap.getCanvas().style.cursor = '';
         });
 
-        // Handle clicks on the point
-        this.#webmap.on('click', layerId, (e) => {
-            const featureProperties = e.features[0].properties;
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            
-            console.log(`Point clicked on ${layerId}:`, featureProperties);
+        this.#webmap.on('click', layerId, (event) => {
+            const feature = event.features[0];
 
-            // Ensure the popup appears over the correct copy of the feature if the map is zoomed out
-            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-            }
-
-            // Ready for MapLibre Popup integration here
+            this.#selectPoint(feature, false);
         });
     }
 
+    /**
+     * Selects a point feature, draws a marker, and optionally flies to it.
+     * @param {Object} feature The GeoJSON feature to select
+     * @param {boolean} shouldFlyTo Whether the map should pan/zoom to the point
+     */
+    #selectPoint(feature, shouldFlyTo = true) {
+        const coordinates = feature.geometry.coordinates;
+
+        if (this.#activeMarker) {
+            this.#activeMarker.remove();
+        }
+
+        this.#activeMarker = new maplibregl.Marker({
+            color: '#009abd'
+        })
+        .setLngLat(coordinates)
+        .addTo(this.#webmap);
+
+        if (shouldFlyTo) {
+            this.#webmap.flyTo({
+                center: coordinates,
+                zoom: 8, 
+                essential: false, 
+                speed: 1.2
+            });
+        }
+
+        EVENT_BUS.emit(EVENTS.MAP_MARKER_CLICKED, feature.properties);
+    }
+
+    /**
+     * Handles a search query by searching the raw GeoJSON data in the database.
+     * This ensures we can find and fly to features even if they are currently off-screen.
+     * @param {Object} event The event object containing the search query.
+     */
+    async #handleSearchQuery(event) {
+        const queryId = event.detail;
+
+        if (!queryId) {
+            console.warn('Search failed: No search query provided in the event.');
+            return;
+        }
+
+        try {
+            const spatialLayers = await DATABASE.getAll(OBJECT_STORES.SPATIAL_LAYERS);
+
+            for (const layer of spatialLayers) {
+                const layerGeojson = layer.data;
+
+                if (!layerGeojson || !layerGeojson.features) {
+                    continue;
+                }
+
+                const targetFeature = layerGeojson.features.find(feature => {
+                    return feature.id === queryId || feature.properties?.id === queryId;
+                });
+
+                if (targetFeature) {
+                    this.#selectPoint(targetFeature, true);
+                    return;
+                }
+            }
+            console.warn(`Search failed: Feature ${queryId} was not found in the database.`);
+        } 
+        catch (error) {
+            console.error('Encountered an error while searching the database:', error);
+        }
+    }
+
+    #handleMarkerPanelClosed() {
+        if (this.#activeMarker) {
+            this.#activeMarker.remove();
+        }
+    }
 }
 
 customElements.define('map-x', Map);

@@ -25,7 +25,7 @@ class DataImporter extends HTMLElement {
 
     #render() {
         this.innerHTML = /*html*/`
-            <input class="file-importer__file-input" type="file" multiple accept=".geojson" style="display: none;">
+            <input class="file-importer__file-input" type="file" multiple accept=".geojson">
             <button-x data-type="secondary" type="button">Browse...</button-x>
             <layer-list></layer-list>
         `;
@@ -51,8 +51,8 @@ class DataImporter extends HTMLElement {
         try {
             const layers = await DATABASE.getAll(OBJECT_STORES.SPATIAL_LAYERS);
 
-            for (const item of layers) {
-                this.#layerList.createListItem(item.file.name, item.id);
+            for (const layer of layers) {
+                this.#layerList.createListItem(layer.fileName, layer.id);
             }
         } 
         catch (error) {
@@ -83,8 +83,19 @@ class DataImporter extends HTMLElement {
 
         for (const file of selectedFiles) {
             try {
+                // Parse the text content
+                const fileText = await file.text();
+                const geojsonData = JSON.parse(fileText);
+
+                // Validation
+                if (geojsonData == null || geojsonData.features == null) {
+                    console.warn(`Skipping ${file.name}: File does not contain GeoJSON features.`);
+                    continue; 
+                }
+
                 const id = await DATABASE.put(OBJECT_STORES.SPATIAL_LAYERS, { 
-                    file: file 
+                    fileName: file.name, 
+                    data: geojsonData
                 });
 
                 this.#layerList.createListItem(file.name, id);

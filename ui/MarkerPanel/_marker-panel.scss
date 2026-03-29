@@ -1,6 +1,6 @@
 .marker-panel {
     display: none;
-    z-index: 1;
+    z-index: var(--z-sidebar);
     grid-area: right;
     background-color: light-dark(var(--clr-white), var(--clr-slate-950));
     padding: 16px;

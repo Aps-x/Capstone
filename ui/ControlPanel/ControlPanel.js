@@ -137,9 +137,7 @@ export default class ControlPanel extends HTMLElement {
             </accordion-x>
 
             <accordion-x data-title="Import Data">
-                <form class="control-panel__form control-panel__form--data">
-                    <data-importer></data-importer>
-                </form>
+                <data-importer></data-importer>
             </accordion-x>
 
             <button-x id="control-panel-submit-button"
@@ -153,9 +151,9 @@ export default class ControlPanel extends HTMLElement {
                     <a href="https://maplibre.org/" target="_blank">MapLibre</a> | 
                     <a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> 
                     <a href="https://www.openmaptiles.org/" target="_blank">© OpenMapTiles</a> Data from 
-                    <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>
+                    <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap.</a>
                 </p>
-                <p>This project is <a href="https://github.com/Aps-x/Capstone">open source</a></p>
+                <p>This project is <a href="https://github.com/Aps-x/Capstone">open source.</a></p>
             <footer>
         `;
     }
@@ -191,6 +189,7 @@ export default class ControlPanel extends HTMLElement {
 
         // Signal that the map settings were updated and attach MapSettings DTO payload
         EVENT_BUS.emit(EVENTS.MAP_SETTINGS_UPDATED, mapSettings);
+        EVENT_BUS.emit(EVENTS.NOTIFICATION_ISSUED, "Testing 1 2 3");
     }
 }
 
