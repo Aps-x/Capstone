@@ -19,12 +19,14 @@
 
         color: light-dark(var(--clr-slate-900), var(--clr-white));
         background-color: light-dark(var(--clr-white), var(--clr-slate-900));
+        text-align: center;
 
         max-inline-size: min(25ch, 90vw);
-        padding-block: .5ch;
+        padding-block: 0.5ch;
         padding-inline: 1ch;
         border-radius: 100vmax;
         font-size: var(--fs-050);
+        text-wrap: balance;
 
         will-change: transform;
         animation:

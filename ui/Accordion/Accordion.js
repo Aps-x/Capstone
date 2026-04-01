@@ -5,11 +5,11 @@
  */
 //------------------------------------------------------------------------------------
 class Accordion extends HTMLElement {
+    /** @type {HTMLButtonElement} */ #triggerButton;
+    /** @type {HTMLDivElement} */ #content;
     static #idCounter = 0;
     #initialized = false;
     #id = 0;
-    /** @type {HTMLButtonElement} */ #triggerButton;
-    /** @type {HTMLDivElement} */ #content;
 
     constructor() {
         super();

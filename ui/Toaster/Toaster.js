@@ -10,7 +10,7 @@ class Toaster extends HTMLElement {
 
     constructor() {
         super();
-        EVENT_BUS.on(EVENTS.NOTIFICATION_ISSUED, (event) => this.#handleNotificationIssued(event));
+        EVENT_BUS.on(EVENTS.SYSTEM_MESSAGE_GENERATED, (event) => this.#handleNotificationIssued(event));
     }
 
     connectedCallback() {

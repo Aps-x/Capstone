@@ -1,5 +1,5 @@
 .data-importer {
-    & > input[type='file'] {
+    &__file-input {
         display: none;
     }
 }

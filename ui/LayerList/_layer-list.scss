@@ -1,7 +1,8 @@
 .layer-list {
-    &__ul {
+    &__list {
         display: grid;
         gap: 16px;
+        margin-top: 18px;
     }
     &__list-item {
         display: grid;

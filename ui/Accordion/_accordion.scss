@@ -9,13 +9,11 @@
         padding-block: 24px;
         font-weight: var(--fw-medium);
         font-size: var(--fs-050);
-        color: light-dark(var(--clr-slate-900), var(--clr-white));
         border: none;
         background-color: unset;
         text-align: left;
         cursor: pointer;
-        &:hover,
-        &:focus-visible  {
+        &:hover, &:focus-visible  {
             color: light-dark(var(--clr-blue-500), var(--clr-blue-300));
         }
         &[aria-expanded="true"] .accordion__arrow {

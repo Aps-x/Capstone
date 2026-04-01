@@ -2,6 +2,8 @@ import "../Button/Button.js";
 import "../LayerList/LayerList.js";
 import { DATABASE } from "../../core/Database.js";
 import { OBJECT_STORES } from "../../core/DatabaseConfig.js";
+import { EVENT_BUS } from "../../core/EventBus.js";
+import { EVENTS } from "../../core/Events.js";
 // ------------------------------------------------------------------------------------
 /**
  * User interface and logic for allowing the user to enter and remove data.
@@ -25,14 +27,14 @@ class DataImporter extends HTMLElement {
 
     #render() {
         this.innerHTML = /*html*/`
-            <input class="file-importer__file-input" type="file" multiple accept=".geojson">
-            <button-x data-type="secondary" type="button">Browse...</button-x>
+            <input class="data-importer__file-input" type="file" multiple accept=".geojson">
+            <button-x data-type="secondary" type="button">Import Data Layers</button-x>
             <layer-list></layer-list>
         `;
     }
 
     async #initialize() {
-        this.#fileInput = this.querySelector('.file-importer__file-input');
+        this.#fileInput = this.querySelector('.data-importer__file-input');
         this.#browseButton = this.querySelector('button'); 
         this.#layerList = this.querySelector('layer-list');
 
@@ -90,6 +92,7 @@ class DataImporter extends HTMLElement {
                 // Validation
                 if (geojsonData == null || geojsonData.features == null) {
                     console.warn(`Skipping ${file.name}: File does not contain GeoJSON features.`);
+                    EVENT_BUS.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, `${file.name} does not contain GeoJSON features.`);
                     continue; 
                 }
 
@@ -102,6 +105,7 @@ class DataImporter extends HTMLElement {
             } 
             catch (error) {
                 console.error(`Failed to save ${file.name} to database:`, error);
+                EVENT_BUS.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, `${file.name} is not valid JSON.`);
             }  
         }
 

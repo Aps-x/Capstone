@@ -20,9 +20,9 @@ class ColorSchemeSelect extends HTMLElement {
 
     #render() {
         this.innerHTML = /*html*/`
-            <label>
-                <span>Color Scheme:</span>
-                <select>
+            <label class="color-scheme-select__label">
+                <span class="color-scheme-select__text">Color Scheme:</span>
+                <select class="color-scheme-select__select">
                     <option value="light dark">Auto</option>
                     <option value="light">Light</option>
                     <option value="dark">Dark</option>

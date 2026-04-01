@@ -146,14 +146,13 @@ export default class ControlPanel extends HTMLElement {
                     type="submit">Apply</button-x>
 
             <footer class="flow my-7">
-                <p>Project developed as part of the University of Canberra's ITS Capstone Program.</p>
+                <p>This <a href="https://github.com/Aps-x/Capstone">open source</a> project was developed as part of the University of Canberra's ITS Capstone Program.</p>
                 <p>
                     <a href="https://maplibre.org/" target="_blank">MapLibre</a> | 
                     <a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> 
                     <a href="https://www.openmaptiles.org/" target="_blank">© OpenMapTiles</a> Data from 
                     <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap.</a>
                 </p>
-                <p>This project is <a href="https://github.com/Aps-x/Capstone">open source.</a></p>
             <footer>
         `;
     }
@@ -182,6 +181,7 @@ export default class ControlPanel extends HTMLElement {
             transfromData.get('scale'),
             transfromData.get('xOffset'),
             transfromData.get('yOffset'),
+            
             appearanceData.get('points'),
             appearanceData.get('lines'),
             appearanceData.get('heatmap'),
@@ -189,7 +189,6 @@ export default class ControlPanel extends HTMLElement {
 
         // Signal that the map settings were updated and attach MapSettings DTO payload
         EVENT_BUS.emit(EVENTS.MAP_SETTINGS_UPDATED, mapSettings);
-        EVENT_BUS.emit(EVENTS.NOTIFICATION_ISSUED, "Testing 1 2 3");
     }
 }
 

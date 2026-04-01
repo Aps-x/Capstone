@@ -11,5 +11,5 @@ export const EVENTS = Object.freeze({
     MAP_MARKER_CLICKED: 'map-marker-clicked',
     MAP_SEARCH_INITIATED: 'map-search-initiated',
     MARKER_PANEL_CLOSED: 'marker-panel-closed',
-    NOTIFICATION_ISSUED: 'notification-issued',
+    SYSTEM_MESSAGE_GENERATED: 'system-message-generated',
 });

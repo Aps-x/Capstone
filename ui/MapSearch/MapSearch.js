@@ -20,8 +20,8 @@ class MapSearch extends HTMLElement {
 
     #render() {
         this.innerHTML = /*html*/`
-            <search>
-                <input type="search" placeholder="Search map...">
+            <search class="map-search__container">
+                <input class="map-search__input" type="search" placeholder="Search map...">
             </search>
         `;
     }

@@ -77,6 +77,9 @@
 .fs-000 {
     font-size: var(--fs-000);
 }
+.fs-050 {
+    font-size: var(--fs-050);
+}
 .fs-100 {
     font-size: var(--fs-100);
 }
@@ -107,29 +110,32 @@
 //------------------------------------------------------------------------------------
 // Font Weight
 //------------------------------------------------------------------------------------
-.fw-100 {
-    font-weight: var(--fw-100);
+.fw-thin {
+    font-weight: var(--fw-thin);
 }
-.fw-200 {
-    font-weight: var(--fw-200);
+.fw-extra-light {
+    font-weight: var(--fw-extra-light);
 }
-.fw-300 {
-    font-weight: var(--fw-300);
+.fw-light {
+    font-weight: var(--fw-light);
 }
-.fw-400 {
-    font-weight: var(--fw-400);
+.fw-normal {
+    font-weight: var(--fw-normal);
 }
-.fw-500 {
-    font-weight: var(--fw-500);
+.fw-medium {
+    font-weight: var(--fw-medium);
 }
-.fw-600 {
-    font-weight: var(--fw-600);
+.fw-semi-bold {
+    font-weight: var(--fw-semi-bold);
 }
-.fw-700 {
-    font-weight: var(--fw-700);
+.fw-bold {
+    font-weight: var(--fw-bold);
 }
-.fw-800 {
-    font-weight: var(--fw-800);
+.fw-extra-bold {
+    font-weight: var(--fw-extra-bold);
+}
+.fw-black {
+    font-weight: var(--fw-black);
 }
 //------------------------------------------------------------------------------------
 // Margin & Padding
@@ -141,22 +147,22 @@
     margin-inline: auto;
 }
 $sizes: (
-    1:  0.25rem,
-    2:  0.5rem,
-    3:  0.75rem,
-    4:  1rem,
-    5:  1.5rem,
-    6:  2rem,
-    7:  3rem,
-    8:  4rem,
-//     9:  6rem,
-//     10: 8rem,
-//     11: 12rem,
-//     12: 16rem,
-//     13: 24rem,
-//     14: 32rem,
-//     15: 40rem,
-//     16: 48rem,
+    1:  4px,
+    2:  8px,
+    3:  12px,
+    4:  16px,
+    5:  24px,
+    6:  32px,
+    7:  48px,
+    8:  64px,
+//  9:  96px,
+//  10: 128px,
+//  11: 192px,
+//  12: 256px,
+//  13: 384px,
+//  14: 512px,
+//  15: 640px,
+//  16: 768px,
 );
 @each $size-name, $size-value in $sizes {
     .m {

@@ -26,10 +26,7 @@ class App extends HTMLElement {
             this.#render();
         } 
         catch (error) {
-            console.error("Failed to initialize app:", error);
-            this.innerHTML = /*html*/`
-                <h2>Fatal Error: Could not connect to database.</h2>
-            `;
+            console.error("Application could not start because an error occured when opening IndexedDB", error);
         }      
     }
 

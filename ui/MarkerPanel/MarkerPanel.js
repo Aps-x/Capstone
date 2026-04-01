@@ -50,7 +50,7 @@ class MarkerPanel extends HTMLElement {
 
     /**
      * Renders a description list of marker info when a marker is clicked.
-     * @param {event} event The click event
+     * @param {Event} event The click event
      * @returns {void}
      */
     #handleMapMarkerClicked(event) {
@@ -66,10 +66,13 @@ class MarkerPanel extends HTMLElement {
 
         for (const [key, value] of Object.entries(markerProperties)) {
             const dt = document.createElement('dt');
-            dt.textContent = key;
-
             const dd = document.createElement('dd');
+
+            dt.textContent = key;
             dd.textContent = value;
+            
+            dt.classList.add("marker-panel__key");
+            dd.classList.add("marker-panel__value");
 
             this.#descriptionList.appendChild(dt);
             this.#descriptionList.appendChild(dd);
