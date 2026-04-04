@@ -8,10 +8,6 @@ import { EVENTS } from "../../core/Events.js";
 //------------------------------------------------------------------------------------
 class MapSearch extends HTMLElement {
 
-    constructor() {
-        super();
-    }
-
     connectedCallback() {
         this.classList.add('map-search');
         this.#render();

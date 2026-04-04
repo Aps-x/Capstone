@@ -1,19 +1,21 @@
 .color-scheme-select {
+    display: block;
     &__label {
-        display: grid;
+        display: flex; 
+        align-items: center;
         gap: 16px;
     }
     &__text {
-        align-self: center;
+        font-weight: var(--fw-semi-bold);
     }
     &__select {
-        justify-self: start;
         border: 2px solid var(--clr-blue-500);
         color: var(--clr-blue-500);
         font-weight: var(--fw-medium);
-        padding: 6px 14px;
+        padding: 8px 16px;
         border-radius: 12px;
         background-color: transparent;
+        cursor: pointer;
         &:hover, &:focus-visible {
             background-color: var(--clr-blue-500);
             color: var(--clr-white);

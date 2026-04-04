@@ -8,10 +8,6 @@ import { EVENTS } from "../../core/Events.js";
 //------------------------------------------------------------------------------------
 class ColorSchemeSelect extends HTMLElement {
 
-    constructor() {
-        super();
-    }
-
     connectedCallback() {
         this.classList.add('color-scheme-select');
         this.#render();

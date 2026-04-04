@@ -27,7 +27,7 @@ class MarkerPanel extends HTMLElement {
     #render() {
         this.innerHTML = /*html*/`
             <header class="marker-panel__header | order-swap">
-                <h2 class="marker-panel__title">Marker Controls</h2>
+                <h2 class="marker-panel__title">Marker Info</h2>
 
                 <button-x data-type="secondary"
                         type="button" 

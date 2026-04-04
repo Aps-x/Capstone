@@ -15,10 +15,6 @@ class DataImporter extends HTMLElement {
     /** @type {HTMLButtonElement} */ #browseButton; 
     /** @type {LayerList} */ #layerList;
 
-    constructor() {
-        super();
-    }
-
     connectedCallback() {
         this.classList.add('data-importer');
         this.#render();

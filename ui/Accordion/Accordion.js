@@ -1,3 +1,4 @@
+import "../FragmentLoader/FragmentLoader.js";
 //------------------------------------------------------------------------------------
 /**
  * Accordion component. Reveals content when the user clicks the trigger.
@@ -10,10 +11,6 @@ class Accordion extends HTMLElement {
     static #idCounter = 0;
     #initialized = false;
     #id = 0;
-
-    constructor() {
-        super();
-    }
 
     connectedCallback() {
         // This component should never be moved, but just in case, check if component is initialized.
@@ -48,7 +45,10 @@ class Accordion extends HTMLElement {
                         aria-controls="sect-${this.#id}" 
                         id="accordion-${this.#id}">
 
-                    <span>${this.dataset.title}</span>
+                    <div>
+                        <fragment-loader src="${this.dataset.image}"></fragment-loader>
+                        <span>${this.dataset.title}</span>
+                    </div>
                     <svg class="accordion__arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="12"><path fill="none" stroke="currentColor" stroke-width="3" d="M1 1l8 8 8-8"/></svg>
                 </button>
             </h3>
