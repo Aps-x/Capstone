@@ -8,7 +8,7 @@ Our solution is a fully client-side web application that accepts geojson spatial
 
 ## User Guide
 
-1. Navigate to the website [here](aps-x.github.io/Capstone/)
+1. Navigate to the website [here](https://aps-x.github.io/Capstone/)
 2. Click 'Import Data'
 3. Click 'Browse' and select your geojson data
 4. Press the 'Apply' button
