@@ -3,7 +3,7 @@ import { EVENT_BUS } from '../../core/EventBus.js';
 import { EVENTS } from '../../core/Events.js';
 //------------------------------------------------------------------------------------
 /**
- * User Interface for editing individual markers / buses and viewing their data.
+ * User Interface for viewing information regarding a clicked marker / bus.
  * @extends HTMLElement
  */
 //------------------------------------------------------------------------------------

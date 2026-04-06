@@ -16,7 +16,6 @@ export default class Map extends HTMLElement {
 
     constructor() {
         super();
-
         EVENT_BUS.on(EVENTS.COLOR_SCHEME_UPDATED, () => this.#handleUpdatedColorScheme());
         EVENT_BUS.on(EVENTS.MAP_SETTINGS_UPDATED, (event) => this.#handleUpdatedMapSettings(event));
         EVENT_BUS.on(EVENTS.MAP_SEARCH_INITIATED, (event) => this.#handleSearchQuery(event));
@@ -87,6 +86,10 @@ export default class Map extends HTMLElement {
         // Setting the map style refreshes the map, removing any rendered map data.
         // Listen for the map to finish and then rerender.
         this.#webmap.once('idle', () => {
+            if (this.#mapSettings == null) {
+                return;
+            }
+
             this.#syncSpatialLayers();
         });
     }
@@ -98,7 +101,7 @@ export default class Map extends HTMLElement {
     #handleUpdatedMapSettings(event) {
         const updatedMapSettings = event.detail;
 
-        if (!updatedMapSettings instanceof MapSettings) {
+        if (!(updatedMapSettings instanceof MapSettings)) {
             return;
         }
 
@@ -107,23 +110,87 @@ export default class Map extends HTMLElement {
     }
 
     /**
- * Orchestrates the synchronization of spatial layers between IndexedDB and the web map.
- * @returns {Promise<void>}
- */
+     * Handles a search query by searching the raw GeoJSON data in the database.
+     * This ensures we can find and fly to features even if they are currently off-screen.
+     * @param {Event} event The event containing the search query.
+     */
+    async #handleSearchQuery(event) {
+        const queryId = event.detail;
+
+        if (!queryId) {
+            console.warn('Search failed: invalid search query.');
+            return;
+        }
+
+        try {
+            const spatialLayers = await DATABASE.getAll(OBJECT_STORES.SPATIAL_LAYERS);
+
+            for (const layer of spatialLayers) {
+                const layerGeojson = layer.data;
+
+                if (!layerGeojson || !layerGeojson.features) {
+                    continue;
+                }
+
+                const targetFeature = layerGeojson.features.find(feature => {
+                    // 1. Check standard top-level GeoJSON id
+                    if (feature.id !== undefined && String(feature.id) === String(queryId)) {
+                        return true;
+                    }
+
+                    // 2. Check the first property in the properties object dynamically
+                    if (feature.properties) {
+                        const propertyKeys = Object.keys(feature.properties);
+                        if (propertyKeys.length > 0) {
+                            const firstKey = propertyKeys[0];
+                            return String(feature.properties[firstKey]) === String(queryId);
+                        }
+                    }
+                    
+                    return false;
+                });
+
+                if (targetFeature) {
+                    this.#selectPoint(targetFeature, true);
+                    return;
+                }
+            }
+            EVENT_BUS.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, `Search failed. Node with key: "${queryId}" not found.`);
+            console.warn(`Search failed. Node with key: ${queryId} not found.`);
+        } 
+        catch (error) {
+            console.error('Encountered an error while searching the database:', error);
+        }
+    }
+
+    /**
+     * Removes the active marker when the marker panel is closed
+     * @returns {void}
+     */
+    #handleMarkerPanelClosed() {
+        if (this.#activeMarker) {
+            this.#activeMarker.remove();
+        }
+    }
+
+    /**
+     * Orchestrates the synchronization of spatial layers between IndexedDB and the web map.
+     * @returns {Promise<void>}
+     */
     async #syncSpatialLayers() {
         try {
             const spatialLayers = await DATABASE.getAll(OBJECT_STORES.SPATIAL_LAYERS);
 
-            // 1. Remove anything on the map that is no longer in the DB
+            // Remove anything on the map that is no longer in the DB
             this.#cleanupOrphanedLayers(spatialLayers);
 
-            // 2. Handle empty state
+            // Handle empty state
             if (spatialLayers.length === 0) {
                 console.warn(`No spatial layers found in the database. Map cleared.`);
                 return;
             }
 
-            // 3. Add or update the valid layers
+            // Add or update the valid layers
             this.#upsertSpatialLayers(spatialLayers);
 
         } 
@@ -176,7 +243,82 @@ export default class Map extends HTMLElement {
     }
 
     /**
-     * Handles the logic for a single layer, deciding whether to update its data or build it from scratch.
+     * Determines if a layer should be rendered based on current MapSettings.
+     * @param {string} geometryType The GeoJSON geometry type.
+     * @returns {boolean}
+     */
+    #shouldRenderLayer(geometryType) {
+        // If settings haven't loaded yet, default to rendering everything
+        if (!this.#mapSettings) return true;
+
+        if (geometryType === 'Point' || geometryType === 'MultiPoint') {
+            return this.#mapSettings.renderPoints;
+        }
+
+        if (geometryType === 'LineString' || geometryType === 'MultiLineString') {
+            return this.#mapSettings.renderLines;
+        }
+
+        return true;
+    }
+
+    /**
+     * Filters GeoJSON features based on power parameters and bus types defined in MapSettings.
+     * @param {Object} geojsonData Original GeoJSON FeatureCollection
+     * @returns {Object} Filtered GeoJSON FeatureCollection
+     */
+    #filterGeojsonFeatures(geojsonData) {
+        // This is the ugliest code I have ever been responsible for. Please understand
+        // that there is a tight deadline. Apologies for this abomination.
+        if (!this.#mapSettings) return geojsonData;
+
+        const {
+            vMax, vMin, pMax, pMin, qMax, qMin,
+            showGeneration, showTransmission, showDistribution
+        } = this.#mapSettings;
+
+        const filteredFeatures = geojsonData.features.filter(feature => {
+            const props = feature.properties;
+            if (!props) return true;
+
+            // 1. Voltage Filter
+            const v = props['V (kV)'] ?? props.voltage ?? props.v;
+            if (v !== undefined && (Number(v) < vMin || Number(v) > vMax)) return false;
+
+            // 2. Active Power Filter 
+            const p = props['P (MW)'] ?? props.power ?? props.p;
+            if (p !== undefined && (Number(p) < pMin || Number(p) > pMax)) return false;
+
+            // 3. Reactive Power Filter
+            const q = props['Q (MVar)'] ?? props.reactive_power ?? props.q;
+            if (q !== undefined && (Number(q) < qMin || Number(q) > qMax)) return false;
+
+            // 4. Bus Type Filter
+            const typeStr = String(props['Type'] ?? props.type ?? '').toLowerCase();
+            
+            if (typeStr) {
+                // Adjust these string matches if your dataset uses different terminology
+                // for Transmission or Distribution
+                const isGen = typeStr.includes('generation');
+                const isTrans = typeStr.includes('transmission');
+                const isDist = typeStr.includes('distribution') || typeStr.includes('load');
+
+                if (isGen && !showGeneration) return false;
+                if (isTrans && !showTransmission) return false;
+                if (isDist && !showDistribution) return false;
+            }
+
+            return true;
+        });
+
+        return {
+            ...geojsonData,
+            features: filteredFeatures
+        };
+    }
+
+    /**
+     * Handles the logic for a single layer, deciding whether to update its data, build it from scratch, or skip it.
      * @param {string|number} layerKey The unique ID of the layer.
      * @param {Object} layerGeojson The GeoJSON data for the layer.
      */
@@ -184,13 +326,44 @@ export default class Map extends HTMLElement {
         const sourceId = `spatial-source-${layerKey}`;
         const layerId = `spatial-layer-${layerKey}`;
 
+        if (!layerGeojson || !layerGeojson.features || layerGeojson.features.length === 0) {
+            return;
+        }
+
+        const geometryType = layerGeojson.features[0]?.geometry?.type;
+
+        if (!geometryType) {
+            return; // Skip if invalid
+        }
+
+        // 1. Settings Check: Should this geometry type be rendered globally?
+        if (!this.#shouldRenderLayer(geometryType)) {
+            // Actively remove the layer and source if they were already rendered but toggled off
+            if (this.#webmap.getLayer(layerId)) this.#webmap.removeLayer(layerId);
+            if (this.#webmap.getSource(sourceId)) this.#webmap.removeSource(sourceId);
+            return;
+        }
+
+        // 2. Filter down the features array via MapSettings
+        const filteredGeojson = this.#filterGeojsonFeatures(layerGeojson);
+
         const existingSource = this.#webmap.getSource(sourceId);
 
         if (existingSource) {
-            existingSource.setData(layerGeojson);
+            existingSource.setData(filteredGeojson);
+            
+            // Re-add the layer if it was removed by a previous settings change, but the source remained
+            if (!this.#webmap.getLayer(layerId)) {
+                // Pass the original layerGeojson to guarantee we can read the geometry type for configuration
+                const layerConfig = this.#generateLayerConfig(layerId, sourceId, layerGeojson);
+                if (layerConfig) {
+                    this.#webmap.addLayer(layerConfig);
+                    if (layerConfig.type === 'circle') this.#attachLayerEvents(layerId);
+                }
+            }
         } 
         else {
-            this.#addNewLayerToMap(layerId, sourceId, layerGeojson);
+            this.#addNewLayerToMap(layerId, sourceId, filteredGeojson, layerGeojson);
         }
     }
 
@@ -198,15 +371,16 @@ export default class Map extends HTMLElement {
      * Injects a brand new source and layer into the web map and attaches necessary events.
      * @param {string} layerId The constructed map layer ID.
      * @param {string} sourceId The constructed map source ID.
-     * @param {Object} layerGeojson The GeoJSON data.
+     * @param {Object} filteredGeojson The GeoJSON data (post-filters) to provide to the source.
+     * @param {Object} originalGeojson The original GeoJSON used strictly to determine layer configuration properties.
      */
-    #addNewLayerToMap(layerId, sourceId, layerGeojson) {
+    #addNewLayerToMap(layerId, sourceId, filteredGeojson, originalGeojson) {
         this.#webmap.addSource(sourceId, {
             type: 'geojson',
-            data: layerGeojson
+            data: filteredGeojson
         });
 
-        const layerConfig = this.#generateLayerConfig(layerId, sourceId, layerGeojson);
+        const layerConfig = this.#generateLayerConfig(layerId, sourceId, originalGeojson);
 
         if (layerConfig) {
             this.#webmap.addLayer(layerConfig);
@@ -323,70 +497,6 @@ export default class Map extends HTMLElement {
         }
 
         EVENT_BUS.emit(EVENTS.MAP_MARKER_CLICKED, feature.properties);
-    }
-
-    /**
-     * Handles a search query by searching the raw GeoJSON data in the database.
-     * This ensures we can find and fly to features even if they are currently off-screen.
-     * @param {Event} event The event containing the search query.
-     */
-    async #handleSearchQuery(event) {
-        const queryId = event.detail;
-
-        if (!queryId) {
-            console.warn('Search failed: invalid search query.');
-            return;
-        }
-
-        try {
-            const spatialLayers = await DATABASE.getAll(OBJECT_STORES.SPATIAL_LAYERS);
-
-            for (const layer of spatialLayers) {
-                const layerGeojson = layer.data;
-
-                if (!layerGeojson || !layerGeojson.features) {
-                    continue;
-                }
-
-                const targetFeature = layerGeojson.features.find(feature => {
-                    // 1. Check standard top-level GeoJSON id
-                    if (feature.id !== undefined && String(feature.id) === String(queryId)) {
-                        return true;
-                    }
-
-                    // 2. Check the first property in the properties object dynamically
-                    if (feature.properties) {
-                        const propertyKeys = Object.keys(feature.properties);
-                        if (propertyKeys.length > 0) {
-                            const firstKey = propertyKeys[0];
-                            return String(feature.properties[firstKey]) === String(queryId);
-                        }
-                    }
-                    
-                    return false;
-                });
-
-                if (targetFeature) {
-                    this.#selectPoint(targetFeature, true);
-                    return;
-                }
-            }
-            EVENT_BUS.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, `Search failed. Node with key: "${queryId}" not found.`);
-            console.warn(`Search failed. Node with key: ${queryId} not found.`);
-        } 
-        catch (error) {
-            console.error('Encountered an error while searching the database:', error);
-        }
-    }
-
-    /**
-     * Removes the active marker when the marker panel is closed
-     * @returns {void}
-     */
-    #handleMarkerPanelClosed() {
-        if (this.#activeMarker) {
-            this.#activeMarker.remove();
-        }
     }
 }
 

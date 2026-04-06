@@ -595,11 +595,7 @@ html:has(meta[name=color-scheme][content=light]) .control-panel__header {
   display: block;
 }
 .pick-list__fieldset {
-  border: none;
   display: grid;
-  align-items: flex-start;
-  gap: 1px;
-  max-inline-size: 45ch;
   background-color: light-dark(var(--clr-slate-50), var(--clr-slate-800));
   border: 1px solid light-dark(var(--clr-slate-200), var(--clr-slate-600));
   border-radius: 12px;

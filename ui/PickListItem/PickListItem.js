@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------
 /**
- * Input for a pick list form UI group.
+ * Input for a pick list form UI group. Dumb Component.
  * @extends HTMLElement
  */
 //------------------------------------------------------------------------------------

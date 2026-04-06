@@ -1,7 +1,7 @@
 import "../PickListItem/PickListItem.js";
 //------------------------------------------------------------------------------------
 /**
- * Form UI component.
+ * Form UI component. Dumb Component.
  * @extends HTMLElement
  */
 //------------------------------------------------------------------------------------

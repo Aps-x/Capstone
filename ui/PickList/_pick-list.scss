@@ -1,11 +1,7 @@
 .pick-list {
     display: block;
     &__fieldset {
-        border: none;
         display: grid;
-        align-items: flex-start;
-        gap: 1px;
-        max-inline-size: 45ch;
         background-color: light-dark(var(--clr-slate-50), var(--clr-slate-800));
         border: 1px solid light-dark(var(--clr-slate-200), var(--clr-slate-600));
         border-radius: 12px;

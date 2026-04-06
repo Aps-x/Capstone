@@ -47,12 +47,6 @@ export default class ControlPanel extends HTMLElement {
                                 data-title="Render Lines"
                                 checked>
                             </pick-list-item>
-                            
-                            <pick-list-item
-                                data-type="checkbox"
-                                data-name="heatmap" 
-                                data-title="Render Heatmap">
-                            </pick-list-item>
                         </pick-list>
 
                         <color-scheme-select></color-scheme-select>
@@ -173,19 +167,13 @@ export default class ControlPanel extends HTMLElement {
     #handleFormSubmission(event) {
         event.preventDefault();
         
-        // Grab forms via their IDs
-        const appearanceForm = this.querySelector('#form--appearance');
-        const filterForm = this.querySelector('#form--filter');
-
-        // Assemble form data
-        const appearanceData = new FormData(appearanceForm);
-        const filterData = new FormData(filterForm);
+        const appearanceData = new FormData(this.querySelector('#form--appearance'));
+        const filterData = new FormData(this.querySelector('#form--filter'));
 
         // Create MapSettings data transfer object
         const mapSettings = new MapSettings(
             appearanceData.get('points'),
             appearanceData.get('lines'),
-            appearanceData.get('heatmap'),
             
             filterData.get('vMax'),
             filterData.get('vMin'),

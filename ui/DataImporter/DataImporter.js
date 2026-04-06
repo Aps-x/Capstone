@@ -121,6 +121,7 @@ class DataImporter extends HTMLElement {
         } 
         catch (error) {
             console.error(`Failed to delete layer ${layerId} from database:`, error);
+            EVENT_BUS.emit(SYSTEM_MESSAGE_GENERATED, `Encountered an error when attempting to delete layer with id: ${layerId}`);
         }
     }
 }

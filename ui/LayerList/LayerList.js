@@ -44,36 +44,6 @@ class LayerList extends HTMLElement {
     }
 
     /**
-     * Dispatches a custom event intended for the DataImporter to listen to and delete the
-     * relevant layer.
-     * @param {Event} event Delete button clicked.
-     * @returns {void}
-     */
-    #handleDeleteButtonClicked(event) {
-        const deleteBtn = event.target.closest('button');
-            
-        if (deleteBtn && deleteBtn.dataset.layerId) {
-            this.dispatchEvent(new CustomEvent('delete-layer', {
-                detail: { id: deleteBtn.dataset.layerId },
-                bubbles: true, 
-            }));
-        }
-    }
-
-    /**
-     * Removes a list item from the DOM based on its layerId.
-     * @param {string|number} layerId Database auto-incremented id.
-     * @returns {void}
-     */
-    removeListItem(layerId) {
-        const li = this.#list.querySelector(`li[data-id="${layerId}"]`);
-
-        if (li) {
-            li.remove();
-        }
-    }
-
-    /**
      * Creates a list item and appends it to the unordered list.
      * @param {string} layerName The file name of the spatial layer.
      * @param {string|number} layerId The auto-incremented database ID.
@@ -111,6 +81,36 @@ class LayerList extends HTMLElement {
             };
         }
         return { name: fileName, extension: '' };
+    }
+
+    /**
+     * Dispatches a custom event intended for the DataImporter to listen to and delete the
+     * relevant layer.
+     * @param {Event} event Delete button clicked.
+     * @returns {void}
+     */
+    #handleDeleteButtonClicked(event) {
+        const deleteBtn = event.target.closest('button');
+            
+        if (deleteBtn && deleteBtn.dataset.layerId) {
+            this.dispatchEvent(new CustomEvent('delete-layer', {
+                detail: { id: deleteBtn.dataset.layerId },
+                bubbles: true, 
+            }));
+        }
+    }
+
+    /**
+     * Removes a list item from the DOM based on its layerId.
+     * @param {string|number} layerId Database auto-incremented id.
+     * @returns {void}
+     */
+    removeListItem(layerId) {
+        const li = this.#list.querySelector(`li[data-id="${layerId}"]`);
+
+        if (li) {
+            li.remove();
+        }
     }
 }
 
