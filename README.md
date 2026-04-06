@@ -21,7 +21,7 @@ Note: The synthetic NEM data is included by default on first visit.
 1. Install the 'Visual Studio Code' IDE
 2. Install the 'Live Server' extension by Ritwick Dey
 3. Install the 'Live Sass Compiler' extension by Glenn Marks
-4. (Optional) Install 'Inline HTML' extension by pushqrdx
+4. Install 'Inline HTML' extension by pushqrdx
 5. Clone the repo with your preferred method of using Git version control
 
 ## Architecture & Design
@@ -33,7 +33,7 @@ Note: The synthetic NEM data is included by default on first visit.
 | Category | Technology Used 
 | :--- | :--- |
 | **Markup** | HTML
-| **Styling** | Sass
+| **Styling** | BEM CSS
 | **Frontend** | JavaScript Custom Elements 
 | **Database** | IndexedDB 
 | **Infrastructure** | Github Pages & OpenFreeMap
@@ -45,7 +45,7 @@ Great care was taken to write semantic HTML because it makes the markup easier t
 
 #### Styling
 
-Sass is still an improvement over CSS, even if its value proposition is slowly diminishing as native capability improves year over year. Concatenation nesting makes following the BEM convention more convenient. Sass partials help save some network requests when a user loads the website. Sass variables have been virtually superseded by custom properties; I can only think of one niche where Sass variables shine: and that is in media query range features. Loops are nice if you want to make your own utility classes, and mixins can be useful, but I never really got into using them. I think there is honestly an argument to be made for just using a constructable stylesheet within your custom elements instead of using Sass. BEM was followed because it helps keep specificity low and organizes styles around components (i.e. blocks).
+I originally used a separate .scss file for each component, mimicking what MDN did for their web docs (yari). I later switched my approach to include the CSS within the component itself and then push the stylesheet to document.adoptedStylesheets. The BEM methodology was followed because it helps keep specificity low and organizes styles around components (i.e. blocks).
 
 #### Frontend
 

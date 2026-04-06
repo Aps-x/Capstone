@@ -7,6 +7,7 @@ import { EVENTS } from "../../core/Events.js";
  */
 //------------------------------------------------------------------------------------
 class ColorSchemeSelect extends HTMLElement {
+    static styles = new CSSStyleSheet();
 
     connectedCallback() {
         this.classList.add('color-scheme-select');
@@ -75,3 +76,38 @@ class ColorSchemeSelect extends HTMLElement {
 }
 
 customElements.define('color-scheme-select', ColorSchemeSelect);
+
+//------------------------------------------------------------------------------------
+// Styles
+//------------------------------------------------------------------------------------
+ColorSchemeSelect.styles.replaceSync(/*css*/`
+    .color-scheme-select {
+        display: block;
+    }
+    .color-scheme-select__label {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+    .color-scheme-select__text {
+        font-weight: var(--fw-semi-bold);
+    }
+    .color-scheme-select__select {
+        border: 2px solid var(--clr-blue-500);
+        color: var(--clr-blue-500);
+        font-weight: var(--fw-medium);
+        padding: 8px 16px;
+        border-radius: 12px;
+        background-color: transparent;
+        cursor: pointer;
+    }
+    .color-scheme-select__select:hover,
+    .color-scheme-select__select:focus-visible {
+        background-color: var(--clr-blue-500);
+        color: var(--clr-white);
+    }
+`);
+
+if (!document.adoptedStyleSheets.includes(ColorSchemeSelect.styles)) {
+    document.adoptedStyleSheets.push(ColorSchemeSelect.styles);
+}

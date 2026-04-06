@@ -5,6 +5,7 @@
  */
 //------------------------------------------------------------------------------------
 class LayerList extends HTMLElement {
+    static styles = new CSSStyleSheet();
     /** @type {HTMLUListElement} */ #list;
     /** @type {HTMLTemplateElement} */ #listTemplate;
 
@@ -115,3 +116,43 @@ class LayerList extends HTMLElement {
 }
 
 customElements.define('layer-list', LayerList);
+
+//------------------------------------------------------------------------------------
+// Styles
+//------------------------------------------------------------------------------------
+LayerList.styles.replaceSync(/*css*/`
+    .layer-list__list {
+        display: grid;
+        gap: 16px;
+        margin-top: 18px;
+    }
+    .layer-list__list-item {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 16px;
+    }
+    .layer-list__file-text {
+        align-self: center;
+        display: flex;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 100%;
+    }
+    .layer-list__file-text>span {
+        overflow: hidden;
+        flex: 0 1 auto;
+    }
+    .layer-list__file-text>span:nth-child(1) {
+        flex-shrink: 1;
+        text-overflow: ellipsis;
+    }
+    .layer-list__file-text>span:nth-child(2) {
+        min-width: -moz-fit-content;
+        min-width: fit-content;
+        flex: 1;
+    }
+`);
+
+if (!document.adoptedStyleSheets.includes(LayerList.styles)) {
+    document.adoptedStyleSheets.push(LayerList.styles);
+}

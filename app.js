@@ -1,8 +1,8 @@
 import "./lib/maplibre/maplibre-gl.js";
-import "./ui/Map/Map.js";
-import "./ui/ControlPanel/ControlPanel.js";
-import "./ui/MarkerPanel/MarkerPanel.js";
-import "./ui/Toaster/Toaster.js";
+import "./ui/components/Map.js";
+import "./ui/components/ControlPanel.js";
+import "./ui/components/MarkerPanel.js";
+import "./ui/components/Toaster.js";
 import { DATABASE } from './core/Database.js';
 import { DATABASE_SCHEMA, OBJECT_STORES } from './core/DatabaseConfig.js'
 //------------------------------------------------------------------------------------
@@ -12,6 +12,7 @@ import { DATABASE_SCHEMA, OBJECT_STORES } from './core/DatabaseConfig.js'
  */
 //------------------------------------------------------------------------------------
 class App extends HTMLElement {
+    static styles = new CSSStyleSheet();
 
     async connectedCallback() {
         this.classList.add('app');
@@ -69,3 +70,29 @@ class App extends HTMLElement {
 }
 
 customElements.define('app-x', App);
+
+//------------------------------------------------------------------------------------
+// Styles
+//------------------------------------------------------------------------------------
+App.styles.replaceSync(/*css*/`
+    .app {
+        display: grid;
+        grid-template-rows: 100vh;
+        grid-template-columns: 400px 1fr 400px;
+        grid-template-areas: "left main right";
+        max-height: 100vh;
+        overflow: hidden;
+    }
+    @media only screen and (max-width: 768px) {
+        .app {
+            max-height: unset;
+            grid-template-columns: 1fr;
+            grid-template-rows: 33dvh 33dvh auto;
+            grid-template-areas: "right" "main" "left";
+        }
+    }
+`);
+
+if (!document.adoptedStyleSheets.includes(App.styles)) {
+    document.adoptedStyleSheets.push(App.styles);
+}

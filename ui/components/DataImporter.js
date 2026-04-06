@@ -1,5 +1,5 @@
-import "../Button/Button.js";
-import "../LayerList/LayerList.js";
+import "./Button.js";
+import "./LayerList.js";
 import { DATABASE } from "../../core/Database.js";
 import { OBJECT_STORES } from "../../core/DatabaseConfig.js";
 import { EVENT_BUS } from "../../core/EventBus.js";
@@ -11,6 +11,7 @@ import { EVENTS } from "../../core/Events.js";
  */
 // ------------------------------------------------------------------------------------
 class DataImporter extends HTMLElement {
+    static styles = new CSSStyleSheet();
     /** @type {HTMLInputElement} */ #fileInput;
     /** @type {HTMLButtonElement} */ #browseButton; 
     /** @type {LayerList} */ #layerList;
@@ -127,3 +128,16 @@ class DataImporter extends HTMLElement {
 }
 
 customElements.define('data-importer', DataImporter);
+
+//------------------------------------------------------------------------------------
+// Styles
+//------------------------------------------------------------------------------------
+DataImporter.styles.replaceSync(/*css*/`
+    .data-importer__file-input {
+        display: none;
+    }
+`);
+
+if (!document.adoptedStyleSheets.includes(DataImporter.styles)) {
+    document.adoptedStyleSheets.push(DataImporter.styles);
+}

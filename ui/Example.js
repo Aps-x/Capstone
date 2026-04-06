@@ -5,6 +5,7 @@
  */
 //------------------------------------------------------------------------------------
 class Example extends HTMLElement {
+    static styles = new CSSStyleSheet();
 
     constructor() {
         super();
@@ -28,3 +29,14 @@ class Example extends HTMLElement {
 }
 
 customElements.define('example-x', Example);
+
+//------------------------------------------------------------------------------------
+// Styles
+//------------------------------------------------------------------------------------
+Example.styles.replaceSync(/*css*/`
+
+`);
+
+if (!document.adoptedStyleSheets.includes(Example.styles)) {
+    document.adoptedStyleSheets.push(Example.styles);
+}

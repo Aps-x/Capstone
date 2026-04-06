@@ -10,6 +10,7 @@ import MapSettings from "../../core/MapSettings.js";
  */
 //------------------------------------------------------------------------------------
 export default class Map extends HTMLElement {
+    static styles = new CSSStyleSheet();
     /** @type {maplibregl.Map} */ #webmap;
     /** @type {MapSettings} */ #mapSettings;
     /** @type {maplibregl.Marker} */ #activeMarker;
@@ -133,12 +134,17 @@ export default class Map extends HTMLElement {
                 }
 
                 const targetFeature = layerGeojson.features.find(feature => {
-                    // 1. Check standard top-level GeoJSON id
+                    // Ensure we are only looking at Point geometries
+                    if (!feature.geometry || feature.geometry.type !== 'Point') {
+                        return false;
+                    }
+
+                    // Check standard top-level GeoJSON id
                     if (feature.id !== undefined && String(feature.id) === String(queryId)) {
                         return true;
                     }
 
-                    // 2. Check the first property in the properties object dynamically
+                    // Check the first property in the properties object dynamically
                     if (feature.properties) {
                         const propertyKeys = Object.keys(feature.properties);
                         if (propertyKeys.length > 0) {
@@ -333,7 +339,7 @@ export default class Map extends HTMLElement {
         const geometryType = layerGeojson.features[0]?.geometry?.type;
 
         if (!geometryType) {
-            return; // Skip if invalid
+            return;
         }
 
         // 1. Settings Check: Should this geometry type be rendered globally?
@@ -501,3 +507,19 @@ export default class Map extends HTMLElement {
 }
 
 customElements.define('map-x', Map);
+
+//------------------------------------------------------------------------------------
+// Styles
+//------------------------------------------------------------------------------------
+Map.styles.replaceSync(/*css*/`
+    .map {
+        z-index: var(--z-base);
+        grid-column: 1/-1;
+        height: 100vh;
+        width: 100vw;
+    }
+`);
+
+if (!document.adoptedStyleSheets.includes(Map.styles)) {
+    document.adoptedStyleSheets.push(Map.styles);
+}

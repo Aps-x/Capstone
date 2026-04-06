@@ -1,4 +1,4 @@
-import "../FragmentLoader/FragmentLoader.js";
+import "./FragmentLoader.js";
 //------------------------------------------------------------------------------------
 /**
  * Accordion component. Reveals content when the user clicks the trigger.
@@ -6,18 +6,13 @@ import "../FragmentLoader/FragmentLoader.js";
  */
 //------------------------------------------------------------------------------------
 class Accordion extends HTMLElement {
+    static styles = new CSSStyleSheet();
+    static #idCounter = 0;
+    #id = 0;
     /** @type {HTMLButtonElement} */ #triggerButton;
     /** @type {HTMLDivElement} */ #content;
-    static #idCounter = 0;
-    #initialized = false;
-    #id = 0;
 
     connectedCallback() {
-        // This component should never be moved, but just in case, check if component is initialized.
-        if (this.#initialized) {
-            return;
-        }
-
         this.classList.add('accordion');
         this.setAttribute('role', 'article');
 
@@ -38,7 +33,7 @@ class Accordion extends HTMLElement {
 
     #render() {
         this.innerHTML = /*html*/`
-            <h3 class="accordion__header">
+            <h2 class="accordion__header">
                 <button class="accordion__trigger" 
                         type="button" 
                         aria-expanded="false" 
@@ -51,7 +46,7 @@ class Accordion extends HTMLElement {
                     </div>
                     <svg class="accordion__arrow" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="12"><path fill="none" stroke="currentColor" stroke-width="3" d="M1 1l8 8 8-8"/></svg>
                 </button>
-            </h3>
+            </h2>
 
             <div class="accordion__content" 
                     id="sect-${this.#id}" 
@@ -72,8 +67,6 @@ class Accordion extends HTMLElement {
         this.#content = this.querySelector(".accordion__content");
 
         this.#triggerButton.addEventListener("click", () => this.#toggleAccordionContentVisibility());
-
-        this.#initialized = true;
     }
 
     /**
@@ -89,3 +82,66 @@ class Accordion extends HTMLElement {
 }
 
 customElements.define('accordion-x', Accordion);
+
+//------------------------------------------------------------------------------------
+// Styles
+//------------------------------------------------------------------------------------
+Accordion.styles.replaceSync(/*css*/`
+    .accordion {
+        margin-top: 64px;
+    }
+    .accordion__trigger {
+        display: grid;
+        grid-template-columns: repeat(2, auto);
+        justify-items: start;
+        align-items: center;
+        width: 100%;
+        padding-block: 24px;
+        font-weight: var(--fw-medium);
+        font-size: var(--fs-050);
+        border: none;
+        background-color: unset;
+        text-align: left;
+        cursor: pointer;
+    }
+    .accordion__trigger:hover, .accordion__trigger:focus-visible {
+        color: light-dark(var(--clr-blue-500), var(--clr-blue-300));
+    }
+    .accordion__trigger[aria-expanded=true] .accordion__arrow {
+        transform: rotate(180deg);
+    }
+    .accordion__arrow {
+        transition: transform 300ms ease-in-out;
+        justify-self: end;
+    }
+    .accordion__content {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: all 350ms;
+        visibility: hidden;
+    }
+    .accordion__content[aria-hidden=false] {
+        grid-template-rows: 1fr;
+        padding-bottom: 16px;
+        visibility: visible;
+    }
+    .accordion__content[aria-hidden=false] > div {
+        animation: reveal-overflow 350ms forwards;
+    }
+    .accordion__content > div {
+        overflow: hidden;
+    }
+
+    @keyframes reveal-overflow {
+        0%, 99% {
+            overflow: hidden;
+        }
+        100% {
+            overflow: visible;
+        }
+    }
+`);
+
+if (!document.adoptedStyleSheets.includes(Accordion.styles)) {
+    document.adoptedStyleSheets.push(Accordion.styles);
+}

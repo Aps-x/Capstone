@@ -7,6 +7,7 @@ import { EVENTS } from '../../core/Events.js';
  */
 //------------------------------------------------------------------------------------
 class Toaster extends HTMLElement {
+    static styles = new CSSStyleSheet();
 
     constructor() {
         super();
@@ -115,3 +116,61 @@ class Toaster extends HTMLElement {
 }
 
 customElements.define('toaster-x', Toaster);
+
+//------------------------------------------------------------------------------------
+// Styles
+//------------------------------------------------------------------------------------
+Toaster.styles.replaceSync(/*css*/`
+    .toaster {
+        position: fixed;
+        z-index: var(--z-toast);
+        inset-block-end: 0;
+        inset-inline: 0;
+        padding-block-end: 5vh;
+        display: grid;
+        justify-items: center;
+        justify-content: center;
+        gap: 1vh;
+        pointer-events: none;
+    }
+    .toaster__toast {
+        --_duration: 3s;
+        --_bg-lightness: 90%;
+        --_travel-distance: 0;
+        color: light-dark(var(--clr-slate-900), var(--clr-white));
+        background-color: light-dark(var(--clr-white), var(--clr-slate-900));
+        text-align: center;
+        max-inline-size: min(25ch, 90vw);
+        padding-block: 0.5ch;
+        padding-inline: 1ch;
+        border-radius: 100vmax;
+        font-size: var(--fs-050);
+        text-wrap: balance;
+        will-change: transform;
+        animation: fade-in 0.3s ease, slide-in 0.3s ease, fade-out 0.3s ease var(--_duration);
+    }
+    @media (--motionOK) {
+        .toaster__toast {
+            --_travel-distance: 5vh;
+        }
+    }
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+    }
+    @keyframes fade-out {
+        to {
+            opacity: 0;
+        }
+    }
+    @keyframes slide-in {
+        from {
+            transform: translateY(var(--_travel-distance, 10px));
+        }
+    }
+`);
+
+if (!document.adoptedStyleSheets.includes(Toaster.styles)) {
+    document.adoptedStyleSheets.push(Toaster.styles);
+}
