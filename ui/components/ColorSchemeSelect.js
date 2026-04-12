@@ -1,4 +1,4 @@
-import { EVENT_BUS } from "../../core/EventBus.js";
+import { eventBus } from "../../core/EventBus.js";
 import { EVENTS } from "../../core/Events.js";
 //------------------------------------------------------------------------------------
 /**
@@ -71,7 +71,7 @@ class ColorSchemeSelect extends HTMLElement {
 
         colorSchemeMetaTag.content = scheme;
 
-        EVENT_BUS.emit(EVENTS.COLOR_SCHEME_UPDATED, scheme);
+        eventBus.emit(EVENTS.COLOR_SCHEME_UPDATED, scheme);
     }
 }
 

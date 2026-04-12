@@ -16,11 +16,17 @@ export default class MapSettings {
      * @param {boolean} showGeneration Show generation buses.
      * @param {boolean} showTransmission Show transmission buses.
      * @param {boolean} showDistribution Show distribution buses.
+     * @param {boolean} showCoal Show coal generation sources.
+     * @param {boolean} showGas Show gas generation sources.
+     * @param {boolean} showHydro Show hydro generation sources.
+     * @param {boolean} showWind Show wind generation sources.
+     * @param {boolean} showSolar Show solar generation sources.
      */
     constructor(
         renderPoints, renderLines,
         vMax, vMin, pMax, pMin, qMax, qMin,
-        showGeneration, showTransmission, showDistribution
+        showGeneration, showTransmission, showDistribution,
+        showCoal, showGas, showHydro, showWind, showSolar
     ) {
         // Appearance Settings
         this.renderPoints = Boolean(renderPoints);
@@ -38,6 +44,13 @@ export default class MapSettings {
         this.showGeneration = Boolean(showGeneration);
         this.showTransmission = Boolean(showTransmission);
         this.showDistribution = Boolean(showDistribution);
+
+        // Generation Source Filters
+        this.showCoal = Boolean(showCoal);
+        this.showGas = Boolean(showGas);
+        this.showHydro = Boolean(showHydro);
+        this.showWind = Boolean(showWind);
+        this.showSolar = Boolean(showSolar);
     }
 
     /**

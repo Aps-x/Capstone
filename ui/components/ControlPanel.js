@@ -4,7 +4,7 @@ import "./Button.js"
 import "./DataImporter.js";
 import "./MapSearch.js";
 import "./PickList.js";
-import { EVENT_BUS } from "../../core/EventBus.js";
+import { eventBus } from "../../core/EventBus.js";
 import { EVENTS } from "../../core/Events.js";
 import MapSettings from "../../core/MapSettings.js";
 //------------------------------------------------------------------------------------
@@ -61,42 +61,42 @@ export default class ControlPanel extends HTMLElement {
                                 data-type="input"
                                 data-name="vMax" 
                                 data-title="V Max"
-                                data-description="Maximum Nominal Voltage in Kilo Volts (KV)">
+                                data-description="Maximum Nominal Voltage in kilovolts (kV)">
                             </pick-list-item>
 
                             <pick-list-item
                                 data-type="input"
                                 data-name="vMin" 
                                 data-title="V Min"
-                                data-description="Minimum Nominal Voltage in Kilo Volts (KV)">
+                                data-description="Minimum Nominal Voltage in kilovolts (kV)">
                             </pick-list-item>
 
                             <pick-list-item
                                 data-type="input"
                                 data-name="pMax" 
                                 data-title="P Max"
-                                data-description="Maximum Power in MegaWatts (MW)">
+                                data-description="Maximum Power in megawatts (MW)">
                             </pick-list-item>
 
                             <pick-list-item
                                 data-type="input"
                                 data-name="pMin" 
                                 data-title="P Min"
-                                data-description="Minimum Power in MegaWatts (MW)">
+                                data-description="Minimum Power in megawatts (MW)">
                             </pick-list-item>
 
                             <pick-list-item
                                 data-type="input"
                                 data-name="qMax" 
                                 data-title="Q Max"
-                                data-description="Maximum Reactive power in MVolt-Ampere Reactive (MVar)">
+                                data-description="Maximum Reactive Power in megavolt-amperes reactive (Mvar)">
                             </pick-list-item>
 
                             <pick-list-item
                                 data-type="input"
                                 data-name="qMin" 
                                 data-title="Q Min"
-                                data-description="Minimum Reactive power in MVolt-Ampere Reactive (MVar)">
+                                data-description="Minimum Reactive Power in megavolt-amperes reactive (Mvar)">
                             </pick-list-item>
                         </pick-list>
 
@@ -104,7 +104,7 @@ export default class ControlPanel extends HTMLElement {
                             <pick-list-item
                                 data-type="checkbox"
                                 data-name="generation" 
-                                data-title="Show Generator Buses"
+                                data-title="Show Generation Buses"
                                 checked>
                             </pick-list-item>
 
@@ -112,7 +112,7 @@ export default class ControlPanel extends HTMLElement {
                                 data-type="checkbox"
                                 data-name="transmission" 
                                 data-title="Show Transmission Buses"
-                                data-description="A bus with a Nominal Voltage (V) over 35 KV, and not a generator."
+                                data-description="A bus with a Nominal Voltage (V) over 35 kV, and not a generator."
                                 checked>
                             </pick-list-item>
                             
@@ -120,7 +120,49 @@ export default class ControlPanel extends HTMLElement {
                                 data-type="checkbox"
                                 data-name="distribution" 
                                 data-title="Show Distribution Buses"
-                                data-description="A bus with a Nominal Voltage (V) under 35 KV, and not a generator."
+                                data-description="A bus with a Nominal Voltage (V) under 35 kV, and not a generator."
+                                checked>
+                            </pick-list-item>
+                        </pick-list>
+
+                        <pick-list data-legend="Generation Sources">
+                            <pick-list-item
+                                data-type="checkbox"
+                                data-name="coal"
+                                data-image="./img/coal.svg"
+                                data-title="Show Coal"
+                                checked>
+                            </pick-list-item>
+
+                            <pick-list-item
+                                data-type="checkbox"
+                                data-name="gas"
+                                data-image="./img/gas.svg"
+                                data-title="Show Gas"
+                                checked>
+                            </pick-list-item>
+                            
+                            <pick-list-item
+                                data-type="checkbox"
+                                data-name="hydro"
+                                data-image="./img/hydro.svg"
+                                data-title="Show Hydro"
+                                checked>
+                            </pick-list-item>
+
+                            <pick-list-item
+                                data-type="checkbox"
+                                data-name="wind"
+                                data-image="./img/wind.svg"
+                                data-title="Show Wind"
+                                checked>
+                            </pick-list-item>
+
+                            <pick-list-item
+                                data-type="checkbox"
+                                data-name="solar"
+                                data-image="./img/solar.svg"
+                                data-title="Show Solar"
                                 checked>
                             </pick-list-item>
                         </pick-list>
@@ -185,11 +227,17 @@ export default class ControlPanel extends HTMLElement {
 
             filterData.get('generation'),
             filterData.get('transmission'),
-            filterData.get('distribution')
+            filterData.get('distribution'),
+
+            filterData.get('coal'),
+            filterData.get('gas'),
+            filterData.get('hydro'),
+            filterData.get('wind'),
+            filterData.get('solar'),
         );
 
         // Signal that the map settings were updated and attach MapSettings DTO payload
-        EVENT_BUS.emit(EVENTS.MAP_SETTINGS_UPDATED, mapSettings);
+        eventBus.emit(EVENTS.MAP_SETTINGS_UPDATED, mapSettings);
     }
 }
 

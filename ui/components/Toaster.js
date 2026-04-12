@@ -1,4 +1,4 @@
-import { EVENT_BUS } from '../../core/EventBus.js';
+import { eventBus } from '../../core/EventBus.js';
 import { EVENTS } from '../../core/Events.js';
 //------------------------------------------------------------------------------------
 /**
@@ -11,7 +11,7 @@ class Toaster extends HTMLElement {
 
     constructor() {
         super();
-        EVENT_BUS.on(EVENTS.SYSTEM_MESSAGE_GENERATED, (event) => this.#handleNotificationIssued(event));
+        eventBus.on(EVENTS.SYSTEM_MESSAGE_GENERATED, (event) => this.#handleNotificationIssued(event));
     }
 
     connectedCallback() {
@@ -140,6 +140,7 @@ Toaster.styles.replaceSync(/*css*/`
         color: light-dark(var(--clr-slate-900), var(--clr-white));
         background-color: light-dark(var(--clr-white), var(--clr-slate-900));
         text-align: center;
+        word-break: break-word;
         max-inline-size: min(25ch, 90vw);
         padding-block: 0.5ch;
         padding-inline: 1ch;

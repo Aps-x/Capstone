@@ -1,8 +1,8 @@
 import "./Button.js";
 import "./LayerList.js";
-import { DATABASE } from "../../core/Database.js";
+import { database } from "../../core/Database.js";
 import { OBJECT_STORES } from "../../core/DatabaseConfig.js";
-import { EVENT_BUS } from "../../core/EventBus.js";
+import { eventBus } from "../../core/EventBus.js";
 import { EVENTS } from "../../core/Events.js";
 // ------------------------------------------------------------------------------------
 /**
@@ -48,7 +48,7 @@ class DataImporter extends HTMLElement {
      */
     async #loadSavedSpatialLayers() {
         try {
-            const layers = await DATABASE.getAll(OBJECT_STORES.SPATIAL_LAYERS);
+            const layers = await database.getAll(OBJECT_STORES.SPATIAL_LAYERS);
 
             for (const layer of layers) {
                 this.#layerList.createListItem(layer.fileName, layer.id);
@@ -87,13 +87,19 @@ class DataImporter extends HTMLElement {
                 const geojsonData = JSON.parse(fileText);
 
                 // Validation
-                if (geojsonData == null || geojsonData.features == null) {
-                    console.warn(`Skipping ${file.name}: File does not contain GeoJSON features.`);
-                    EVENT_BUS.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, `${file.name} does not contain GeoJSON features.`);
+                if (geojsonData == null) {
+                    console.warn(`Skipping ${file.name}: File is not valid JSON.`);
+                    eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, `${file.name} is not valid JSON.`);
                     continue; 
                 }
 
-                const id = await DATABASE.put(OBJECT_STORES.SPATIAL_LAYERS, { 
+                if (geojsonData.features == null) {
+                    console.warn(`Skipping ${file.name}: File is not valid GeoJSON.`);
+                    eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, `${file.name} does not contain GeoJSON features.`);
+                    continue;
+                }
+
+                const id = await database.put(OBJECT_STORES.SPATIAL_LAYERS, { 
                     fileName: file.name, 
                     data: geojsonData
                 });
@@ -102,7 +108,7 @@ class DataImporter extends HTMLElement {
             } 
             catch (error) {
                 console.error(`Failed to save ${file.name} to database:`, error);
-                EVENT_BUS.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, `${file.name} is not valid JSON.`);
+                eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, `${file.name} is not valid JSON.`);
             }  
         }
 
@@ -117,12 +123,12 @@ class DataImporter extends HTMLElement {
         const layerId = Number(event.detail.id);
 
         try {
-            await DATABASE.delete(OBJECT_STORES.SPATIAL_LAYERS, layerId);
+            await database.delete(OBJECT_STORES.SPATIAL_LAYERS, layerId);
             this.#layerList.removeListItem(layerId);
         } 
         catch (error) {
             console.error(`Failed to delete layer ${layerId} from database:`, error);
-            EVENT_BUS.emit(SYSTEM_MESSAGE_GENERATED, `Encountered an error when attempting to delete layer with id: ${layerId}`);
+            eventBus.emit(SYSTEM_MESSAGE_GENERATED, `Encountered an error when attempting to delete layer with id: ${layerId}`);
         }
     }
 }

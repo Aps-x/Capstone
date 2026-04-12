@@ -14,7 +14,7 @@ Our solution is a fully client-side web application that accepts geojson spatial
 4. Press the 'Apply' button
 5. Et voilà, enjoy your visualized data!
 
-Note: The synthetic NEM data is included by default on first visit.
+Note: The Synthetic NEM data is included by default on first visit. If you delete this data, you can find it in this repository within the data folder.
 
 ## Developer Guide
 
@@ -49,11 +49,11 @@ I originally used a separate .scss file for each component, mimicking what MDN d
 
 #### Frontend
 
-JavaScript Custom Elements were used to organize our code around components. Web Components and the Shadow DOM were avoided because they prevent the use of utility classes and inheritance, they require workarounds to play nicely with forms and accessibility, and they just feel like they go against the grain of the web despite being a native API. JSDocs was used to help document the code. Here is an example custom element:
+JavaScript Custom Elements were used to organize the code around components. Web Components and the Shadow DOM were avoided because they prevent the use of utility classes and inheritance, they require workarounds to play nicely with forms and accessibility, and they just feel like they go against the grain of the web despite being a native API. JSDocs was used to help document the code. Here is an component:
 
 ```javascript
-import '../Button/Button.js';
-import { EVENT_BUS } from '../../core/EventBus.js';
+import './Button.js';
+import { eventBus } from '../../core/EventBus.js';
 import { EVENTS } from '../../core/Events.js';
 //------------------------------------------------------------------------------------
 /**
@@ -62,12 +62,13 @@ import { EVENTS } from '../../core/Events.js';
  */
 //------------------------------------------------------------------------------------
 class MarkerPanel extends HTMLElement {
+    static styles = new CSSStyleSheet();
     /** @type {HTMLButtonElement} */ #closeButton;
     /** @type {HTMLDListElement} */ #descriptionList;
 
     constructor() {
         super();
-        EVENT_BUS.on(EVENTS.MAP_MARKER_CLICKED, (event) => this.#handleMapMarkerClicked(event));
+        eventBus.on(EVENTS.MAP_MARKER_CLICKED, (event) => this.#handleMapMarkerClicked(event));
     }
 
     connectedCallback() {
@@ -139,11 +140,88 @@ class MarkerPanel extends HTMLElement {
      */
     #closeMarkerPanel() {
         this.setAttribute("aria-hidden", "true");
-        EVENT_BUS.emit(EVENTS.MARKER_PANEL_CLOSED);
+        eventBus.emit(EVENTS.MARKER_PANEL_CLOSED);
     }
 }
 
 customElements.define('marker-panel', MarkerPanel);
+
+//------------------------------------------------------------------------------------
+// Styles
+//------------------------------------------------------------------------------------
+MarkerPanel.styles.replaceSync(/*css*/`
+    .marker-panel {
+        display: none;
+        grid-area: right;
+        z-index: var(--z-sidebar);
+        background-color: light-dark(var(--clr-white), var(--clr-slate-950));
+        padding: 16px;
+        padding-bottom: 64px;
+        overflow: scroll;
+    }
+    @media only screen and (max-width: 768px) {
+        .marker-panel {
+            border-radius: 0px 0px 12px 12px;
+        }
+    }
+    .marker-panel[aria-hidden=false] {
+        display: block;
+        animation: appear 0.25s;
+    }
+    .marker-panel__header {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 16px;
+    }
+    .marker-panel__title {
+        font-size: var(--fs-200);
+        font-weight: var(--fw-semi-bold);
+        color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
+        align-self: center;
+    }
+    .marker-panel__table {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin-top: 32px;
+        border: 1px solid light-dark(var(--clr-slate-300), var(--clr-slate-700));
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .marker-panel__key {
+        background-color: light-dark(var(--clr-slate-100), var(--clr-slate-900));
+        font-weight: var(--fw-semi-bold);
+        border-right: 1px solid light-dark(var(--clr-slate-300), var(--clr-slate-700));
+    }
+    .marker-panel__key::first-letter {
+        text-transform: uppercase;
+    }
+    .marker-panel__value {
+        background-color: light-dark(var(--clr-white), var(--clr-slate-800));
+    }
+    .marker-panel__key, .marker-panel__value {
+        padding: 12px 16px;
+        border-bottom: 1px solid light-dark(var(--clr-slate-300), var(--clr-slate-700));
+        min-width: 0;
+        overflow-wrap: break-word;
+        align-content: center;
+    }
+    .marker-panel__key:last-of-type, .marker-panel__value:last-of-type {
+        border-bottom: none;
+    }
+
+    @keyframes appear {
+        from {
+            transform: translateX(25vw);
+        }
+        to {
+            transform: unset;
+        }
+    }
+`);
+
+if (!document.adoptedStyleSheets.includes(MarkerPanel.styles)) {
+    document.adoptedStyleSheets.push(MarkerPanel.styles);
+}
 ```
 
 #### Database
@@ -155,17 +233,36 @@ IndexedDB is used to handle the data that users can transfer to the website. It 
 Github, OpenFreeMap, and MapLibre were chosen because they are free to use :)
 
 
+## License
+
+The Synthetic NEM dataset is licensed under CC-BY ([https://creativecommons.org/licenses/by/4.0/](https://creativecommons.org/licenses/by/4.0/)). More information on the dataset can be found [here](https://github.com/csiro-energy-systems/Synthetic-NEM-2000bus-Data).
+
+
+
 ## Acknowledgments
 
-TODO: Ask mentor and sponsor if they want to be included here. CSIRO peeps for the dataset as well(?)
+#### University of Canberra
 
-Special thanks to:
+Special thanks to Dr. Ana Goulart (Project Sponsor) and Jeanette Cotterill (Project Mentor) for their support and guidance over the course of this semester.
+
+#### Academia
+
+We would like to thank Frederik Geth, Ghulam Mohy Ud Din, and Matt Amos for sharing their expertise and helping us improve our understanding of the Synthetic NEM dataset.
+
+* R. Heidari, M. Amos and F. Geth, "An Open Optimal Power Flow Model for the Australian National Electricity Market," 2023 IEEE PES Innovative Smart Grid Technologies - Asia (ISGT Asia), Auckland, New Zealand, 2023, pp. 1-5, doi: [10.1109/ISGTAsia54891.2023.10372618](https://doi.org/10.1109/ISGTAsia54891.2023.10372618)
+
+* F. Arraño-Vargas and G. Konstantinou, "Modular Design and Real-Time Simulators Toward Power System Digital Twins Implementation," in IEEE Transactions on Industrial Informatics, doi: [10.1109/TII.2022.3178713](https://doi.org/10.1109/TII.2022.3178713)
+
+* F. Arraño-Vargas and G. Konstantinou, "Synthetic Grid Modeling for Real-Time Simulations," 2021 IEEE PES Innovative Smart Grid Technologies - Asia (ISGT Asia), 2021, pp. 1-5, doi: [10.1109/ISGTAsia49270.2021.9715654](https://doi.org/10.1109/ISGTAsia49270.2021.9715654)
+
+#### Web Development
 
 * Kevin Powell for the accessible accordion
-* Josh Comeau for the cool 3D button
+* Josh Comeau for the 3D button
 * Adam Argyle for the picklist and toast components
 * Wes Bos for the center truncating text trick
 * CJ (Coding Garden) for the MapLibre and OpenFreeMap example
+* Tabler.io for the svg icons
 * The entire web development community for being so awesome and open to sharing knowledge
 
 ## Appendix

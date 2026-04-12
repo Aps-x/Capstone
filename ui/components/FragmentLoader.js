@@ -7,7 +7,14 @@
 class FragmentLoader extends HTMLElement {
 
     async connectedCallback() {
-        const response = await fetch(this.getAttribute("src"));
+        const source = this.getAttribute("src");
+
+        if (!source) {
+            this.remove();
+            return;
+        }
+
+        const response = await fetch(source);
 
         if (!response.ok) {
             this.remove();

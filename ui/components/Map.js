@@ -1,8 +1,10 @@
-import { DATABASE } from "../../core/Database.js";
+import { database } from "../../core/Database.js";
 import { OBJECT_STORES } from "../../core/DatabaseConfig.js";
-import { EVENT_BUS } from "../../core/EventBus.js";
+import { eventBus } from "../../core/EventBus.js";
 import { EVENTS } from "../../core/Events.js";
 import MapSettings from "../../core/MapSettings.js";
+import { GENERATION_COLORS } from "../../core/GenerationColors.js";
+import { VOLTAGE_COLORS } from "../../core/VoltageColors.js";
 //------------------------------------------------------------------------------------
 /**
  * Facade for the mapping library. Provides an API for web map CRUD operations.
@@ -17,10 +19,10 @@ export default class Map extends HTMLElement {
 
     constructor() {
         super();
-        EVENT_BUS.on(EVENTS.COLOR_SCHEME_UPDATED, () => this.#handleUpdatedColorScheme());
-        EVENT_BUS.on(EVENTS.MAP_SETTINGS_UPDATED, (event) => this.#handleUpdatedMapSettings(event));
-        EVENT_BUS.on(EVENTS.MAP_SEARCH_INITIATED, (event) => this.#handleSearchQuery(event));
-        EVENT_BUS.on(EVENTS.MARKER_PANEL_CLOSED, () => this.#handleMarkerPanelClosed());
+        eventBus.on(EVENTS.COLOR_SCHEME_UPDATED, () => this.#handleUpdatedColorScheme());
+        eventBus.on(EVENTS.MAP_SETTINGS_UPDATED, (event) => this.#handleUpdatedMapSettings(event));
+        eventBus.on(EVENTS.MAP_SEARCH_INITIATED, (event) => this.#handleSearchQuery(event));
+        eventBus.on(EVENTS.MARKER_PANEL_CLOSED, () => this.#handleMarkerPanelClosed());
     }
 
     connectedCallback() {
@@ -84,13 +86,14 @@ export default class Map extends HTMLElement {
 
         this.#webmap.setStyle(mapStyle);
 
+        // If the map hasn't been rendered yet, don't bother rerendering.
+        if (this.#mapSettings == null) {
+            return;
+        }
+
         // Setting the map style refreshes the map, removing any rendered map data.
         // Listen for the map to finish and then rerender.
         this.#webmap.once('idle', () => {
-            if (this.#mapSettings == null) {
-                return;
-            }
-
             this.#syncSpatialLayers();
         });
     }
@@ -116,40 +119,42 @@ export default class Map extends HTMLElement {
      * @param {Event} event The event containing the search query.
      */
     async #handleSearchQuery(event) {
-        const queryId = event.detail;
+        const query = event.detail;
 
-        if (!queryId) {
+        if (!query) {
             console.warn('Search failed: invalid search query.');
             return;
         }
 
+        // We are only searching for spatial layers by ID and no other features.
+        // Assumption: The first property is a uniqe ID.
+
+        const queryString = String(query);
+
         try {
-            const spatialLayers = await DATABASE.getAll(OBJECT_STORES.SPATIAL_LAYERS);
+            const spatialLayers = await database.getAll(OBJECT_STORES.SPATIAL_LAYERS);
 
             for (const layer of spatialLayers) {
-                const layerGeojson = layer.data;
+                const features = layer.data?.features;
 
-                if (!layerGeojson || !layerGeojson.features) {
+                if (!features) {
                     continue;
                 }
 
-                const targetFeature = layerGeojson.features.find(feature => {
-                    // Ensure we are only looking at Point geometries
-                    if (!feature.geometry || feature.geometry.type !== 'Point') {
+                const targetFeature = features.find(feature => {
+                    // Only search for points
+                    if (feature.geometry?.type !== 'Point') {
                         return false;
-                    }
-
-                    // Check standard top-level GeoJSON id
-                    if (feature.id !== undefined && String(feature.id) === String(queryId)) {
-                        return true;
                     }
 
                     // Check the first property in the properties object dynamically
                     if (feature.properties) {
                         const propertyKeys = Object.keys(feature.properties);
+
                         if (propertyKeys.length > 0) {
                             const firstKey = propertyKeys[0];
-                            return String(feature.properties[firstKey]) === String(queryId);
+
+                            return String(feature.properties[firstKey]) === queryString;
                         }
                     }
                     
@@ -161,8 +166,9 @@ export default class Map extends HTMLElement {
                     return;
                 }
             }
-            EVENT_BUS.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, `Search failed. Node with key: "${queryId}" not found.`);
-            console.warn(`Search failed. Node with key: ${queryId} not found.`);
+
+            eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, `Search failed. Node with key: "${query}" not found.`);
+            console.warn(`Search failed. Node with key: ${query} not found.`);
         } 
         catch (error) {
             console.error('Encountered an error while searching the database:', error);
@@ -185,7 +191,7 @@ export default class Map extends HTMLElement {
      */
     async #syncSpatialLayers() {
         try {
-            const spatialLayers = await DATABASE.getAll(OBJECT_STORES.SPATIAL_LAYERS);
+            const spatialLayers = await database.getAll(OBJECT_STORES.SPATIAL_LAYERS);
 
             // Remove anything on the map that is no longer in the DB
             this.#cleanupOrphanedLayers(spatialLayers);
@@ -210,12 +216,13 @@ export default class Map extends HTMLElement {
      * @param {Array} databaseLayers The current layers fetched from IndexedDB.
      */
     #cleanupOrphanedLayers(databaseLayers) {
-        const validLayerKeys = new Set(databaseLayers.map(layer => layer.id));
         const currentStyle = this.#webmap.getStyle();
 
         if (!currentStyle || !currentStyle.layers) {
             return;
         }
+
+        const validLayerKeys = new Set(databaseLayers.map(layer => layer.id));
 
         for (const mapLayer of currentStyle.layers) {
             if (mapLayer.id.startsWith('spatial-layer-')) {
@@ -225,6 +232,7 @@ export default class Map extends HTMLElement {
                     this.#webmap.removeLayer(mapLayer.id);
 
                     const sourceId = `spatial-source-${layerKey}`;
+
                     if (this.#webmap.getSource(sourceId)) {
                         this.#webmap.removeSource(sourceId);
                     }
@@ -255,7 +263,9 @@ export default class Map extends HTMLElement {
      */
     #shouldRenderLayer(geometryType) {
         // If settings haven't loaded yet, default to rendering everything
-        if (!this.#mapSettings) return true;
+        if (!this.#mapSettings) {
+            return true;
+        }
 
         if (geometryType === 'Point' || geometryType === 'MultiPoint') {
             return this.#mapSettings.renderPoints;
@@ -269,18 +279,17 @@ export default class Map extends HTMLElement {
     }
 
     /**
-     * Filters GeoJSON features based on power parameters and bus types defined in MapSettings.
+     * Filters GeoJSON features based on power parameters, bus types, and generation sources defined in MapSettings.
      * @param {Object} geojsonData Original GeoJSON FeatureCollection
      * @returns {Object} Filtered GeoJSON FeatureCollection
      */
     #filterGeojsonFeatures(geojsonData) {
-        // This is the ugliest code I have ever been responsible for. Please understand
-        // that there is a tight deadline. Apologies for this abomination.
         if (!this.#mapSettings) return geojsonData;
 
         const {
             vMax, vMin, pMax, pMin, qMax, qMin,
-            showGeneration, showTransmission, showDistribution
+            showGeneration, showTransmission, showDistribution,
+            showCoal, showGas, showHydro, showWind, showSolar
         } = this.#mapSettings;
 
         const filteredFeatures = geojsonData.features.filter(feature => {
@@ -288,30 +297,45 @@ export default class Map extends HTMLElement {
             if (!props) return true;
 
             // 1. Voltage Filter
-            const v = props['V (kV)'] ?? props.voltage ?? props.v;
+            const v = props['V (kV)'];
             if (v !== undefined && (Number(v) < vMin || Number(v) > vMax)) return false;
 
             // 2. Active Power Filter 
-            const p = props['P (MW)'] ?? props.power ?? props.p;
+            const p = props['P (MW)'];
             if (p !== undefined && (Number(p) < pMin || Number(p) > pMax)) return false;
 
             // 3. Reactive Power Filter
-            const q = props['Q (MVar)'] ?? props.reactive_power ?? props.q;
+            const q = props['Q (Mvar)'];
             if (q !== undefined && (Number(q) < qMin || Number(q) > qMax)) return false;
 
             // 4. Bus Type Filter
-            const typeStr = String(props['Type'] ?? props.type ?? '').toLowerCase();
+            const typeStr = String(props['Type'] ?? '').toLowerCase();
             
             if (typeStr) {
-                // Adjust these string matches if your dataset uses different terminology
-                // for Transmission or Distribution
                 const isGen = typeStr.includes('generation');
                 const isTrans = typeStr.includes('transmission');
-                const isDist = typeStr.includes('distribution') || typeStr.includes('load');
+                const isDist = typeStr.includes('distribution');
 
                 if (isGen && !showGeneration) return false;
                 if (isTrans && !showTransmission) return false;
                 if (isDist && !showDistribution) return false;
+            }
+
+            // 5. Generation Source Filter
+            const sourceStr = String(props['Generation Source'] ?? '').toLowerCase();
+
+            if (sourceStr) {
+                const isCoal = sourceStr.includes('coal');
+                const isGas = sourceStr.includes('gas');
+                const isHydro = sourceStr.includes('water'); // The dataset uses 'water' instead of 'hydro'
+                const isWind = sourceStr.includes('wind');
+                const isSolar = sourceStr.includes('solar');
+
+                if (isCoal && !showCoal) return false;
+                if (isGas && !showGas) return false;
+                if (isHydro && !showHydro) return false;
+                if (isWind && !showWind) return false;
+                if (isSolar && !showSolar) return false;
             }
 
             return true;
@@ -329,30 +353,33 @@ export default class Map extends HTMLElement {
      * @param {Object} layerGeojson The GeoJSON data for the layer.
      */
     #renderOrUpdateSingleLayer(layerKey, layerGeojson) {
-        const sourceId = `spatial-source-${layerKey}`;
-        const layerId = `spatial-layer-${layerKey}`;
-
         if (!layerGeojson || !layerGeojson.features || layerGeojson.features.length === 0) {
             return;
         }
 
         const geometryType = layerGeojson.features[0]?.geometry?.type;
-
         if (!geometryType) {
             return;
         }
 
+        const sourceId = `spatial-source-${layerKey}`;
+        const layerId = `spatial-layer-${layerKey}`;
+
         // 1. Settings Check: Should this geometry type be rendered globally?
         if (!this.#shouldRenderLayer(geometryType)) {
             // Actively remove the layer and source if they were already rendered but toggled off
-            if (this.#webmap.getLayer(layerId)) this.#webmap.removeLayer(layerId);
-            if (this.#webmap.getSource(sourceId)) this.#webmap.removeSource(sourceId);
+            if (this.#webmap.getLayer(layerId)) {
+                this.#webmap.removeLayer(layerId);
+            }
+
+            if (this.#webmap.getSource(sourceId)) {
+                this.#webmap.removeSource(sourceId);
+            }
             return;
         }
 
         // 2. Filter down the features array via MapSettings
         const filteredGeojson = this.#filterGeojsonFeatures(layerGeojson);
-
         const existingSource = this.#webmap.getSource(sourceId);
 
         if (existingSource) {
@@ -362,9 +389,9 @@ export default class Map extends HTMLElement {
             if (!this.#webmap.getLayer(layerId)) {
                 // Pass the original layerGeojson to guarantee we can read the geometry type for configuration
                 const layerConfig = this.#generateLayerConfig(layerId, sourceId, layerGeojson);
+                
                 if (layerConfig) {
                     this.#webmap.addLayer(layerConfig);
-                    if (layerConfig.type === 'circle') this.#attachLayerEvents(layerId);
                 }
             }
         } 
@@ -407,7 +434,7 @@ export default class Map extends HTMLElement {
      */
     #generateLayerConfig(layerId, sourceId, geojsonData) {
         // Inspect the first feature to determine the geometry type
-        const geometryType = geojsonData.features[0].geometry.type;
+        const geometryType = geojsonData.features[0]?.geometry?.type;
 
         if (!geometryType) {
             console.warn(`Skipping layer config for ${layerId}: First feature is missing a valid geometry type.`);
@@ -426,7 +453,17 @@ export default class Map extends HTMLElement {
                 type: 'circle',
                 paint: {
                     'circle-radius': 5,
-                    'circle-color': '#FFC107',
+                    'circle-color': [
+                        'match',
+                        ['get', 'Generation Source'],
+                        'Coal', GENERATION_COLORS.COAL,
+                        'Gas', GENERATION_COLORS.GAS,
+                        'Water', GENERATION_COLORS.WATER,
+                        'Hydro', GENERATION_COLORS.HYDRO,
+                        'Wind', GENERATION_COLORS.WIND,
+                        'Solar', GENERATION_COLORS.SOLAR,
+                        GENERATION_COLORS.DEFAULT
+                    ],
                     'circle-stroke-width': 2,
                     'circle-stroke-color': '#000000'
                 }
@@ -443,8 +480,33 @@ export default class Map extends HTMLElement {
                     'line-cap': 'round'
                 },
                 paint: {
-                    'line-color': '#2196F3',
-                    'line-width': 2
+                    'line-color': [
+                        'case',
+                        ['has', 'Voltage (kV)'],
+                        [
+                            // If TRUE, evaluate the step expression
+                            'step',
+                            ['get', 'Voltage (kV)'],
+                            VOLTAGE_COLORS.DISTRIBUTION,
+                            50, VOLTAGE_COLORS.TRANSMISSION,
+                            132, VOLTAGE_COLORS.HIGH_VOLTAGE
+                        ],
+                        // If FALSE, use the default color
+                        // Some power lines in our dataset are missing the voltage property entirely.
+                        VOLTAGE_COLORS.DEFAULT
+                    ],
+                    'line-width': [
+                        'case',
+                        ['has', 'Voltage (kV)'],
+                        [
+                            'step',
+                            ['get', 'Voltage (kV)'],
+                            2,     // Base width
+                            50, 3, // >= 50 kV
+                            132, 4 // >= 132 kV
+                        ],
+                        2 // Fallback width
+                    ]
                 }
             };
         }
@@ -502,7 +564,7 @@ export default class Map extends HTMLElement {
             });
         }
 
-        EVENT_BUS.emit(EVENTS.MAP_MARKER_CLICKED, feature.properties);
+        eventBus.emit(EVENTS.MAP_MARKER_CLICKED, feature.properties);
     }
 }
 

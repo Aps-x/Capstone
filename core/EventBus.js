@@ -43,4 +43,4 @@ class EventBus extends EventTarget {
     }
 }
 
-export const EVENT_BUS = new EventBus();
+export const eventBus = new EventBus();

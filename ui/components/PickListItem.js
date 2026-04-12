@@ -1,3 +1,4 @@
+import "./FragmentLoader.js";
 //------------------------------------------------------------------------------------
 /**
  * Input for a pick list form UI group. Dumb Component.
@@ -6,21 +7,24 @@
 //------------------------------------------------------------------------------------
 class PickListItem extends HTMLElement {
     static styles = new CSSStyleSheet();
+    /** @type {Boolean} */ #isChecked;
 
     connectedCallback() {
         this.classList.add('pick-list-item');
+        this.#isChecked = this.hasAttribute('checked') ? 'checked' : '';
         this.#render();
     }
 
     #render() {
-        const isChecked = this.hasAttribute('checked') ? 'checked' : '';
-
         this.innerHTML = /*html*/`
             <label class="pick-list-item__label">
-                <input class="pick-list-item__input" type="${this.dataset.type}" name="${this.dataset.name}" ${isChecked}>
+                <input class="pick-list-item__input" type="${this.dataset.type}" name="${this.dataset.name}" ${this.#isChecked}>
 
                 <span class="pick-list-item__content">
+                    <fragment-loader src="${this.dataset.image || ''}"></fragment-loader>
+
                     <b class="pick-list-item__title">${this.dataset.title}</b>
+
                     ${this.dataset.description ? `<span class="pick-list-item__description">${this.dataset.description}</span>` : ''}
                 </span>
             </label>
@@ -51,7 +55,7 @@ PickListItem.styles.replaceSync(/*css*/`
         -webkit-tap-highlight-color: transparent;
     }
     .pick-list-item__label:is(:focus-within, :hover) .pick-list-item__title {
-        color: var(--clr-blue-500);
+        color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
     }
     .pick-list-item__input[type=checkbox] {
         margin-inline: calc(var(--space) * 1.5);
@@ -61,13 +65,16 @@ PickListItem.styles.replaceSync(/*css*/`
         padding-inline: 0.25em;
     }
     .pick-list-item__content {
-        display: grid;
+        > svg {
+            margin-right: 10px;
+        }
     }
     .pick-list-item__title {
         font-weight: var(--fw-semi-bold);
     }
     .pick-list-item__description {
-        color: vvar(--clr-slate-600);
+        display: block;
+        color: light-dark(var(--clr-slate-600), var(--clr-slate-300));
     }
 `);
 

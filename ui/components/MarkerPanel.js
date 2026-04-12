@@ -1,5 +1,5 @@
 import './Button.js';
-import { EVENT_BUS } from '../../core/EventBus.js';
+import { eventBus } from '../../core/EventBus.js';
 import { EVENTS } from '../../core/Events.js';
 //------------------------------------------------------------------------------------
 /**
@@ -14,7 +14,7 @@ class MarkerPanel extends HTMLElement {
 
     constructor() {
         super();
-        EVENT_BUS.on(EVENTS.MAP_MARKER_CLICKED, (event) => this.#handleMapMarkerClicked(event));
+        eventBus.on(EVENTS.MAP_MARKER_CLICKED, (event) => this.#handleMapMarkerClicked(event));
     }
 
     connectedCallback() {
@@ -86,7 +86,7 @@ class MarkerPanel extends HTMLElement {
      */
     #closeMarkerPanel() {
         this.setAttribute("aria-hidden", "true");
-        EVENT_BUS.emit(EVENTS.MARKER_PANEL_CLOSED);
+        eventBus.emit(EVENTS.MARKER_PANEL_CLOSED);
     }
 }
 
@@ -104,6 +104,11 @@ MarkerPanel.styles.replaceSync(/*css*/`
         padding: 16px;
         padding-bottom: 64px;
         overflow: scroll;
+    }
+    @media only screen and (max-width: 768px) {
+        .marker-panel {
+            border-radius: 0px 0px 12px 12px;
+        }
     }
     .marker-panel[aria-hidden=false] {
         display: block;
@@ -132,7 +137,9 @@ MarkerPanel.styles.replaceSync(/*css*/`
         background-color: light-dark(var(--clr-slate-100), var(--clr-slate-900));
         font-weight: var(--fw-semi-bold);
         border-right: 1px solid light-dark(var(--clr-slate-300), var(--clr-slate-700));
-        text-transform: capitalize;
+    }
+    .marker-panel__key::first-letter {
+        text-transform: uppercase;
     }
     .marker-panel__value {
         background-color: light-dark(var(--clr-white), var(--clr-slate-800));
@@ -142,6 +149,7 @@ MarkerPanel.styles.replaceSync(/*css*/`
         border-bottom: 1px solid light-dark(var(--clr-slate-300), var(--clr-slate-700));
         min-width: 0;
         overflow-wrap: break-word;
+        align-content: center;
     }
     .marker-panel__key:last-of-type, .marker-panel__value:last-of-type {
         border-bottom: none;

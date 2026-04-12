@@ -3,7 +3,7 @@ import "./ui/components/Map.js";
 import "./ui/components/ControlPanel.js";
 import "./ui/components/MarkerPanel.js";
 import "./ui/components/Toaster.js";
-import { DATABASE } from './core/Database.js';
+import { database } from './core/Database.js';
 import { DATABASE_SCHEMA, OBJECT_STORES } from './core/DatabaseConfig.js'
 //------------------------------------------------------------------------------------
 /**
@@ -19,13 +19,12 @@ class App extends HTMLElement {
         this.setAttribute('role', 'main');
 
         try {
-            await DATABASE.open(DATABASE_SCHEMA);
+            await database.open(DATABASE_SCHEMA);
 
             const hasVisited = localStorage.getItem('hasVisited');
 
             if (!hasVisited) {
                 await this.#loadInitialData();
-
                 localStorage.setItem('hasVisited', 'true');
             }
 
@@ -53,12 +52,12 @@ class App extends HTMLElement {
             const pointsResponse = await fetch('./data/points.geojson');
             const pointsData = await pointsResponse.json();
 
-            await DATABASE.put(OBJECT_STORES.SPATIAL_LAYERS, {
+            await database.put(OBJECT_STORES.SPATIAL_LAYERS, {
                 fileName: 'lines.geojson',
                 data: linesData
             });
 
-            await DATABASE.put(OBJECT_STORES.SPATIAL_LAYERS, {
+            await database.put(OBJECT_STORES.SPATIAL_LAYERS, {
                 fileName: 'points.geojson',
                 data: pointsData
             });
@@ -87,7 +86,7 @@ App.styles.replaceSync(/*css*/`
         .app {
             max-height: unset;
             grid-template-columns: 1fr;
-            grid-template-rows: 33dvh 33dvh auto;
+            grid-template-rows: 35dvh 35dvh auto;
             grid-template-areas: "right" "main" "left";
         }
     }

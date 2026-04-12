@@ -1,4 +1,4 @@
-import { EVENT_BUS } from "../../core/EventBus.js";
+import { eventBus } from "../../core/EventBus.js";
 import { EVENTS } from "../../core/Events.js";
 //------------------------------------------------------------------------------------
 /**
@@ -44,7 +44,7 @@ class MapSearch extends HTMLElement {
             return;
         }
 
-        EVENT_BUS.emit(EVENTS.MAP_SEARCH_INITIATED, query);
+        eventBus.emit(EVENTS.MAP_SEARCH_INITIATED, query);
     }
 }
 
