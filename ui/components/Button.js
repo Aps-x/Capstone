@@ -72,15 +72,15 @@ Button.styles.replaceSync(/*css*/`
         --_btn-fw: var(--fw-500);
     }
     .button--secondary {
-        border: 2px solid var(--clr-blue-500);
-        color: var(--clr-blue-500);
+        border: 2px solid light-dark(var(--clr-blue-500), var(--clr-blue-400));
+        color: light-dark(var(--clr-blue-500), var(--clr-blue-400));;
         font-weight: var(--fw-medium);
         padding: 6px 14px;
         border-radius: 12px;
     }
     .button--secondary:hover,
     .button--secondary:focus-visible {
-        background-color: var(--clr-blue-500);
+        background-color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
         color: var(--clr-white);
     }
     .button--secondary:active {

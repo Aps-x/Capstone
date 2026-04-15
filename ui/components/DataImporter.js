@@ -1,7 +1,7 @@
 import "./Button.js";
 import "./LayerList.js";
 import { database } from "../../core/Database.js";
-import { OBJECT_STORES } from "../../core/DatabaseConfig.js";
+import { OBJECT_STORES } from "../../core/ObjectStores.js";
 import { eventBus } from "../../core/EventBus.js";
 import { EVENTS } from "../../core/Events.js";
 // ------------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ class DataImporter extends HTMLElement {
     #render() {
         this.innerHTML = /*html*/`
             <input class="data-importer__file-input" type="file" multiple accept=".geojson">
-            <button-x data-type="secondary" type="button">Import Data Layers</button-x>
+            <button-x data-type="secondary" type="button">Import Spatial Data Layers</button-x>
             <layer-list></layer-list>
         `;
     }

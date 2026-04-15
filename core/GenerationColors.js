@@ -6,10 +6,10 @@
 //------------------------------------------------------------------------------------
 export const GENERATION_COLORS = Object.freeze({
     COAL: '#555555',
-    GAS: '#FF9800',
+    GAS: '#ff5e00',
     WATER: '#2196F3',
     HYDRO: '#009688',
     WIND: '#8BC34A',
-    SOLAR: '#FFEB3B',
+    SOLAR: '#fffc3b',
     DEFAULT: '#FFC107'
 });

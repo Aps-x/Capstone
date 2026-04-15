@@ -4,7 +4,8 @@ import "./ui/components/ControlPanel.js";
 import "./ui/components/MarkerPanel.js";
 import "./ui/components/Toaster.js";
 import { database } from './core/Database.js';
-import { DATABASE_SCHEMA, OBJECT_STORES } from './core/DatabaseConfig.js'
+import { DATABASE_SCHEMA } from "./core/DatabaseSchema.js";
+import { OBJECT_STORES } from "./core/ObjectStores.js";
 //------------------------------------------------------------------------------------
 /**
  * Application entry point.

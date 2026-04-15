@@ -1,5 +1,5 @@
 import { database } from "../../core/Database.js";
-import { OBJECT_STORES } from "../../core/DatabaseConfig.js";
+import { OBJECT_STORES } from "../../core/ObjectStores.js";
 import { eventBus } from "../../core/EventBus.js";
 import { EVENTS } from "../../core/Events.js";
 import MapSettings from "../../core/MapSettings.js";
@@ -106,6 +106,7 @@ export default class Map extends HTMLElement {
         const updatedMapSettings = event.detail;
 
         if (!(updatedMapSettings instanceof MapSettings)) {
+            console.warn("Map was provided with an invalid MapSettings object.");
             return;
         }
 
@@ -132,9 +133,14 @@ export default class Map extends HTMLElement {
         const queryString = String(query);
 
         try {
+            // The map is only capable of finding points that are currently rendered on the map.
+            // By querying the database, we can find any marker regardless of if it is rendered.
             const spatialLayers = await database.getAll(OBJECT_STORES.SPATIAL_LAYERS);
+            const analysisLayers = await database.getAll(OBJECT_STORES.ANALYSIS_LAYERS);
 
-            for (const layer of spatialLayers) {
+            const layers = [...spatialLayers, ...analysisLayers];
+
+            for (const layer of layers) {
                 const features = layer.data?.features;
 
                 if (!features) {
@@ -192,18 +198,24 @@ export default class Map extends HTMLElement {
     async #syncSpatialLayers() {
         try {
             const spatialLayers = await database.getAll(OBJECT_STORES.SPATIAL_LAYERS);
+            const analysisLayers = await database.getAll(OBJECT_STORES.ANALYSIS_LAYERS);
+
+            console.log(analysisLayers);
+
+            const layers = [...spatialLayers, ...analysisLayers];
 
             // Remove anything on the map that is no longer in the DB
-            this.#cleanupOrphanedLayers(spatialLayers);
+            this.#cleanupOrphanedLayers(layers);
 
             // Handle empty state
-            if (spatialLayers.length === 0) {
+            if (layers.length === 0) {
+                eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, "No spatial layers found in the Database.");
                 console.warn(`No spatial layers found in the database. Map cleared.`);
                 return;
             }
 
             // Add or update the valid layers
-            this.#upsertSpatialLayers(spatialLayers);
+            this.#upsertSpatialLayers(layers);
 
         } 
         catch (error) {
@@ -454,15 +466,19 @@ export default class Map extends HTMLElement {
                 paint: {
                     'circle-radius': 5,
                     'circle-color': [
-                        'match',
-                        ['get', 'Generation Source'],
-                        'Coal', GENERATION_COLORS.COAL,
-                        'Gas', GENERATION_COLORS.GAS,
-                        'Water', GENERATION_COLORS.WATER,
-                        'Hydro', GENERATION_COLORS.HYDRO,
-                        'Wind', GENERATION_COLORS.WIND,
-                        'Solar', GENERATION_COLORS.SOLAR,
-                        GENERATION_COLORS.DEFAULT
+                        'case',
+                        ['==', ['get', 'Type'], 'Control'], 'DarkOrchid', 
+                        [
+                            'match',
+                            ['get', 'Generation Source'],
+                            'Coal', GENERATION_COLORS.COAL,
+                            'Gas', GENERATION_COLORS.GAS,
+                            'Water', GENERATION_COLORS.WATER,
+                            'Hydro', GENERATION_COLORS.HYDRO,
+                            'Wind', GENERATION_COLORS.WIND,
+                            'Solar', GENERATION_COLORS.SOLAR,
+                            GENERATION_COLORS.DEFAULT
+                        ]
                     ],
                     'circle-stroke-width': 2,
                     'circle-stroke-color': '#000000'

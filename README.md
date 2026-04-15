@@ -36,8 +36,8 @@ Note: The Synthetic NEM data is included by default on first visit. If you delet
 | **Styling** | BEM CSS
 | **Frontend** | JavaScript Custom Elements 
 | **Database** | IndexedDB 
-| **Infrastructure** | Github Pages & OpenFreeMap
-| **Libraries** | MapLibre
+| **Infrastructure** | Github Pages & [OpenFreeMap](https://openfreemap.org/)
+| **Libraries** | [MapLibre](https://github.com/maplibre/maplibre-gl-js), [Kmeans](https://github.com/mljs/kmeans)
 
 #### Markup
 

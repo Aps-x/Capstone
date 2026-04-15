@@ -4,6 +4,7 @@ import "./Button.js"
 import "./DataImporter.js";
 import "./MapSearch.js";
 import "./PickList.js";
+import "./DataAnalyzer.js";
 import { eventBus } from "../../core/EventBus.js";
 import { EVENTS } from "../../core/Events.js";
 import MapSettings from "../../core/MapSettings.js";
@@ -167,6 +168,10 @@ export default class ControlPanel extends HTMLElement {
                             </pick-list-item>
                         </pick-list>
                     </form>
+                </accordion-x>
+
+                <accordion-x data-title="Data Analysis" data-image="./img/chart-scatter.svg">
+                    <data-analyzer></data-analyzer>
                 </accordion-x>
 
                 <accordion-x data-title="Search" data-image="./img/search.svg">

@@ -104,7 +104,8 @@ Accordion.styles.replaceSync(/*css*/`
         text-align: left;
         cursor: pointer;
     }
-    .accordion__trigger:hover, .accordion__trigger:focus-visible {
+    .accordion__trigger:hover,
+    .accordion__trigger:focus-visible {
         color: light-dark(var(--clr-blue-500), var(--clr-blue-300));
     }
     .accordion__trigger[aria-expanded=true] .accordion__arrow {
