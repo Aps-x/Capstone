@@ -15,11 +15,12 @@ class Button extends HTMLElement {
     #render() {
         const { type = "", classes = "" } = this.dataset;
 
-        // Not the most elegant solution, but this gets attributes from the enclosing custom element
-        // tag without replacing data-type or data-classes.
+        // Get attributes from the custom element so they can be passed on to the button element
+        const excludedAttributes = new Set(['data-type', 'data-classes', 'class']);
+
         const passedAttributes = Array.from(this.attributes)
-            .filter(attr => !['data-type', 'data-classes', 'class'].includes(attr.name))
-            .map(attr => `${attr.name}="${attr.value}"`)
+            .filter(({ name }) => !excludedAttributes.has(name))
+            .map(({ name, value }) => `${name}="${value}"`)
             .join(' ');
 
         switch (type) {
@@ -75,7 +76,7 @@ Button.styles.replaceSync(/*css*/`
         border: 2px solid light-dark(var(--clr-blue-500), var(--clr-blue-400));
         color: light-dark(var(--clr-blue-500), var(--clr-blue-400));;
         font-weight: var(--fw-medium);
-        padding: 6px 14px;
+        padding: 6px 12px;
         border-radius: 12px;
     }
     .button--secondary:hover,

@@ -34,7 +34,7 @@ class ColorSchemeSelect extends HTMLElement {
         // Check for saved preference
         let colorSchemePreference = localStorage.getItem("color-scheme-preference");
 
-        if (colorSchemePreference == null) {
+        if (!colorSchemePreference) {
             colorSchemePreference = "light dark";
         }
 
@@ -65,7 +65,7 @@ class ColorSchemeSelect extends HTMLElement {
     #applyScheme(scheme) {
         const colorSchemeMetaTag = document.querySelector('meta[name="color-scheme"]');
         
-        if (colorSchemeMetaTag == null) {
+        if (!colorSchemeMetaTag) {
             return;
         }
 
@@ -93,8 +93,8 @@ ColorSchemeSelect.styles.replaceSync(/*css*/`
         font-weight: var(--fw-semi-bold);
     }
     .color-scheme-select__select {
-        border: 2px solid var(--clr-blue-500);
-        color: var(--clr-blue-500);
+        border: 2px solid light-dark(var(--clr-blue-500), var(--clr-blue-400));
+        color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
         font-weight: var(--fw-medium);
         padding: 8px 16px;
         border-radius: 12px;
@@ -103,7 +103,7 @@ ColorSchemeSelect.styles.replaceSync(/*css*/`
     }
     .color-scheme-select__select:hover,
     .color-scheme-select__select:focus-visible {
-        background-color: var(--clr-blue-500);
+        background-color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
         color: var(--clr-white);
     }
 `);

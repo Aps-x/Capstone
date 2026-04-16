@@ -20,7 +20,7 @@ class DataAnalyzer extends HTMLElement {
 
     #render() {
         this.innerHTML = /*html*/`
-            <button type="button">Generate Control Centers</button>
+            <button-x data-type="secondary">Generate Control Centers</button-x>
         `;
     }
 
@@ -32,10 +32,9 @@ class DataAnalyzer extends HTMLElement {
 
     async #generateAndSaveKMeansClusters() {
         try {
-            // 1. Fetch all spatial layers
             const spatialLayers = await database.getAll(OBJECT_STORES.SPATIAL_LAYERS);
 
-            // 2. Filter for layers that contain at least one Point geometry
+            // Filter for layers that contain at least one Point geometry
             const spatialLayersWithPoints = spatialLayers.filter(layer => {
                 const features = layer.data?.features;
 
@@ -46,23 +45,23 @@ class DataAnalyzer extends HTMLElement {
                 return features.some(feature => feature.geometry?.type === 'Point');
             });
 
-            // 3. Ensure we actually found a layer before proceeding
+            // Ensure we actually found a layer before proceeding
             if (spatialLayersWithPoints.length === 0) {
                 eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, "No spatial layers with point geometries found in the database.");
                 console.warn("No spatial layers with point geometries found in the database.");
                 return;
             }
 
-            // 4. Extract coordinates
+            // Extract coordinates
             const coordinates = [];
-            const assignedNodes = [];
+            const nodeIds = [];
 
             spatialLayersWithPoints.forEach(layer => {
                 layer.data.features.forEach(feature => {
                     if (feature.geometry?.type === 'Point') {
                         coordinates.push(feature.geometry.coordinates);
                         // Assuming the first property is the unique id
-                        assignedNodes.push(Object.values(feature.properties)[0]);
+                        nodeIds.push(Object.values(feature.properties)[0]);
                     }
                 });
             });
@@ -72,13 +71,17 @@ class DataAnalyzer extends HTMLElement {
                 return;
             }
 
-            console.log(assignedNodes);
-
-            // 5. Run the K-Means clustering algorithm
+            //
+            // Run the K-Means clustering algorithm
+            //
 
             // NOTE:
-            // Kmeans does not guarantee that there will always be 21 buses per control center
-            // Some will have more, some will have less.
+            // K-means cares about distance, not equal group sizes.
+            // There will be, on average, 21 buses per control center**
+            // Some will have more, some will have less. Sometimes with signifcant disparities.
+            //
+            // ** kmeans requires integers, so we round up the number. This means that there will
+            // be slightly more than 21 buses per control center on average.
             const busesPerControlCenter = 21;
 
             // k = number of control centers to create.
@@ -90,10 +93,10 @@ class DataAnalyzer extends HTMLElement {
             result.clusters.forEach((clusterIndex, dataIndex) => {
                 // You can push just the coordinates, or the whole original feature
                 // We'll push the whole feature so the control center knows everything about its nodes
-                nodesByCluster[clusterIndex].push(assignedNodes[dataIndex]);
+                nodesByCluster[clusterIndex].push(nodeIds[dataIndex]);
             });
 
-            // 6. Format the centroids as a new GeoJSON FeatureCollection
+            // Format the centroids as a new GeoJSON FeatureCollection
             const controlCentersGeoJSON = {
                 type: "FeatureCollection",
                 features: result.centroids.map((centroid, index) => ({
@@ -112,11 +115,11 @@ class DataAnalyzer extends HTMLElement {
                 }))
             };
 
-            // 7. Save the newly created layer back to the database
-            const timestamp = Date.now();
+            // Save the newly created layer back to the database
+            const randomString = Math.random().toString(36).substring(2, 10);
 
             await database.put(OBJECT_STORES.ANALYSIS_LAYERS, {
-                fileName: `analysis_layer_${timestamp}.geojson`,
+                fileName: `analysis_layer_${randomString}.geojson`,
                 data: controlCentersGeoJSON
             });
 

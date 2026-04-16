@@ -5,8 +5,11 @@
  */
 //------------------------------------------------------------------------------------
 export const VOLTAGE_COLORS = Object.freeze({
-    DISTRIBUTION: '#4caf50', 
-    TRANSMISSION: '#ff9800',
-    HIGH_VOLTAGE: '#f44336',
-    DEFAULT: '#2196F3'
+    KV_66:      '#4caf50',
+    KV_110_132: '#2196F3',
+    KV_220:     '#ffeb3b',
+    KV_275:     '#ff9800',
+    KV_330:     '#f44336',
+    KV_500:     '#9c27b0',
+    DEFAULT:    '#8d8d8d' 
 });

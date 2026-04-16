@@ -354,6 +354,10 @@ a {
   font-weight: var(--fw-black);
 }
 
+.clr-black {
+  color: var(--clr-black);
+}
+
 .my-auto {
   margin-block: auto;
 }

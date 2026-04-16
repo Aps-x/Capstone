@@ -430,9 +430,12 @@ export default class Map extends HTMLElement {
         if (layerConfig) {
             this.#webmap.addLayer(layerConfig);
 
-            // Attach interaction events ONLY to point layers
             if (layerConfig.type === 'circle') {
-                this.#attachLayerEvents(layerId);
+                this.#attachPointEvents(layerId);
+            }
+
+            if (layerConfig.type === 'line') {
+                this.#attachLineEvents(layerId);
             }
         }
     }
@@ -474,7 +477,6 @@ export default class Map extends HTMLElement {
                             'Coal', GENERATION_COLORS.COAL,
                             'Gas', GENERATION_COLORS.GAS,
                             'Water', GENERATION_COLORS.WATER,
-                            'Hydro', GENERATION_COLORS.HYDRO,
                             'Wind', GENERATION_COLORS.WIND,
                             'Solar', GENERATION_COLORS.SOLAR,
                             GENERATION_COLORS.DEFAULT
@@ -503,9 +505,12 @@ export default class Map extends HTMLElement {
                             // If TRUE, evaluate the step expression
                             'step',
                             ['get', 'Voltage (kV)'],
-                            VOLTAGE_COLORS.DISTRIBUTION,
-                            50, VOLTAGE_COLORS.TRANSMISSION,
-                            132, VOLTAGE_COLORS.HIGH_VOLTAGE
+                            VOLTAGE_COLORS.KV_66,
+                            110, VOLTAGE_COLORS.KV_110_132,
+                            220, VOLTAGE_COLORS.KV_220,
+                            275, VOLTAGE_COLORS.KV_275,
+                            330, VOLTAGE_COLORS.KV_330,
+                            500, VOLTAGE_COLORS.KV_500
                         ],
                         // If FALSE, use the default color
                         // Some power lines in our dataset are missing the voltage property entirely.
@@ -514,13 +519,16 @@ export default class Map extends HTMLElement {
                     'line-width': [
                         'case',
                         ['has', 'Voltage (kV)'],
-                        [
-                            'step',
-                            ['get', 'Voltage (kV)'],
-                            2,     // Base width
-                            50, 3, // >= 50 kV
-                            132, 4 // >= 132 kV
-                        ],
+                            [
+                                'step',
+                                ['get', 'Voltage (kV)'],
+                                3,      
+                                110, 4,
+                                220, 5,
+                                275, 6,
+                                330, 7,
+                                500, 8
+                            ],
                         2 // Fallback width
                     ]
                 }
@@ -532,12 +540,12 @@ export default class Map extends HTMLElement {
     }
 
     /**
-     * Attaches mouse interaction events to a specific map layer.
+     * Attaches mouse interaction events to points.
      * @private
      * @param {string} layerId The unique identifier of the map layer to attach events to.
      * @returns {void}
      */
-    #attachLayerEvents(layerId) {
+    #attachPointEvents(layerId) {
         this.#webmap.on('mouseenter', layerId, () => {
             this.#webmap.getCanvas().style.cursor = 'pointer';
         });
@@ -550,6 +558,50 @@ export default class Map extends HTMLElement {
             const feature = event.features[0];
 
             this.#selectPoint(feature, false);
+        });
+    }
+
+
+    /**
+     * Attaches mouse interaction events to lines.
+     * @param {string} layerId The unique identifier of the map layer to attach events to.
+     * @returns {void}
+     */
+    #attachLineEvents(layerId) {
+        this.#webmap.on('mouseenter', layerId, () => {
+            this.#webmap.getCanvas().style.cursor = 'pointer';
+        });
+
+        this.#webmap.on('mouseleave', layerId, () => {
+            this.#webmap.getCanvas().style.cursor = '';
+        });
+
+        this.#webmap.on('click', layerId, (event) => {
+            if (!event.features || event.features.length === 0) {
+                return;
+            }
+
+            const properties = event.features[0].properties;
+
+            // Format the properties into HTML for the popup
+            const popupItems = Object.entries(properties)
+                .map(([key, value]) => `<dt class="fw-bold">${key}</dt><dd>${value}</dd>`)
+                .join('');
+
+            const popupContent = /*html*/`
+                <dl class="clr-black">
+                    ${popupItems}
+                </dl>
+            `;
+
+            new maplibregl.Popup({
+                closeButton: true,
+                closeOnClick: true,
+                closeOnMove: true
+            })
+                .setLngLat(event.lngLat)
+                .setHTML(popupContent)
+                .addTo(this.#webmap);
         });
     }
 
@@ -595,6 +647,10 @@ Map.styles.replaceSync(/*css*/`
         grid-column: 1/-1;
         height: 100vh;
         width: 100vw;
+
+        & .maplibregl-popup-close-button {
+            color: var(--clr-black);
+        }
     }
 `);
 

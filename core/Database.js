@@ -1,3 +1,5 @@
+import { EVENTS } from "./Events.js";
+import { eventBus } from "./EventBus.js";
 //------------------------------------------------------------------------------------
 /**
  * Promise-based wrapper for the IndexedDB Database.
@@ -100,8 +102,17 @@ class Database {
      * @param {Object} item The data object to insert or update.
      * @returns {Promise<string|number>} A promise resolving to the key of the stored item.
      */
-    put(storeName, item) {
-        return this.#promisify(this.#getStore(storeName, 'readwrite').put(item));
+    async put(storeName, item) {
+        const key = await this.#promisify(this.#getStore(storeName, 'readwrite').put(item));
+        
+        eventBus.emit(EVENTS.DATABASE_MUTATION, { 
+            action: 'put', 
+            storeName, 
+            key, 
+            item 
+        });
+        
+        return key;
     }
 
     /**
@@ -110,9 +121,15 @@ class Database {
      * @param {string|number} key The unique key of the item to delete.
      * @returns {Promise<void>} A promise that resolves when the item is deleted.
      */
-    delete(storeName, key) {
-        return this.#promisify(this.#getStore(storeName, 'readwrite').delete(key));
+    async delete(storeName, key) {
+        await this.#promisify(this.#getStore(storeName, 'readwrite').delete(key));
+        
+        eventBus.emit(EVENTS.DATABASE_MUTATION, { 
+            action: 'delete', 
+            storeName,
+            key
+        });
     }
 }
 
-export const database = new Database('CapstoneDB', 4);
+export const database = new Database('CapstoneDB', 5);

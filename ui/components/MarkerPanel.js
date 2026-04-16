@@ -105,7 +105,7 @@ MarkerPanel.styles.replaceSync(/*css*/`
         padding-bottom: 64px;
         overflow: scroll;
     }
-    @media only screen and (max-width: 768px) {
+    @media (max-width: 768px) {
         .marker-panel {
             border-radius: 0px 0px 12px 12px;
         }
@@ -157,10 +157,21 @@ MarkerPanel.styles.replaceSync(/*css*/`
 
     @keyframes appear {
         from {
-            transform: translateX(25vw);
+            transform: translateX(400px);
         }
         to {
             transform: unset;
+        }
+    }
+
+    @media (max-width: 768px) {
+        @keyframes appear {
+            from {
+                transform: translateY(-35dvh);
+            }
+            to {
+                transform: unset;
+            }
         }
     }
 `);

@@ -83,11 +83,11 @@ App.styles.replaceSync(/*css*/`
         max-height: 100vh;
         overflow: hidden;
     }
-    @media only screen and (max-width: 768px) {
+    @media (max-width: 768px) {
         .app {
             max-height: unset;
             grid-template-columns: 1fr;
-            grid-template-rows: 35dvh 35dvh auto;
+            grid-template-rows: 40dvh 30dvh auto;
             grid-template-areas: "right" "main" "left";
         }
     }

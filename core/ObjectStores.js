@@ -5,6 +5,6 @@
  */
 //------------------------------------------------------------------------------------
 export const OBJECT_STORES = Object.freeze({
-    SPATIAL_LAYERS: 'spatial_layers',
-    ANALYSIS_LAYERS: 'analysis_layers',
+    SPATIAL_LAYERS: 'spatial-layers',
+    ANALYSIS_LAYERS: 'analysis-layers',
 });
