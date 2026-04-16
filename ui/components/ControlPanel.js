@@ -173,7 +173,6 @@ export default class ControlPanel extends HTMLElement {
 
                 <accordion-x data-title="Data Analysis" data-image="./img/chart-scatter.svg">
                     <data-analyzer></data-analyzer>
-                    <layer-list data-store="analysis-layers"></layer-list>
                 </accordion-x>
 
                 <accordion-x data-title="Search" data-image="./img/search.svg">
@@ -182,7 +181,7 @@ export default class ControlPanel extends HTMLElement {
 
                 <accordion-x data-title="Import Data" data-image="./img/stack.svg">
                     <data-importer></data-importer>
-                    <layer-list data-store="spatial-layers"></layer-list>
+                    <layer-list></layer-list>
                 </accordion-x>
             </div>
 

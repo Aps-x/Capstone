@@ -118,8 +118,8 @@ class DataAnalyzer extends HTMLElement {
             // Save the newly created layer back to the database
             const randomString = Math.random().toString(36).substring(2, 10);
 
-            await database.put(OBJECT_STORES.ANALYSIS_LAYERS, {
-                fileName: `analysis_layer_${randomString}.geojson`,
+            await database.put(OBJECT_STORES.SPATIAL_LAYERS, {
+                fileName: `control_centers_${randomString}.geojson`,
                 data: controlCentersGeoJSON
             });
 

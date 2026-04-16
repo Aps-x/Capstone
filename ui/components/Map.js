@@ -136,11 +136,8 @@ export default class Map extends HTMLElement {
             // The map is only capable of finding points that are currently rendered on the map.
             // By querying the database, we can find any marker regardless of if it is rendered.
             const spatialLayers = await database.getAll(OBJECT_STORES.SPATIAL_LAYERS);
-            const analysisLayers = await database.getAll(OBJECT_STORES.ANALYSIS_LAYERS);
 
-            const layers = [...spatialLayers, ...analysisLayers];
-
-            for (const layer of layers) {
+            for (const layer of spatialLayers) {
                 const features = layer.data?.features;
 
                 if (!features) {
@@ -198,24 +195,19 @@ export default class Map extends HTMLElement {
     async #syncSpatialLayers() {
         try {
             const spatialLayers = await database.getAll(OBJECT_STORES.SPATIAL_LAYERS);
-            const analysisLayers = await database.getAll(OBJECT_STORES.ANALYSIS_LAYERS);
-
-            console.log(analysisLayers);
-
-            const layers = [...spatialLayers, ...analysisLayers];
 
             // Remove anything on the map that is no longer in the DB
-            this.#cleanupOrphanedLayers(layers);
+            this.#cleanupOrphanedLayers(spatialLayers);
 
             // Handle empty state
-            if (layers.length === 0) {
+            if (spatialLayers.length === 0) {
                 eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, "No spatial layers found in the Database.");
                 console.warn(`No spatial layers found in the database. Map cleared.`);
                 return;
             }
 
             // Add or update the valid layers
-            this.#upsertSpatialLayers(layers);
+            this.#upsertSpatialLayers(spatialLayers);
 
         } 
         catch (error) {

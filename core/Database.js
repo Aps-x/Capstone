@@ -132,4 +132,4 @@ class Database {
     }
 }
 
-export const database = new Database('CapstoneDB', 5);
+export const database = new Database('CapstoneDB', 6);

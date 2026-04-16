@@ -1,4 +1,5 @@
 import { database } from "../../core/Database.js";
+import { OBJECT_STORES } from "../../core/ObjectStores.js";
 import { EVENTS } from "../../core/Events.js";
 import { eventBus } from "../../core/EventBus.js";
 //------------------------------------------------------------------------------------
@@ -9,7 +10,6 @@ import { eventBus } from "../../core/EventBus.js";
 //------------------------------------------------------------------------------------
 class LayerList extends HTMLElement {
     static styles = new CSSStyleSheet();
-    /** @type {string} */ #storeName;
     /** @type {HTMLUListElement} */ #list;
     /** @type {HTMLTemplateElement} */ #listItemTemplate;
     
@@ -49,19 +49,11 @@ class LayerList extends HTMLElement {
     }
 
     async #initialize() {
-        this.#storeName = this.dataset.store;
-
-        if (!this.#storeName) {
-            console.error("LayerList requires a 'data-store' attribute to initialize.");
-            this.remove();
-            return;
-        }
-
         this.#list = this.querySelector('ul');
         this.#list.addEventListener('click', (event) => this.#delegateClickEvent(event));
 
         try {
-            const layers = await database.getAll(this.#storeName);
+            const layers = await database.getAll(OBJECT_STORES.SPATIAL_LAYERS);
             
             layers.forEach(layer => {
                 this.#createListItem(layer, layer.id);
@@ -145,7 +137,7 @@ class LayerList extends HTMLElement {
      */
     async #handleDownloadButtonClicked(layerId) {
         try {
-            const layer = await database.get(this.#storeName, Number(layerId));
+            const layer = await database.get(OBJECT_STORES.SPATIAL_LAYERS, Number(layerId));
 
             const blob = new Blob([JSON.stringify(layer.data)], { type: 'application/geo+json' });
 
@@ -172,7 +164,7 @@ class LayerList extends HTMLElement {
      */
     async #handleDeleteButtonClicked(layerId) {
         try {
-            await database.delete(this.#storeName, Number(layerId));
+            await database.delete(OBJECT_STORES.SPATIAL_LAYERS, Number(layerId));
             
             const li = this.#list.querySelector(`li[data-id="${layerId}"]`);
 
@@ -197,7 +189,7 @@ class LayerList extends HTMLElement {
         
         const { action, storeName, key, item } = event.detail;
         
-        if (storeName !== this.#storeName) {
+        if (storeName !== OBJECT_STORES.SPATIAL_LAYERS) {
             return;
         }
 
