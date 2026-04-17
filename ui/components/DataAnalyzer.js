@@ -5,7 +5,7 @@ import { eventBus } from "../../core/EventBus.js";
 import { EVENTS } from "../../core/Events.js";
 //------------------------------------------------------------------------------------
 /**
- * Performs Data Analysis on the geojson data. Currently performs Kmeans analysis.
+ * Performs Data Analysis on the geojson data. Currently just performs Kmeans analysis.
  * @extends HTMLElement
  */
 //------------------------------------------------------------------------------------

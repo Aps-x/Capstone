@@ -124,6 +124,10 @@ class LayerList extends HTMLElement {
         const layerId = li.dataset.id;
 
         if (deleteButton) {
+            if (!window.confirm(`${deleteButton.getAttribute('aria-label')}?`)) {
+                return;
+            }
+
             this.#handleDeleteButtonClicked(layerId);
         } 
         else if (downloadButton) {

@@ -76,7 +76,7 @@ Button.styles.replaceSync(/*css*/`
         border: 2px solid light-dark(var(--clr-blue-500), var(--clr-blue-400));
         color: light-dark(var(--clr-blue-500), var(--clr-blue-400));;
         font-weight: var(--fw-medium);
-        padding: 6px 12px;
+        padding: 6px 11px;
         border-radius: 12px;
     }
     .button--secondary:hover,

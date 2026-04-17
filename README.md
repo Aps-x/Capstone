@@ -49,7 +49,7 @@ I originally used a separate .scss file for each component, mimicking what MDN d
 
 #### Frontend
 
-JavaScript Custom Elements were used to organize the code around components. Web Components and the Shadow DOM were avoided because they prevent the use of utility classes and inheritance, they require workarounds to play nicely with forms and accessibility, and they just feel like they go against the grain of the web despite being a native API. JSDocs was used to help document the code. Here is an component:
+JavaScript Custom Elements were used to organize the code around components. Web Components and the Shadow DOM were avoided because they prevent the use of utility classes and inheritance, they require workarounds to play nicely with forms and accessibility, and they just feel like they go against the grain of the web despite being a native API. JSDocs was used to help document the code. Here is an example component:
 
 ```javascript
 import './Button.js';
@@ -235,7 +235,7 @@ Github, OpenFreeMap, and MapLibre were chosen because they are free to use :)
 
 ## License
 
-The Synthetic NEM dataset is licensed under CC-BY ([https://creativecommons.org/licenses/by/4.0/](https://creativecommons.org/licenses/by/4.0/)). More information on the dataset can be found [here](https://github.com/csiro-energy-systems/Synthetic-NEM-2000bus-Data).
+The Synthetic NEM dataset is licensed under CC-BY ([https://creativecommons.org/licenses/by/4.0/](https://creativecommons.org/licenses/by/4.0/)). More information on the Synthetic NEM dataset can be found here: [https://github.com/csiro-energy-systems/Synthetic-NEM-2000bus-Data](https://github.com/csiro-energy-systems/Synthetic-NEM-2000bus-Data).
 
 
 
@@ -257,12 +257,12 @@ We would like to thank Frederik Geth, Ghulam Mohy Ud Din, and Matt Amos for shar
 
 #### Web Development
 
-* Kevin Powell for the accessible accordion
-* Josh Comeau for the 3D button
-* Adam Argyle for the picklist and toast components
-* Wes Bos for the center truncating text trick
-* CJ (Coding Garden) for the MapLibre and OpenFreeMap example
-* Tabler.io for the svg icons
+* Kevin Powell for the [accordion](https://www.youtube.com/watch?v=B_n4YONte5A) component
+* Josh Comeau for the [3D button](https://www.joshwcomeau.com/animation/3d-button/) component
+* Adam Argyle for the [picklist](https://github.com/argyleink/gui-challenges/tree/main/picklists) and [toast](https://github.com/argyleink/gui-challenges/tree/main/toast) components
+* Wes Bos for the center [truncating text trick](https://www.youtube.com/shorts/cuxbmq07Vxw)
+* CJ (Coding Garden) for the [MapLibre and OpenFreeMap example](https://github.com/w3cj/openfreemap-examples/)
+* Tabler.io for the [svg icons](https://tabler.io/icons)
 * The entire web development community for being so awesome and open to sharing knowledge
 
 ## Appendix

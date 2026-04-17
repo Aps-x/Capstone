@@ -30,10 +30,8 @@ class MarkerPanel extends HTMLElement {
             <header class="marker-panel__header | order-swap">
                 <h2 class="marker-panel__title">Marker Info</h2>
 
-                <button-x data-type="secondary"
-                        type="button" 
-                        aria-label="Close marker controls">
-                    <span aria-hidden="true">X</span>
+                <button-x data-type="secondary" type="button" aria-label="Close marker controls">
+                    <svg class="icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6.707 5.293l5.293 5.292l5.293 -5.292a1 1 0 0 1 1.414 1.414l-5.292 5.293l5.292 5.293a1 1 0 0 1 -1.414 1.414l-5.293 -5.292l-5.293 5.292a1 1 0 1 1 -1.414 -1.414l5.292 -5.293l-5.292 -5.293a1 1 0 0 1 1.414 -1.414" /></svg>
                 </button-x>
             </header>
 
@@ -59,7 +57,7 @@ class MarkerPanel extends HTMLElement {
 
         const markerProperties = event.detail;
 
-        if (markerProperties == null) {
+        if (!markerProperties) {
             console.warn("Map provided invalid marker properties to MarkerPanel");
         }
 
@@ -104,6 +102,7 @@ MarkerPanel.styles.replaceSync(/*css*/`
         padding: 16px;
         padding-bottom: 64px;
         overflow: scroll;
+        overscroll-behavior: contain;
     }
     @media (max-width: 768px) {
         .marker-panel {

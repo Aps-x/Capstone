@@ -16,6 +16,7 @@ export default class Map extends HTMLElement {
     /** @type {maplibregl.Map} */ #webmap;
     /** @type {MapSettings} */ #mapSettings;
     /** @type {maplibregl.Marker} */ #activeMarker;
+    /** @type {Set} */ #boundEventLayers = new Set();
 
     constructor() {
         super();
@@ -94,7 +95,7 @@ export default class Map extends HTMLElement {
         // Setting the map style refreshes the map, removing any rendered map data.
         // Listen for the map to finish and then rerender.
         this.#webmap.once('idle', () => {
-            this.#syncSpatialLayers();
+            this.#syncMapWithDatabase();
         });
     }
 
@@ -111,7 +112,7 @@ export default class Map extends HTMLElement {
         }
 
         this.#mapSettings = updatedMapSettings;
-        this.#syncSpatialLayers();
+        this.#syncMapWithDatabase();
     }
 
     /**
@@ -192,23 +193,22 @@ export default class Map extends HTMLElement {
      * Orchestrates the synchronization of spatial layers between IndexedDB and the web map.
      * @returns {Promise<void>}
      */
-    async #syncSpatialLayers() {
+    async #syncMapWithDatabase() {
         try {
-            const spatialLayers = await database.getAll(OBJECT_STORES.SPATIAL_LAYERS);
+            const layers = await database.getAll(OBJECT_STORES.SPATIAL_LAYERS);
 
             // Remove anything on the map that is no longer in the DB
-            this.#cleanupOrphanedLayers(spatialLayers);
+            this.#removeDeletedMapLayers(layers);
 
             // Handle empty state
-            if (spatialLayers.length === 0) {
+            if (layers.length === 0) {
                 eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, "No spatial layers found in the Database.");
                 console.warn(`No spatial layers found in the database. Map cleared.`);
                 return;
             }
 
             // Add or update the valid layers
-            this.#upsertSpatialLayers(spatialLayers);
-
+            this.#upsertMapLayers(layers);
         } 
         catch (error) {
             console.error('Encountered an error when syncing spatial layers:', error);
@@ -219,7 +219,7 @@ export default class Map extends HTMLElement {
      * Removes map layers and sources that do not exist in the provided database data.
      * @param {Array} databaseLayers The current layers fetched from IndexedDB.
      */
-    #cleanupOrphanedLayers(databaseLayers) {
+    #removeDeletedMapLayers(databaseLayers) {
         const currentStyle = this.#webmap.getStyle();
 
         if (!currentStyle || !currentStyle.layers) {
@@ -229,13 +229,13 @@ export default class Map extends HTMLElement {
         const validLayerKeys = new Set(databaseLayers.map(layer => layer.id));
 
         for (const mapLayer of currentStyle.layers) {
-            if (mapLayer.id.startsWith('spatial-layer-')) {
-                const layerKey = mapLayer.id.replace('spatial-layer-', '');
+            if (mapLayer.id.startsWith('layer-')) {
+                const layerKey = mapLayer.id.replace('layer-', '');
 
                 if (!validLayerKeys.has(layerKey)) {
                     this.#webmap.removeLayer(mapLayer.id);
 
-                    const sourceId = `spatial-source-${layerKey}`;
+                    const sourceId = `source-${layerKey}`;
 
                     if (this.#webmap.getSource(sourceId)) {
                         this.#webmap.removeSource(sourceId);
@@ -249,7 +249,7 @@ export default class Map extends HTMLElement {
      * Iterates through database layers to either update existing map sources or create new ones.
      * @param {Array} databaseLayers The current layers fetched from IndexedDB.
      */
-    #upsertSpatialLayers(databaseLayers) {
+    #upsertMapLayers(databaseLayers) {
         for (const layer of databaseLayers) {
             if (layer.data == null) {
                 console.warn(`Skipping layer ${layer.id}: No geojson found in database object`);
@@ -265,7 +265,7 @@ export default class Map extends HTMLElement {
      * @param {string} geometryType The GeoJSON geometry type.
      * @returns {boolean}
      */
-    #shouldRenderLayer(geometryType) {
+    #shouldRenderLayerByGeometryType(geometryType) {
         // If settings haven't loaded yet, default to rendering everything
         if (!this.#mapSettings) {
             return true;
@@ -287,7 +287,7 @@ export default class Map extends HTMLElement {
      * @param {Object} geojsonData Original GeoJSON FeatureCollection
      * @returns {Object} Filtered GeoJSON FeatureCollection
      */
-    #filterGeojsonFeatures(geojsonData) {
+    #filterGeojsonFeaturesByUserSettings(geojsonData) {
         if (!this.#mapSettings) return geojsonData;
 
         const {
@@ -366,11 +366,11 @@ export default class Map extends HTMLElement {
             return;
         }
 
-        const sourceId = `spatial-source-${layerKey}`;
-        const layerId = `spatial-layer-${layerKey}`;
+        const sourceId = `source-${layerKey}`;
+        const layerId = `layer-${layerKey}`;
 
         // 1. Settings Check: Should this geometry type be rendered globally?
-        if (!this.#shouldRenderLayer(geometryType)) {
+        if (!this.#shouldRenderLayerByGeometryType(geometryType)) {
             // Actively remove the layer and source if they were already rendered but toggled off
             if (this.#webmap.getLayer(layerId)) {
                 this.#webmap.removeLayer(layerId);
@@ -383,7 +383,7 @@ export default class Map extends HTMLElement {
         }
 
         // 2. Filter down the features array via MapSettings
-        const filteredGeojson = this.#filterGeojsonFeatures(layerGeojson);
+        const filteredGeojson = this.#filterGeojsonFeaturesByUserSettings(layerGeojson);
         const existingSource = this.#webmap.getSource(sourceId);
 
         if (existingSource) {
@@ -521,7 +521,7 @@ export default class Map extends HTMLElement {
                                 330, 7,
                                 500, 8
                             ],
-                        2 // Fallback width
+                        3 // Fallback width
                     ]
                 }
             };
@@ -538,6 +538,13 @@ export default class Map extends HTMLElement {
      * @returns {void}
      */
     #attachPointEvents(layerId) {
+        // Prevent event listener duplication
+        if (this.#boundEventLayers.has(layerId)) {
+            return;
+        }
+
+        this.#boundEventLayers.add(layerId);
+
         this.#webmap.on('mouseenter', layerId, () => {
             this.#webmap.getCanvas().style.cursor = 'pointer';
         });
@@ -560,6 +567,13 @@ export default class Map extends HTMLElement {
      * @returns {void}
      */
     #attachLineEvents(layerId) {
+        // Prevent event listener duplication
+        if (this.#boundEventLayers.has(layerId)) {
+            return;
+        }
+
+        this.#boundEventLayers.add(layerId);
+
         this.#webmap.on('mouseenter', layerId, () => {
             this.#webmap.getCanvas().style.cursor = 'pointer';
         });

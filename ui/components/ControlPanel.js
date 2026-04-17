@@ -6,6 +6,7 @@ import "./LayerList.js";
 import "./MapSearch.js";
 import "./PickList.js";
 import "./DataAnalyzer.js";
+import "./VoltageLegend.js";
 import { eventBus } from "../../core/EventBus.js";
 import { EVENTS } from "../../core/Events.js";
 import MapSettings from "../../core/MapSettings.js";
@@ -53,6 +54,8 @@ export default class ControlPanel extends HTMLElement {
                         </pick-list>
 
                         <color-scheme-select></color-scheme-select>
+
+                        <voltage-legend></voltage-legend>
                     </form>
                 </accordion-x>
 
@@ -191,7 +194,8 @@ export default class ControlPanel extends HTMLElement {
                     type="submit">Apply</button-x>
 
             <footer class="control-panel__footer | flow">
-                <p>This <a href="https://github.com/Aps-x/Capstone">open source</a> project was developed as part of the University of Canberra's ITS Capstone Program.</p>
+                <p>This <a href="https://github.com/Aps-x/Capstone" target="_blank">open source</a> project was developed as part of the University of Canberra's ITS Capstone Program.</p>
+                <p>The default geojson data is the <a href="https://github.com/csiro-energy-systems/Synthetic-NEM-2000bus-Data" target="_blank">Synthetic NEM 2000 Bus Data</a> provided by R. Heidari, M. Amos and F. Geth</p>
                 <p>
                     <a href="https://maplibre.org/" target="_blank">MapLibre</a> | 
                     <a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> 
