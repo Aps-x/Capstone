@@ -1,4 +1,4 @@
-import { kmeans } from 'https://esm.sh/ml-kmeans@7.0.0';
+import { kmeans } from '../../lib/kmeans/ml-kmeans.mjs';
 import { database } from "../../core/Database.js";
 import { OBJECT_STORES } from '../../core/ObjectStores.js';
 import { eventBus } from "../../core/EventBus.js";
