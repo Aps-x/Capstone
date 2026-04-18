@@ -195,7 +195,7 @@ export default class ControlPanel extends HTMLElement {
 
             <footer class="control-panel__footer | flow">
                 <p>This <a href="https://github.com/Aps-x/Capstone" target="_blank">open source</a> project was developed as part of the University of Canberra's ITS Capstone Program.</p>
-                <p>The default geojson data is the <a href="https://github.com/csiro-energy-systems/Synthetic-NEM-2000bus-Data" target="_blank">Synthetic NEM 2000 Bus Data</a> provided by R. Heidari, M. Amos and F. Geth</p>
+                <p>The default dataset is: <a href="https://github.com/csiro-energy-systems/Synthetic-NEM-2000bus-Data" target="_blank">Synthetic NEM 2000 Bus Data</a> provided by R. Heidari, M. Amos and F. Geth.</p>
                 <p>
                     <a href="https://maplibre.org/" target="_blank">MapLibre</a> | 
                     <a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> 

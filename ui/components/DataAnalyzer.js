@@ -20,7 +20,7 @@ class DataAnalyzer extends HTMLElement {
 
     #render() {
         this.innerHTML = /*html*/`
-            <button-x data-type="secondary">Generate Control Centers</button-x>
+            <button-x data-type="secondary">Generate Utility Nodes</button-x>
         `;
     }
 
@@ -75,29 +75,31 @@ class DataAnalyzer extends HTMLElement {
             // Run the K-Means clustering algorithm
             //
 
+            eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, "Running K-Means clustering algorithm...");
+
             // NOTE:
             // K-means cares about distance, not equal group sizes.
-            // There will be, on average, 21 buses per control center**
+            // There will be, on average, 21 buses per utility node*
             // Some will have more, some will have less. Sometimes with signifcant disparities.
             //
-            // ** kmeans requires integers, so we round up the number. This means that there will
-            // be slightly more than 21 buses per control center on average.
-            const busesPerControlCenter = 21;
+            // * kmeans requires integers, so we round up the number. This means that there will
+            // be slightly more than 21 buses per utility node on average.
+            const averageBusesPerUtilityNode = 21;
 
-            // k = number of control centers to create.
-            const k = Math.ceil(coordinates.length / busesPerControlCenter);
+            // k = number of utility nodes to create.
+            const k = Math.ceil(coordinates.length / averageBusesPerUtilityNode);
             const result = kmeans(coordinates, k);
 
             const nodesByCluster = Array.from({ length: k }, () => []);
 
             result.clusters.forEach((clusterIndex, dataIndex) => {
                 // You can push just the coordinates, or the whole original feature
-                // We'll push the whole feature so the control center knows everything about its nodes
+                // We'll push the whole feature so the utility node knows everything about its nodes
                 nodesByCluster[clusterIndex].push(nodeIds[dataIndex]);
             });
 
             // Format the centroids as a new GeoJSON FeatureCollection
-            const controlCentersGeoJSON = {
+            const utilityNodesGeoJSON = {
                 type: "FeatureCollection",
                 features: result.centroids.map((centroid, index) => ({
                     type: "Feature",
@@ -105,7 +107,7 @@ class DataAnalyzer extends HTMLElement {
                         "Name": `0${index + 1}`,
                         "Longitude": `${centroid[0]}`,
                         "Latitude": `${centroid[1]}`,
-                        "Type": "Control",
+                        "Type": "Utility",
                         "AssignedNodes": nodesByCluster[index].join(', ') 
                     },
                     geometry: {
@@ -119,11 +121,11 @@ class DataAnalyzer extends HTMLElement {
             const randomString = Math.random().toString(36).substring(2, 10);
 
             await database.put(OBJECT_STORES.SPATIAL_LAYERS, {
-                fileName: `control_centers_${randomString}.geojson`,
-                data: controlCentersGeoJSON
+                fileName: `utility_nodes_${randomString}.geojson`,
+                data: utilityNodesGeoJSON
             });
 
-            eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, "Successfully generated control centers");
+            eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, "Successfully Generated K-Means Clusters");
         }
         catch (error) {
             console.error("Failed to generate K-Means clusters:", error);

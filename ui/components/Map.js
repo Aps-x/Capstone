@@ -24,6 +24,7 @@ export default class Map extends HTMLElement {
         eventBus.on(EVENTS.MAP_SETTINGS_UPDATED, (event) => this.#handleUpdatedMapSettings(event));
         eventBus.on(EVENTS.MAP_SEARCH_INITIATED, (event) => this.#handleSearchQuery(event));
         eventBus.on(EVENTS.MARKER_PANEL_CLOSED, () => this.#handleMarkerPanelClosed());
+        eventBus.on(EVENTS.DATABASE_MUTATION, (event) => this.#handleDatabaseMutation(event));
     }
 
     connectedCallback() {
@@ -79,27 +80,6 @@ export default class Map extends HTMLElement {
     }
 
     /**
-     * Reacts to the updated color scheme by setting a new map style. Then rerenders the map.
-     * @returns {void}
-     */
-    #handleUpdatedColorScheme() {
-        const mapStyle = this.#determineMapStyle();
-
-        this.#webmap.setStyle(mapStyle);
-
-        // If the map hasn't been rendered yet, don't bother rerendering.
-        if (this.#mapSettings == null) {
-            return;
-        }
-
-        // Setting the map style refreshes the map, removing any rendered map data.
-        // Listen for the map to finish and then rerender.
-        this.#webmap.once('idle', () => {
-            this.#syncMapWithDatabase();
-        });
-    }
-
-    /**
      * Accepts the new MapSettings event payload and then rerenders the map.
      * @param {Event} event Map settings updated by ControlPanel.
      */
@@ -112,6 +92,40 @@ export default class Map extends HTMLElement {
         }
 
         this.#mapSettings = updatedMapSettings;
+        this.#syncMapWithDatabase();
+    }
+
+    /**
+     * Reacts to the updated color scheme by setting a new map style. Then rerenders the map.
+     * @returns {void}
+     */
+    #handleUpdatedColorScheme() {
+        const mapStyle = this.#determineMapStyle();
+
+        this.#webmap.setStyle(mapStyle);
+
+        // If the map hasn't been rendered yet, don't bother rerendering.
+        if (!this.#mapSettings) {
+            return;
+        }
+
+        // Setting the map style refreshes the map, removing any rendered map data.
+        // Listen for the map to finish and then rerender.
+        this.#webmap.once('idle', () => {
+            this.#syncMapWithDatabase();
+        });
+    }
+
+    /**
+     * Syncs the map with the updated database.
+     * @param {Event} event Database added or deleted a layer.
+     * @returns {void}
+     */
+    #handleDatabaseMutation(event) {
+        if (!this.#mapSettings) {
+            return;
+        }
+
         this.#syncMapWithDatabase();
     }
 
@@ -462,7 +476,7 @@ export default class Map extends HTMLElement {
                     'circle-radius': 5,
                     'circle-color': [
                         'case',
-                        ['==', ['get', 'Type'], 'Control'], 'DarkOrchid', 
+                        ['==', ['get', 'Type'], 'Utility'], 'DarkOrchid', 
                         [
                             'match',
                             ['get', 'Generation Source'],
@@ -595,7 +609,7 @@ export default class Map extends HTMLElement {
                 .join('');
 
             const popupContent = /*html*/`
-                <dl class="clr-black">
+                <dl class="map__popup">
                     ${popupItems}
                 </dl>
             `;
@@ -657,6 +671,11 @@ Map.styles.replaceSync(/*css*/`
         & .maplibregl-popup-close-button {
             color: var(--clr-black);
         }
+    }
+    .map__popup {
+        color: var(--clr-black);
+        max-height: 400px;
+        overflow: scroll;
     }
 `);
 

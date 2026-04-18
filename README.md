@@ -20,8 +20,8 @@ Note: The Synthetic NEM data is included by default on first visit. If you delet
 
 1. Install the 'Visual Studio Code' IDE
 2. Install the 'Live Server' extension by Ritwick Dey
-3. Install the 'Live Sass Compiler' extension by Glenn Marks
-4. Install 'Inline HTML' extension by pushqrdx
+3. Install 'Inline HTML' extension by pushqrdx
+4. Install the 'Live Sass Compiler' extension by Glenn Marks
 5. Clone the repo with your preferred method of using Git version control
 
 ## Architecture & Design
@@ -49,7 +49,7 @@ I originally used a separate .scss file for each component, mimicking what MDN d
 
 #### Frontend
 
-JavaScript Custom Elements were used to organize the code around components. Web Components and the Shadow DOM were avoided because they prevent the use of utility classes and inheritance, they require workarounds to play nicely with forms and accessibility, and they just feel like they go against the grain of the web despite being a native API. JSDocs was used to help document the code. Here is an example component:
+JavaScript Custom Elements were used to organize the code around components. Web Components and the Shadow DOM were avoided because they prevent the use of utility classes and inheritance, they require workarounds to play nicely with forms and accessibility, and they just feel like they go against the grain of the web despite being a native API (in my opinion). JSDocs was used to help document the code. Here is an example component:
 
 ```javascript
 import './Button.js';
@@ -113,7 +113,7 @@ class MarkerPanel extends HTMLElement {
 
         const markerProperties = event.detail;
 
-        if (markerProperties == null) {
+        if (!markerProperties) {
             console.warn("Map provided invalid marker properties to MarkerPanel");
         }
 
@@ -158,6 +158,7 @@ MarkerPanel.styles.replaceSync(/*css*/`
         padding: 16px;
         padding-bottom: 64px;
         overflow: scroll;
+        overflow-behavior: contain;
     }
     @media only screen and (max-width: 768px) {
         .marker-panel {
@@ -247,7 +248,7 @@ Special thanks to Dr. Ana Goulart (Project Sponsor) and Jeanette Cotterill (Proj
 
 #### Academia
 
-We would like to thank Frederik Geth, Ghulam Mohy Ud Din, and Matt Amos for sharing their expertise and helping us improve our understanding of the Synthetic NEM dataset.
+We would like to thank Frederik Geth, Ghulam Mohy Ud Din, and Matt Amos for sharing their expertise and helping us improve our understanding of the [Synthetic NEM dataset.](https://github.com/csiro-energy-systems/Synthetic-NEM-2000bus-Data).
 
 * R. Heidari, M. Amos and F. Geth, "An Open Optimal Power Flow Model for the Australian National Electricity Market," 2023 IEEE PES Innovative Smart Grid Technologies - Asia (ISGT Asia), Auckland, New Zealand, 2023, pp. 1-5, doi: [10.1109/ISGTAsia54891.2023.10372618](https://doi.org/10.1109/ISGTAsia54891.2023.10372618)
 
