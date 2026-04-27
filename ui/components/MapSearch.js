@@ -58,14 +58,14 @@ MapSearch.styles.replaceSync(/*css*/`
         background-color: light-dark(var(--clr-slate-50), var(--clr-slate-900));
         border: 1px solid light-dark(var(--clr-slate-200), var(--clr-slate-700));
         border-radius: 100vmax;
-        padding: 0.5rem 1rem;
+        padding: 8px 16px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
     .map-search__input {
         width: 100%;
         border: none;
         background: transparent;
-        padding: 0.25rem 0;
+        padding-block: 4px;
         color: light-dark(var(--clr-slate-800), var(--clr-slate-200));
     }
 `);

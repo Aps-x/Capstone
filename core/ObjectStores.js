@@ -6,5 +6,4 @@
 //------------------------------------------------------------------------------------
 export const OBJECT_STORES = Object.freeze({
     SPATIAL_LAYERS: 'spatial-layers',
-    ANALYSIS_LAYERS: 'analysis-layers',
 });

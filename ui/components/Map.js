@@ -481,8 +481,15 @@ export default class Map extends HTMLElement {
                             'match',
                             ['get', 'Generation Source'],
                             'Coal', GENERATION_COLORS.COAL,
+                            'Black Coal', GENERATION_COLORS.COAL,
+                            'Brown Coal', GENERATION_COLORS.COAL,
+
                             'Gas', GENERATION_COLORS.GAS,
+                            'Natural Gas', GENERATION_COLORS.GAS,
+
+                            'Hydro', GENERATION_COLORS.WATER,
                             'Water', GENERATION_COLORS.WATER,
+
                             'Wind', GENERATION_COLORS.WIND,
                             'Solar', GENERATION_COLORS.SOLAR,
                             GENERATION_COLORS.DEFAULT
@@ -512,7 +519,7 @@ export default class Map extends HTMLElement {
                             'step',
                             ['get', 'Voltage (kV)'],
                             VOLTAGE_COLORS.KV_66,
-                            110, VOLTAGE_COLORS.KV_110_132,
+                            110, VOLTAGE_COLORS.KV_110,
                             220, VOLTAGE_COLORS.KV_220,
                             275, VOLTAGE_COLORS.KV_275,
                             330, VOLTAGE_COLORS.KV_330,

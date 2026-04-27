@@ -96,7 +96,7 @@ customElements.define('marker-panel', MarkerPanel);
 MarkerPanel.styles.replaceSync(/*css*/`
     .marker-panel {
         display: none;
-        grid-area: right;
+        grid-area: marker-panel;
         z-index: var(--z-sidebar);
         background-color: light-dark(var(--clr-white), var(--clr-slate-950));
         padding: 16px;
@@ -159,17 +159,17 @@ MarkerPanel.styles.replaceSync(/*css*/`
             transform: translateX(400px);
         }
         to {
-            transform: unset;
+            transform: translateX(0);
         }
     }
 
     @media (max-width: 768px) {
         @keyframes appear {
             from {
-                transform: translateY(-35dvh);
+                transform: translateY(-40dvh);
             }
             to {
-                transform: unset;
+                transform: translateY(0);
             }
         }
     }

@@ -18,6 +18,9 @@ class LayerList extends HTMLElement {
 
         this.#listItemTemplate = document.createElement('template');
 
+        // There is a strong argument to be made for splitting the list item off into a separate 
+        // component. Each button could have its own event listener instead of using event delegation.
+        // I was just experimenting with something new here.
         this.#listItemTemplate.innerHTML = /*html*/`
             <li class="layer-list__list-item">
                 <p class="layer-list__file-text">

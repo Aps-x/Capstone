@@ -1,3 +1,4 @@
+import { VOLTAGE_COLORS } from "../../core/VoltageColors.js";
 //------------------------------------------------------------------------------------
 /**
  * Legend that explains the voltage lines. Dumb component.
@@ -17,27 +18,27 @@ class VoltageLegend extends HTMLElement {
             <h3 class="voltage-legend__title">Line Voltage</h3>
             <ul class="voltage-legend__list">
                 <li class="voltage-legend__item">
-                    <span class="voltage-legend__color-line" style="background-color: #9c27b0;"></span>
+                    <span class="voltage-legend__color-line" style="background-color: ${VOLTAGE_COLORS.KV_500};"></span>
                     <span class="voltage-legend__label">500 kV</span>
                 </li>
                 <li class="voltage-legend__item">
-                    <span class="voltage-legend__color-line" style="background-color: #f44336;"></span>
+                    <span class="voltage-legend__color-line" style="background-color: ${VOLTAGE_COLORS.KV_330};"></span>
                     <span class="voltage-legend__label">330 kV</span>
                 </li>
                 <li class="voltage-legend__item">
-                    <span class="voltage-legend__color-line" style="background-color: #ff9800;"></span>
+                    <span class="voltage-legend__color-line" style="background-color: ${VOLTAGE_COLORS.KV_275};"></span>
                     <span class="voltage-legend__label">275 kV</span>
                 </li>
                 <li class="voltage-legend__item">
-                    <span class="voltage-legend__color-line" style="background-color: #ffeb3b;"></span>
+                    <span class="voltage-legend__color-line" style="background-color: ${VOLTAGE_COLORS.KV_220};"></span>
                     <span class="voltage-legend__label">220 kV</span>
                 </li>
                 <li class="voltage-legend__item">
-                    <span class="voltage-legend__color-line" style="background-color: #2196F3;"></span>
-                    <span class="voltage-legend__label">110 - 132 kV</span>
+                    <span class="voltage-legend__color-line" style="background-color: ${VOLTAGE_COLORS.KV_110};"></span>
+                    <span class="voltage-legend__label">110 kV</span>
                 </li>
                 <li class="voltage-legend__item">
-                    <span class="voltage-legend__color-line" style="background-color: #4caf50;"></span>
+                    <span class="voltage-legend__color-line" style="background-color: ${VOLTAGE_COLORS.KV_66};"></span>
                     <span class="voltage-legend__label">66 kV</span>
                 </li>
             </ul>

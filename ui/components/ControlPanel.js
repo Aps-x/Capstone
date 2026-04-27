@@ -259,8 +259,8 @@ customElements.define('control-panel', ControlPanel);
 //------------------------------------------------------------------------------------
 ControlPanel.styles.replaceSync(/*css*/`
     .control-panel {
+        grid-area: control-panel;
         z-index: var(--z-sidebar);
-        grid-area: left;
         overflow: scroll;
         background-color: light-dark(var(--clr-white), var(--clr-slate-950));
     }

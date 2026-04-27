@@ -79,7 +79,7 @@ App.styles.replaceSync(/*css*/`
         display: grid;
         grid-template-rows: 100vh;
         grid-template-columns: 400px 1fr 400px;
-        grid-template-areas: "left main right";
+        grid-template-areas: "control-panel main marker-panel";
         max-height: 100vh;
         overflow: hidden;
     }
@@ -88,7 +88,9 @@ App.styles.replaceSync(/*css*/`
             max-height: unset;
             grid-template-columns: 1fr;
             grid-template-rows: 40dvh 30dvh auto;
-            grid-template-areas: "right" "main" "left";
+            grid-template-areas: "marker-panel" 
+                                 "main" 
+                                 "control-panel";
         }
     }
 `);

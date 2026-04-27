@@ -138,7 +138,7 @@ Toaster.styles.replaceSync(/*css*/`
         --_bg-lightness: 90%;
         --_travel-distance: 0;
         color: light-dark(var(--clr-slate-900), var(--clr-white));
-        background-color: light-dark(var(--clr-white), var(--clr-slate-900));
+        background-color: light-dark(var(--clr-white), var(--clr-slate-800));
         text-align: center;
         word-break: break-word;
         max-inline-size: min(25ch, 90vw);

@@ -32,6 +32,8 @@ class DataAnalyzer extends HTMLElement {
 
     async #generateAndSaveKMeansClusters() {
         try {
+            eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, "Running K-Means clustering algorithm...");
+
             const spatialLayers = await database.getAll(OBJECT_STORES.SPATIAL_LAYERS);
 
             // Filter for layers that contain at least one Point geometry
@@ -54,14 +56,14 @@ class DataAnalyzer extends HTMLElement {
 
             // Extract coordinates
             const coordinates = [];
-            const nodeIds = [];
+            const sourceFeatureIds = [];
 
             spatialLayersWithPoints.forEach(layer => {
                 layer.data.features.forEach(feature => {
                     if (feature.geometry?.type === 'Point') {
                         coordinates.push(feature.geometry.coordinates);
                         // Assuming the first property is the unique id
-                        nodeIds.push(Object.values(feature.properties)[0]);
+                        sourceFeatureIds.push(Object.values(feature.properties)[0]);
                     }
                 });
             });
@@ -75,40 +77,42 @@ class DataAnalyzer extends HTMLElement {
             // Run the K-Means clustering algorithm
             //
 
-            eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, "Running K-Means clustering algorithm...");
-
             // NOTE:
             // K-means cares about distance, not equal group sizes.
             // There will be, on average, 21 buses per utility node*
-            // Some will have more, some will have less. Sometimes with signifcant disparities.
+            // Some will have more, some will have less. Sometimes with significant disparities.
             //
             // * kmeans requires integers, so we round up the number. This means that there will
             // be slightly more than 21 buses per utility node on average.
-            const averageBusesPerUtilityNode = 21;
+            const averagePointsPerUtilityNode = 21;
 
             // k = number of utility nodes to create.
-            const k = Math.ceil(coordinates.length / averageBusesPerUtilityNode);
-            const result = kmeans(coordinates, k);
+            const k = Math.ceil(coordinates.length / averagePointsPerUtilityNode);
+            const kmeansResult = kmeans(coordinates, k);
 
-            const nodesByCluster = Array.from({ length: k }, () => []);
+            const sourceFeaturesByCluster = [];
 
-            result.clusters.forEach((clusterIndex, dataIndex) => {
+            for (let i = 0; i < k; i++) {
+                sourceFeaturesByCluster.push([]);
+            }
+
+            kmeansResult.clusters.forEach((clusterIndex, dataIndex) => {
                 // You can push just the coordinates, or the whole original feature
                 // We'll push the whole feature so the utility node knows everything about its nodes
-                nodesByCluster[clusterIndex].push(nodeIds[dataIndex]);
+                sourceFeaturesByCluster[clusterIndex].push(sourceFeatureIds[dataIndex]);
             });
 
             // Format the centroids as a new GeoJSON FeatureCollection
             const utilityNodesGeoJSON = {
                 type: "FeatureCollection",
-                features: result.centroids.map((centroid, index) => ({
+                features: kmeansResult.centroids.map((centroid, index) => ({
                     type: "Feature",
                     properties: {
                         "Name": `0${index + 1}`,
                         "Longitude": `${centroid[0]}`,
                         "Latitude": `${centroid[1]}`,
                         "Type": "Utility",
-                        "AssignedNodes": nodesByCluster[index].join(', ') 
+                        "AssignedNodes": sourceFeaturesByCluster[index].join(', ') 
                     },
                     geometry: {
                         type: "Point",
@@ -118,10 +122,10 @@ class DataAnalyzer extends HTMLElement {
             };
 
             // Save the newly created layer back to the database
-            const randomString = Math.random().toString(36).substring(2, 10);
+            const randomFileSuffix = Math.random().toString(36).substring(2, 10);
 
             await database.put(OBJECT_STORES.SPATIAL_LAYERS, {
-                fileName: `utility_nodes_${randomString}.geojson`,
+                fileName: `utility_nodes_${randomFileSuffix}.geojson`,
                 data: utilityNodesGeoJSON
             });
 
