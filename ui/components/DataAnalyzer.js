@@ -77,29 +77,21 @@ class DataAnalyzer extends HTMLElement {
             // Run the K-Means clustering algorithm
             //
 
-            // NOTE:
-            // K-means cares about distance, not equal group sizes.
-            // There will be, on average, 21 buses per utility node*
-            // Some will have more, some will have less. Sometimes with significant disparities.
-            //
-            // * kmeans requires integers, so we round up the number. This means that there will
-            // be slightly more than 21 buses per utility node on average.
             const averagePointsPerUtilityNode = 21;
-
-            // k = number of utility nodes to create.
             const k = Math.ceil(coordinates.length / averagePointsPerUtilityNode);
             const kmeansResult = kmeans(coordinates, k);
 
-            const sourceFeaturesByCluster = [];
+            const sourceFeatureIdsByCluster = [];
+            const coordinatesByCluster = []; // Track coordinates for line generation
 
             for (let i = 0; i < k; i++) {
-                sourceFeaturesByCluster.push([]);
+                sourceFeatureIdsByCluster.push([]);
+                coordinatesByCluster.push([]);
             }
 
             kmeansResult.clusters.forEach((clusterIndex, dataIndex) => {
-                // You can push just the coordinates, or the whole original feature
-                // We'll push the whole feature so the utility node knows everything about its nodes
-                sourceFeaturesByCluster[clusterIndex].push(sourceFeatureIds[dataIndex]);
+                sourceFeatureIdsByCluster[clusterIndex].push(sourceFeatureIds[dataIndex]);
+                coordinatesByCluster[clusterIndex].push(coordinates[dataIndex]);
             });
 
             // Format the centroids as a new GeoJSON FeatureCollection
@@ -112,7 +104,7 @@ class DataAnalyzer extends HTMLElement {
                         "Longitude": `${centroid[0]}`,
                         "Latitude": `${centroid[1]}`,
                         "Type": "Utility",
-                        "AssignedNodes": sourceFeaturesByCluster[index].join(', ') 
+                        "AssignedNodes": sourceFeatureIdsByCluster[index].join(', ') 
                     },
                     geometry: {
                         type: "Point",
@@ -121,15 +113,50 @@ class DataAnalyzer extends HTMLElement {
                 }))
             };
 
-            // Save the newly created layer back to the database
+            // Format the connection lines as a new GeoJSON FeatureCollection
+            const connectionLinesGeoJSON = {
+                type: "FeatureCollection",
+                features: []
+            };
+
+            kmeansResult.centroids.forEach((centroid, index) => {
+                const utilityNodeName = `0${index + 1}`;
+                
+                coordinatesByCluster[index].forEach((targetCoord, ptIndex) => {
+                    connectionLinesGeoJSON.features.push({
+                        type: "Feature",
+                        properties: {
+                            "Type": "UtilityConnection",
+                            "SourceUtilityNode": utilityNodeName,
+                            "TargetAssignedNode": sourceFeatureIdsByCluster[index][ptIndex]
+                        },
+                        geometry: {
+                            type: "LineString",
+                            coordinates: [
+                                [centroid[0], centroid[1]], // Start at utility node
+                                [targetCoord[0], targetCoord[1]] // End at assigned node
+                            ]
+                        }
+                    });
+                });
+            });
+
+            // Save the newly created layers back to the database
             const randomFileSuffix = Math.random().toString(36).substring(2, 10);
 
+            // Save LineString layer (Connections)
+            await database.put(OBJECT_STORES.SPATIAL_LAYERS, {
+                fileName: `utility_connections_${randomFileSuffix}.geojson`,
+                data: connectionLinesGeoJSON
+            });
+
+            // Save Point layer (Nodes)
             await database.put(OBJECT_STORES.SPATIAL_LAYERS, {
                 fileName: `utility_nodes_${randomFileSuffix}.geojson`,
                 data: utilityNodesGeoJSON
             });
 
-            eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, "Successfully Generated K-Means Clusters");
+            eventBus.emit(EVENTS.SYSTEM_MESSAGE_GENERATED, "Successfully Generated K-Means Clusters & Connection Lines");
         }
         catch (error) {
             console.error("Failed to generate K-Means clusters:", error);

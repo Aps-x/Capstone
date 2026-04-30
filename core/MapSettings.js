@@ -13,6 +13,8 @@ export default class MapSettings {
      * @param {number|string|null} pMin Minimum Power.
      * @param {number|string|null} qMax Maximum Reactive Power.
      * @param {number|string|null} qMin Minimum Reactive Power.
+     * @param {number|string|null} minRange Minimum Bus Range.
+     * @param {number|string|null} maxRange Maximum Bus Range.
      * @param {boolean} showGeneration Show generation buses.
      * @param {boolean} showTransmission Show transmission buses.
      * @param {boolean} showDistribution Show distribution buses.
@@ -25,6 +27,7 @@ export default class MapSettings {
     constructor(
         renderPoints, renderLines,
         vMax, vMin, pMax, pMin, qMax, qMin,
+        minRange, maxRange,
         showGeneration, showTransmission, showDistribution,
         showCoal, showGas, showHydro, showWind, showSolar
     ) {
@@ -32,13 +35,17 @@ export default class MapSettings {
         this.renderPoints = Boolean(renderPoints);
         this.renderLines = Boolean(renderLines);
 
-        // Power Parameter Filters (Safely parsed)
+        // Power Parameter Filters
         this.vMax = this.#parseOptionalNumber(vMax);
         this.vMin = this.#parseOptionalNumber(vMin);
         this.pMax = this.#parseOptionalNumber(pMax);
         this.pMin = this.#parseOptionalNumber(pMin);
         this.qMax = this.#parseOptionalNumber(qMax);
         this.qMin = this.#parseOptionalNumber(qMin);
+
+        // Bus Range Filters
+        this.minRange = this.#parseOptionalNumber(minRange);
+        this.maxRange = this.#parseOptionalNumber(maxRange);
 
         // Bus Type Filters
         this.showGeneration = Boolean(showGeneration);

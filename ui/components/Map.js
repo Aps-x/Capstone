@@ -306,6 +306,7 @@ export default class Map extends HTMLElement {
 
         const {
             vMax, vMin, pMax, pMin, qMax, qMin,
+            minRange, maxRange,
             showGeneration, showTransmission, showDistribution,
             showCoal, showGas, showHydro, showWind, showSolar
         } = this.#mapSettings;
@@ -314,19 +315,28 @@ export default class Map extends HTMLElement {
             const props = feature.properties;
             if (!props) return true;
 
-            // 1. Voltage Filter
+            // Voltage Filter
             const v = props['V (kV)'];
             if (v !== undefined && (Number(v) < vMin || Number(v) > vMax)) return false;
 
-            // 2. Active Power Filter 
+            // Active Power Filter 
             const p = props['P (MW)'];
             if (p !== undefined && (Number(p) < pMin || Number(p) > pMax)) return false;
 
-            // 3. Reactive Power Filter
+            // Reactive Power Filter
             const q = props['Q (Mvar)'];
             if (q !== undefined && (Number(q) < qMin || Number(q) > qMax)) return false;
 
-            // 4. Bus Type Filter
+            // Bus Range Filter
+            const firstKey = Object.keys(props)[0];
+            const busNum = firstKey !== undefined ? props[firstKey] : undefined;
+
+            if (busNum !== undefined) {
+                if (minRange !== undefined && Number(busNum) < minRange) return false;
+                if (maxRange !== undefined && Number(busNum) > maxRange) return false;
+            }
+
+            // Bus Type Filter
             const typeStr = String(props['Type'] ?? '').toLowerCase();
             
             if (typeStr) {
@@ -339,7 +349,7 @@ export default class Map extends HTMLElement {
                 if (isDist && !showDistribution) return false;
             }
 
-            // 5. Generation Source Filter
+            // Generation Source Filter
             const sourceStr = String(props['Generation Source'] ?? '').toLowerCase();
 
             if (sourceStr) {
@@ -513,12 +523,13 @@ export default class Map extends HTMLElement {
                 paint: {
                     'line-color': [
                         'case',
-                        ['has', 'Voltage (kV)'],
+                        ['==', ['get', 'Type'], 'UtilityConnection'], 'DarkOrchid',
+                        ['has', 'Voltage (kV) (L-N)'],
                         [
                             // If TRUE, evaluate the step expression
                             'step',
-                            ['get', 'Voltage (kV)'],
-                            VOLTAGE_COLORS.KV_66,
+                            ['get', 'Voltage (kV) (L-N)'],
+                            VOLTAGE_COLORS.LOW_VOLTAGE,
                             110, VOLTAGE_COLORS.KV_110,
                             220, VOLTAGE_COLORS.KV_220,
                             275, VOLTAGE_COLORS.KV_275,
@@ -543,6 +554,12 @@ export default class Map extends HTMLElement {
                                 500, 8
                             ],
                         3 // Fallback width
+                    ],
+                    'line-dasharray': [
+                        'case',
+                        ['==', ['get', 'Type'], 'UtilityConnection'],
+                        ['literal', [2, 2]],
+                        ['literal', [1, 0]]
                     ]
                 }
             };

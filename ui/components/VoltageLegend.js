@@ -38,8 +38,8 @@ class VoltageLegend extends HTMLElement {
                     <span class="voltage-legend__label">110 kV</span>
                 </li>
                 <li class="voltage-legend__item">
-                    <span class="voltage-legend__color-line" style="background-color: ${VOLTAGE_COLORS.KV_66};"></span>
-                    <span class="voltage-legend__label">66 kV</span>
+                    <span class="voltage-legend__color-line" style="background-color: ${VOLTAGE_COLORS.LOW_VOLTAGE};"></span>
+                    <span class="voltage-legend__label">Low Voltage</span>
                 </li>
             </ul>
         `;

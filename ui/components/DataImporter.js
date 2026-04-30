@@ -76,7 +76,7 @@ class DataImporter extends HTMLElement {
                 }
 
                 await database.put(OBJECT_STORES.SPATIAL_LAYERS, { 
-                    fileName: file.name, 
+                    fileName: file.name,
                     data: geojsonData
                 });
             } 

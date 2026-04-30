@@ -105,6 +105,22 @@ export default class ControlPanel extends HTMLElement {
                             </pick-list-item>
                         </pick-list>
 
+                        <pick-list data-legend="Bus Range">
+                            <pick-list-item
+                                data-type="input"
+                                data-name="minRange" 
+                                data-title="From"
+                                data-description="Minimum bus range (Inclusive)">
+                            </pick-list-item>
+
+                            <pick-list-item
+                                data-type="input"
+                                data-name="maxRange" 
+                                data-title="To"
+                                data-description="Maximum bus range (Inclusive)">
+                            </pick-list-item>
+                        </pick-list>
+
                         <pick-list data-legend="Bus Types">
                             <pick-list-item
                                 data-type="checkbox"
@@ -236,6 +252,9 @@ export default class ControlPanel extends HTMLElement {
             filterData.get('qMax'),
             filterData.get('qMin'),
 
+            filterData.get('minRange'),
+            filterData.get('maxRange'),
+
             filterData.get('generation'),
             filterData.get('transmission'),
             filterData.get('distribution'),
@@ -273,19 +292,14 @@ ControlPanel.styles.replaceSync(/*css*/`
         padding-inline: 16px;
         text-align: center;
         border-radius: 0px 0px 14px 14px;
-        --_shadow-color: 0deg 0% 63%;
-        --_shadow-elevation-low:
-            0px 1px 1.1px hsl(var(--_shadow-color) / 0.34),
-            0px 1.7px 1.9px -1.2px hsl(var(--_shadow-color) / 0.34),
-            0px 4px 4.5px -2.5px hsl(var(--_shadow-color) / 0.34);
         box-shadow: none;
     }
     html:has(meta[name=color-scheme][content=light]) .control-panel__header {
-        box-shadow: var(--_shadow-elevation-low);
+        box-shadow: var(--shadow-elevation-low);
     }
     @media (prefers-color-scheme: light) {
         html:has(meta[name=color-scheme][content="light dark"]) .control-panel__header {
-            box-shadow: var(--_shadow-elevation-low);
+            box-shadow: var(--shadow-elevation-low);
         }
     }
     .control-panel__title {

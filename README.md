@@ -1,13 +1,13 @@
 # Capstone Map
 ![](./docs/Screenshot.png)
 ## Project Overview
----
+
 This project was sponsored by Dr. Ana Goulart as part of the University of Canberra's ITS Capstone Program. Our team was tasked with visualizing a dataset produced by the CSIRO -- a synthetic model of the Australian Eastern Power Grid.
 
 Our solution is a fully client-side web application that accepts GeoJSON spatial data and visualizes it on a web map. This solution aids users in improving their understanding of the dataset in a visual and accessible way.
 
 ## User Guide
----
+
 ### Quick Guide
 1. Navigate to the website [here](https://aps-x.github.io/Capstone/)
 2. Click 'Apply' to see the Synthetic NEM Data visualized
@@ -17,6 +17,8 @@ Our solution is a fully client-side web application that accepts GeoJSON spatial
 6. Et voilà, enjoy your visualized data!
 
 Note: The Synthetic NEM data is included by default on first visit. If you delete this data, you can find it in this repository within the data folder.
+
+Alternatively, you can go to your browser settings > privacy > manage data, and then remove the local data for the website and refresh.
 
 ### In-Depth Guide
 
@@ -33,7 +35,7 @@ Note: The Synthetic NEM data is included by default on first visit. If you delet
 
 #### Data Analysis Section
 
-* Pressing the 'Generate Utility Nodes' button will perform k-means analysis and generate a new GeoJSON layer. There will be, on average, 21 buses per utility node. It is important to not that the k-means algorithm expects an integer for the number of groups to create. If the total number of buses divided by 21 is a float, it will be rounded up to the nearest integer, resulting in slightly more than 21 buses per utility node.
+* Pressing the 'Generate Utility Nodes' button will perform k-means analysis and generate a new GeoJSON layer. There will be, on average, 21 buses per utility node. It is important to not that the k-means algorithm expects an integer for the number of groups to create. If the total number of buses divided by 21 is a float, it will be rounded up to the nearest integer, resulting in slightly more than 21 buses per utility node. All newly created utility nodes will be prefixed with '0'. Dashed lines will also be created between the new utility nodes and all the nodes in its cluster.
 
 #### Search Section
 
@@ -47,11 +49,11 @@ Note: The Synthetic NEM data is included by default on first visit. If you delet
 * This website only accepts GeoJSON. If you have a JSON file, you must ensure that it meets the [GeoJSON specification](https://geojson.org/) and has a .geojson file extension. There are numerous free online tools for converting CSV to GeoJSON.
 
 ## License
----
+
 The Synthetic NEM dataset is licensed under CC-BY ([https://creativecommons.org/licenses/by/4.0/](https://creativecommons.org/licenses/by/4.0/)). More information on the Synthetic NEM dataset can be found here: [https://github.com/csiro-energy-systems/Synthetic-NEM-2000bus-Data](https://github.com/csiro-energy-systems/Synthetic-NEM-2000bus-Data).
 
 ## Acknowledgments
----
+
 #### University of Canberra
 
 Special thanks to Dr. Ana Goulart (Project Sponsor) and Jeanette Cotterill (Project Mentor) for their support and guidance over the course of this semester.
@@ -77,7 +79,7 @@ We would like to thank Frederik Geth, Ghulam Mohy Ud Din, and Matt Amos for shar
 * The entire web development community for being so awesome and open to sharing knowledge
 
 ## Developer Guide
----
+
 ### Setup Guide
 1. Install the 'Visual Studio Code' IDE
 2. Install the 'Live Server' extension by Ritwick Dey
@@ -112,7 +114,7 @@ Another consideration is where you keep your CSS. I have opted for a Single-File
 
 Yet another consideration was whether or not to use design tokens, or a design system like [Brad Frost’s Atomic Design](https://atomicdesign.bradfrost.com/table-of-contents/). I decided that this project wasn’t large enough to benefit from these more complex development practices, but if this project was to grow past a single page, I would certainly recommend looking into this space.
 
-I am personally a big fan of using [BEM and utility classes together](https://css-tricks.com/building-a-scalable-css-architecture-with-bem-and-utility-classes/). I think that they can complement each other like Yin and Yang. BEM covers components, their elements, and specific variants (Think primary or secondary button), whilst utility classes are great for applying styles to a single instance of a component i.e. exceptions to the rule. I did not end up using that many utility classes in this project, but they would certainly come in handy if the website was to group and you had components that appeared in more than one context.
+I am personally a big fan of using [BEM and utility classes together](https://css-tricks.com/building-a-scalable-css-architecture-with-bem-and-utility-classes/). I think that they can complement each other like Yin and Yang. BEM covers components, their elements, and specific variants (Think primary or secondary button), whilst utility classes are great for applying styles to a single instance of a component i.e. exceptions to the rule. I did not end up using that many utility classes in this project, but they would certainly come in handy if the website was to grow and you had components that appeared in more than one context.
 
 
 #### Frontend

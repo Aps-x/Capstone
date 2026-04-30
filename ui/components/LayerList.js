@@ -80,6 +80,7 @@ class LayerList extends HTMLElement {
         const deleteButton = clone.querySelector('button-x:nth-of-type(2)');
 
         // Split the file name and insert it into the template
+        // This would be more useful if we supported multiple file types, but whatever.
         const { name, extension } = this.#splitFileName(layer.fileName);
 
         li.querySelector('.file-name').textContent = name;

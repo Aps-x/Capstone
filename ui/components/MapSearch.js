@@ -59,7 +59,6 @@ MapSearch.styles.replaceSync(/*css*/`
         border: 1px solid light-dark(var(--clr-slate-200), var(--clr-slate-700));
         border-radius: 100vmax;
         padding: 8px 16px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
     .map-search__input {
         width: 100%;
