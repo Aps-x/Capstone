@@ -542,10 +542,10 @@ export default class Map extends HTMLElement {
                     ],
                     'line-width': [
                         'case',
-                        ['has', 'Voltage (kV)'],
+                        ['has', 'Voltage (kV) (L-N)'],
                             [
                                 'step',
-                                ['get', 'Voltage (kV)'],
+                                ['get', 'Voltage (kV) (L-N)'],
                                 3,      
                                 110, 4,
                                 220, 5,
