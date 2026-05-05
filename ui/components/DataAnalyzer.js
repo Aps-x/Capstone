@@ -10,7 +10,6 @@ import { EVENTS } from "../../core/Events.js";
  */
 //------------------------------------------------------------------------------------
 class DataAnalyzer extends HTMLElement {
-    static styles = new CSSStyleSheet();
 
     connectedCallback() {
         this.classList.add('data-analyzer');
@@ -162,17 +161,8 @@ class DataAnalyzer extends HTMLElement {
             console.error("Failed to generate K-Means clusters:", error);
         }
     }
-}
 
-customElements.define('data-analyzer', DataAnalyzer);
-
-//------------------------------------------------------------------------------------
-// Styles
-//------------------------------------------------------------------------------------
-DataAnalyzer.styles.replaceSync(/*css*/`
-
-`);
-
-if (!document.adoptedStyleSheets.includes(DataAnalyzer.styles)) {
-    document.adoptedStyleSheets.push(DataAnalyzer.styles);
+    static {
+        customElements.define('data-analyzer', this);
+    }
 }

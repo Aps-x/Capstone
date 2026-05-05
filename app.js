@@ -13,7 +13,6 @@ import { OBJECT_STORES } from "./core/ObjectStores.js";
  */
 //------------------------------------------------------------------------------------
 class App extends HTMLElement {
-    static styles = new CSSStyleSheet();
 
     async connectedCallback() {
         this.classList.add('app');
@@ -67,34 +66,31 @@ class App extends HTMLElement {
             console.error("Failed to load data:", error);
         }
     }
-}
 
-customElements.define('app-x', App);
+    static {
+        customElements.define('app-x', this);
 
-//------------------------------------------------------------------------------------
-// Styles
-//------------------------------------------------------------------------------------
-App.styles.replaceSync(/*css*/`
-    .app {
-        display: grid;
-        grid-template-rows: 100vh;
-        grid-template-columns: 400px 1fr 400px;
-        grid-template-areas: "control-panel main marker-panel";
-        max-height: 100vh;
-        overflow: hidden;
+        const styles = new CSSStyleSheet();
+        styles.replaceSync(/*css*/`
+            .app {
+                display: grid;
+                grid-template-rows: 100vh;
+                grid-template-columns: 400px 1fr 400px;
+                grid-template-areas: "control-panel main marker-panel";
+                max-height: 100vh;
+                overflow: hidden;
+            }
+            @media (max-width: 768px) {
+                .app {
+                    max-height: unset;
+                    grid-template-columns: 1fr;
+                    grid-template-rows: 40dvh 30dvh auto;
+                    grid-template-areas: "marker-panel" 
+                                         "main" 
+                                         "control-panel";
+                }
+            }
+        `);
+        document.adoptedStyleSheets.push(styles);
     }
-    @media (max-width: 768px) {
-        .app {
-            max-height: unset;
-            grid-template-columns: 1fr;
-            grid-template-rows: 40dvh 30dvh auto;
-            grid-template-areas: "marker-panel" 
-                                 "main" 
-                                 "control-panel";
-        }
-    }
-`);
-
-if (!document.adoptedStyleSheets.includes(App.styles)) {
-    document.adoptedStyleSheets.push(App.styles);
 }

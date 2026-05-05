@@ -9,7 +9,6 @@ import { eventBus } from "../../core/EventBus.js";
  */
 //------------------------------------------------------------------------------------
 class LayerList extends HTMLElement {
-    static styles = new CSSStyleSheet();
     /** @type {HTMLUListElement} */ #list;
     /** @type {HTMLTemplateElement} */ #listItemTemplate;
     
@@ -205,46 +204,43 @@ class LayerList extends HTMLElement {
             this.#createListItem(item, key);
         } 
     }
-}
 
-customElements.define('layer-list', LayerList);
+    static {
+        customElements.define('layer-list', this);
 
-//------------------------------------------------------------------------------------
-// Styles
-//------------------------------------------------------------------------------------
-LayerList.styles.replaceSync(/*css*/`
-    .layer-list__list {
-        display: grid;
-        gap: 16px;
-        margin-top: 18px;
+        const styles = new CSSStyleSheet();
+        styles.replaceSync(/*css*/`
+            .layer-list__list {
+                display: grid;
+                gap: 16px;
+                margin-top: 18px;
+            }
+            .layer-list__list-item {
+                display: grid;
+                grid-template-columns: 1fr auto auto;
+                gap: 6px;
+            }
+            .layer-list__file-text {
+                align-self: center;
+                display: flex;
+                white-space: nowrap;
+                overflow: hidden;
+                max-width: 100%;
+            }
+            .layer-list__file-text>span {
+                overflow: hidden;
+                flex: 0 1 auto;
+            }
+            .layer-list__file-text > span:nth-child(1) {
+                flex-shrink: 1;
+                text-overflow: ellipsis;
+            }
+            .layer-list__file-text > span:nth-child(2) {
+                min-width: -moz-fit-content;
+                min-width: fit-content;
+                flex: 1;
+            }
+        `);
+        document.adoptedStyleSheets.push(styles);
     }
-    .layer-list__list-item {
-        display: grid;
-        grid-template-columns: 1fr auto auto;
-        gap: 6px;
-    }
-    .layer-list__file-text {
-        align-self: center;
-        display: flex;
-        white-space: nowrap;
-        overflow: hidden;
-        max-width: 100%;
-    }
-    .layer-list__file-text>span {
-        overflow: hidden;
-        flex: 0 1 auto;
-    }
-    .layer-list__file-text > span:nth-child(1) {
-        flex-shrink: 1;
-        text-overflow: ellipsis;
-    }
-    .layer-list__file-text > span:nth-child(2) {
-        min-width: -moz-fit-content;
-        min-width: fit-content;
-        flex: 1;
-    }
-`);
-
-if (!document.adoptedStyleSheets.includes(LayerList.styles)) {
-    document.adoptedStyleSheets.push(LayerList.styles);
 }

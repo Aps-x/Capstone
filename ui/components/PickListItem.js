@@ -6,7 +6,6 @@ import "./FragmentLoader.js";
  */
 //------------------------------------------------------------------------------------
 class PickListItem extends HTMLElement {
-    static styles = new CSSStyleSheet();
     /** @type {Boolean} */ #isChecked;
 
     connectedCallback() {
@@ -30,54 +29,51 @@ class PickListItem extends HTMLElement {
             </label>
         `;
     }
-}
 
-customElements.define('pick-list-item', PickListItem);
+    static {
+        customElements.define('pick-list-item', this);
 
-//------------------------------------------------------------------------------------
-// Styles
-//------------------------------------------------------------------------------------
-PickListItem.styles.replaceSync(/*css*/`
-    .pick-list-item {
-        --space: 16px;
+        const styles = new CSSStyleSheet();
+        styles.replaceSync(/*css*/`
+            .pick-list-item {
+                --space: 16px;
+            }
+            .pick-list-item:where(:not(:last-of-type)) {
+                border-bottom: 1px solid light-dark(var(--clr-slate-200), var(--clr-slate-600));
+            }
+            .pick-list-item__label {
+                display: grid;
+                align-items: center;
+                gap: calc(var(--space) * 1.5);
+                grid-auto-flow: column;
+                grid-template-columns: auto 1fr;
+                padding: var(--space);
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .pick-list-item__label:is(:focus-within, :hover) .pick-list-item__title {
+                color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
+            }
+            .pick-list-item__input[type=checkbox] {
+                margin-inline: calc(var(--space) * 1.5);
+            }
+            .pick-list-item__input {
+                max-width: 100px;
+                padding-inline: 0.25em;
+            }
+            .pick-list-item__content {
+                > svg {
+                    margin-right: 10px;
+                }
+            }
+            .pick-list-item__title {
+                font-weight: var(--fw-semi-bold);
+            }
+            .pick-list-item__description {
+                display: block;
+                color: light-dark(var(--clr-slate-600), var(--clr-slate-300));
+            }
+        `);
+        document.adoptedStyleSheets.push(styles);
     }
-    .pick-list-item:where(:not(:last-of-type)) {
-        border-bottom: 1px solid light-dark(var(--clr-slate-200), var(--clr-slate-600));
-    }
-    .pick-list-item__label {
-        display: grid;
-        align-items: center;
-        gap: calc(var(--space) * 1.5);
-        grid-auto-flow: column;
-        grid-template-columns: auto 1fr;
-        padding: var(--space);
-        cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-    }
-    .pick-list-item__label:is(:focus-within, :hover) .pick-list-item__title {
-        color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
-    }
-    .pick-list-item__input[type=checkbox] {
-        margin-inline: calc(var(--space) * 1.5);
-    }
-    .pick-list-item__input {
-        max-width: 100px;
-        padding-inline: 0.25em;
-    }
-    .pick-list-item__content {
-        > svg {
-            margin-right: 10px;
-        }
-    }
-    .pick-list-item__title {
-        font-weight: var(--fw-semi-bold);
-    }
-    .pick-list-item__description {
-        display: block;
-        color: light-dark(var(--clr-slate-600), var(--clr-slate-300));
-    }
-`);
-
-if (!document.adoptedStyleSheets.includes(PickListItem.styles)) {
-    document.adoptedStyleSheets.push(PickListItem.styles);
 }

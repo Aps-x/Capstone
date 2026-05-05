@@ -8,7 +8,6 @@ import { EVENTS } from '../../core/Events.js';
  */
 //------------------------------------------------------------------------------------
 class MarkerPanel extends HTMLElement {
-    static styles = new CSSStyleSheet();
     /** @type {HTMLButtonElement} */ #closeButton;
     /** @type {HTMLDListElement} */ #descriptionList;
 
@@ -53,14 +52,14 @@ class MarkerPanel extends HTMLElement {
      * @returns {void}
      */
     #handleMapMarkerClicked(event) {
-        this.setAttribute("aria-hidden", "false");
-
         const markerProperties = event.detail;
 
         if (!markerProperties) {
             console.warn("Map provided invalid marker properties to MarkerPanel");
+            return;
         }
 
+        this.setAttribute("aria-hidden", "false");
         this.#descriptionList.innerHTML = '';
 
         for (const [key, value] of Object.entries(markerProperties)) {
@@ -86,95 +85,90 @@ class MarkerPanel extends HTMLElement {
         this.setAttribute("aria-hidden", "true");
         eventBus.emit(EVENTS.MARKER_PANEL_CLOSED);
     }
-}
 
-customElements.define('marker-panel', MarkerPanel);
+    static {
+        customElements.define('marker-panel', this);
 
-//------------------------------------------------------------------------------------
-// Styles
-//------------------------------------------------------------------------------------
-MarkerPanel.styles.replaceSync(/*css*/`
-    .marker-panel {
-        display: none;
-        grid-area: marker-panel;
-        z-index: var(--z-sidebar);
-        background-color: light-dark(var(--clr-white), var(--clr-slate-950));
-        padding: 16px;
-        padding-bottom: 64px;
-        overflow: scroll;
-        overscroll-behavior: contain;
-    }
-    @media (max-width: 768px) {
-        .marker-panel {
-            border-radius: 0px 0px 12px 12px;
-        }
-    }
-    .marker-panel[aria-hidden=false] {
-        display: block;
-        animation: appear 0.25s;
-    }
-    .marker-panel__header {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 16px;
-    }
-    .marker-panel__title {
-        font-size: var(--fs-200);
-        font-weight: var(--fw-semi-bold);
-        color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
-        align-self: center;
-    }
-    .marker-panel__table {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        margin-top: 32px;
-        border: 1px solid light-dark(var(--clr-slate-300), var(--clr-slate-700));
-        border-radius: 8px;
-        overflow: hidden;
-    }
-    .marker-panel__key {
-        background-color: light-dark(var(--clr-slate-100), var(--clr-slate-900));
-        font-weight: var(--fw-semi-bold);
-        border-right: 1px solid light-dark(var(--clr-slate-300), var(--clr-slate-700));
-    }
-    .marker-panel__key::first-letter {
-        text-transform: uppercase;
-    }
-    .marker-panel__value {
-        background-color: light-dark(var(--clr-white), var(--clr-slate-800));
-    }
-    .marker-panel__key, .marker-panel__value {
-        padding: 12px 16px;
-        border-bottom: 1px solid light-dark(var(--clr-slate-300), var(--clr-slate-700));
-        min-width: 0;
-        overflow-wrap: break-word;
-        align-content: center;
-    }
-    .marker-panel__key:last-of-type, .marker-panel__value:last-of-type {
-        border-bottom: none;
-    }
-
-    @keyframes appear {
-        from {
-            transform: translateX(400px);
-        }
-        to {
-            transform: translateX(0);
-        }
-    }
-
-    @media (max-width: 768px) {
-        @keyframes appear {
-            from {
-                transform: translateY(-40dvh);
+        const styles = new CSSStyleSheet();
+        styles.replaceSync(/*css*/`
+            .marker-panel {
+                display: none;
+                grid-area: marker-panel;
+                z-index: var(--z-sidebar);
+                background-color: light-dark(var(--clr-white), var(--clr-slate-950));
+                padding: 16px;
+                padding-bottom: 64px;
+                overflow: scroll;
+                overscroll-behavior: contain;
             }
-            to {
-                transform: translateY(0);
+            @media (max-width: 768px) {
+                .marker-panel {
+                    border-radius: 0px 0px 12px 12px;
+                }
             }
-        }
+            .marker-panel[aria-hidden=false] {
+                display: block;
+                animation: appear 0.25s;
+            }
+            .marker-panel__header {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                gap: 16px;
+            }
+            .marker-panel__title {
+                font-size: var(--fs-200);
+                font-weight: var(--fw-semi-bold);
+                color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
+                align-self: center;
+            }
+            .marker-panel__table {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                margin-top: 32px;
+                border: 1px solid light-dark(var(--clr-slate-300), var(--clr-slate-700));
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            .marker-panel__key {
+                background-color: light-dark(var(--clr-slate-100), var(--clr-slate-900));
+                font-weight: var(--fw-semi-bold);
+                border-right: 1px solid light-dark(var(--clr-slate-300), var(--clr-slate-700));
+            }
+            .marker-panel__key::first-letter {
+                text-transform: uppercase;
+            }
+            .marker-panel__value {
+                background-color: light-dark(var(--clr-white), var(--clr-slate-800));
+            }
+            .marker-panel__key, .marker-panel__value {
+                padding: 12px 16px;
+                border-bottom: 1px solid light-dark(var(--clr-slate-300), var(--clr-slate-700));
+                min-width: 0;
+                overflow-wrap: break-word;
+                align-content: center;
+            }
+            .marker-panel__key:last-of-type, .marker-panel__value:last-of-type {
+                border-bottom: none;
+            }
+            @keyframes appear {
+                from {
+                    transform: translateX(400px);
+                }
+                to {
+                    transform: translateX(0);
+                }
+            }
+            @media (max-width: 768px) {
+                @keyframes appear {
+                    from {
+                        transform: translateY(-40dvh);
+                    }
+                    to {
+                        transform: translateY(0);
+                    }
+                }
+            }
+        `);
+        document.adoptedStyleSheets.push(styles);
     }
-`);
-
-if (!document.adoptedStyleSheets.includes(MarkerPanel.styles)) {
-    document.adoptedStyleSheets.push(MarkerPanel.styles);
 }

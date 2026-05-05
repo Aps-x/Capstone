@@ -5,7 +5,6 @@
  */
 //------------------------------------------------------------------------------------
 class Example extends HTMLElement {
-    static styles = new CSSStyleSheet();
 
     constructor() {
         super();
@@ -26,17 +25,14 @@ class Example extends HTMLElement {
     #initialize() {
 
     }
-}
 
-customElements.define('example-x', Example);
+    static {
+        customElements.define('example-x', this);
 
-//------------------------------------------------------------------------------------
-// Styles
-//------------------------------------------------------------------------------------
-Example.styles.replaceSync(/*css*/`
+        const styles = new CSSStyleSheet();
+        styles.replaceSync(/*css*/`
 
-`);
-
-if (!document.adoptedStyleSheets.includes(Example.styles)) {
-    document.adoptedStyleSheets.push(Example.styles);
+        `);
+        document.adoptedStyleSheets.push(styles);
+    }
 }

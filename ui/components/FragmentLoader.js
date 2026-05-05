@@ -24,6 +24,8 @@ class FragmentLoader extends HTMLElement {
         const fragment = await response.text();
         this.outerHTML = fragment;
     }
-}
 
-customElements.define('fragment-loader', FragmentLoader);
+    static {
+        customElements.define('fragment-loader', this);
+    }
+}

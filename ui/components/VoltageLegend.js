@@ -6,7 +6,6 @@ import { VOLTAGE_COLORS } from "../../core/VoltageColors.js";
  */
 //------------------------------------------------------------------------------------
 class VoltageLegend extends HTMLElement {
-    static styles = new CSSStyleSheet();
 
     connectedCallback() {
         this.classList.add('voltage-legend');
@@ -44,42 +43,39 @@ class VoltageLegend extends HTMLElement {
             </ul>
         `;
     }
-}
 
-customElements.define('voltage-legend', VoltageLegend);
+    static {
+        customElements.define('voltage-legend', this);
 
-//------------------------------------------------------------------------------------
-// Styles
-//------------------------------------------------------------------------------------
-VoltageLegend.styles.replaceSync(/*css*/`
-    .voltage-legend {
-        display: block;
+        const styles = new CSSStyleSheet();
+        styles.replaceSync(/*css*/`
+            .voltage-legend {
+                display: block;
+            }
+            .voltage-legend__title {
+                font-size: var(--fs-050);
+                font-weight: var(--fw-semi-bold);
+            }
+            .voltage-legend__list {
+                margin-top: 16px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+            .voltage-legend__item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .voltage-legend__color-line {
+                display: inline-block;
+                width: 24px;
+                height: 6px;    
+            }
+            .voltage-legend__label {
+                color: light-dark(var(--clr-slate-800), var(--clr-slate-100));
+            }
+        `);
+        document.adoptedStyleSheets.push(styles);
     }
-    .voltage-legend__title {
-        font-size: var(--fs-050);
-        font-weight: var(--fw-semi-bold);
-    }
-    .voltage-legend__list {
-        margin-top: 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-    .voltage-legend__item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    .voltage-legend__color-line {
-        display: inline-block;
-        width: 24px;
-        height: 6px;    
-    }
-    .voltage-legend__label {
-        color: light-dark(var(--clr-slate-800), var(--clr-slate-100));
-    }
-`);
-
-if (!document.adoptedStyleSheets.includes(VoltageLegend.styles)) {
-    document.adoptedStyleSheets.push(VoltageLegend.styles);
 }

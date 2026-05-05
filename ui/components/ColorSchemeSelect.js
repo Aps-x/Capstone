@@ -7,7 +7,6 @@ import { EVENTS } from "../../core/Events.js";
  */
 //------------------------------------------------------------------------------------
 class ColorSchemeSelect extends HTMLElement {
-    static styles = new CSSStyleSheet();
 
     connectedCallback() {
         this.classList.add('color-scheme-select');
@@ -73,41 +72,38 @@ class ColorSchemeSelect extends HTMLElement {
 
         eventBus.emit(EVENTS.COLOR_SCHEME_UPDATED, scheme);
     }
-}
 
-customElements.define('color-scheme-select', ColorSchemeSelect);
+    static {
+        customElements.define('color-scheme-select', this);
 
-//------------------------------------------------------------------------------------
-// Styles
-//------------------------------------------------------------------------------------
-ColorSchemeSelect.styles.replaceSync(/*css*/`
-    .color-scheme-select {
-        display: block;
+        const styles = new CSSStyleSheet();
+        styles.replaceSync(/*css*/`
+            .color-scheme-select {
+                display: block;
+            }
+            .color-scheme-select__label {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            .color-scheme-select__text {
+                font-weight: var(--fw-semi-bold);
+            }
+            .color-scheme-select__select {
+                border: 2px solid light-dark(var(--clr-blue-500), var(--clr-blue-400));
+                color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
+                font-weight: var(--fw-medium);
+                padding: 8px 16px;
+                border-radius: 12px;
+                background-color: transparent;
+                cursor: pointer;
+            }
+            .color-scheme-select__select:hover,
+            .color-scheme-select__select:focus-visible {
+                background-color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
+                color: var(--clr-white);
+            }
+        `);
+        document.adoptedStyleSheets.push(styles);
     }
-    .color-scheme-select__label {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-    .color-scheme-select__text {
-        font-weight: var(--fw-semi-bold);
-    }
-    .color-scheme-select__select {
-        border: 2px solid light-dark(var(--clr-blue-500), var(--clr-blue-400));
-        color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
-        font-weight: var(--fw-medium);
-        padding: 8px 16px;
-        border-radius: 12px;
-        background-color: transparent;
-        cursor: pointer;
-    }
-    .color-scheme-select__select:hover,
-    .color-scheme-select__select:focus-visible {
-        background-color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
-        color: var(--clr-white);
-    }
-`);
-
-if (!document.adoptedStyleSheets.includes(ColorSchemeSelect.styles)) {
-    document.adoptedStyleSheets.push(ColorSchemeSelect.styles);
 }

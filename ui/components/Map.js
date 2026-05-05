@@ -12,7 +12,6 @@ import { VOLTAGE_COLORS } from "../../core/VoltageColors.js";
  */
 //------------------------------------------------------------------------------------
 export default class Map extends HTMLElement {
-    static styles = new CSSStyleSheet();
     /** @type {maplibregl.Map} */ #webmap;
     /** @type {MapSettings} */ #mapSettings;
     /** @type {maplibregl.Marker} */ #activeMarker;
@@ -678,31 +677,28 @@ export default class Map extends HTMLElement {
 
         eventBus.emit(EVENTS.MAP_MARKER_CLICKED, feature.properties);
     }
-}
 
-customElements.define('map-x', Map);
+    static {
+        customElements.define('map-x', this);
 
-//------------------------------------------------------------------------------------
-// Styles
-//------------------------------------------------------------------------------------
-Map.styles.replaceSync(/*css*/`
-    .map {
-        z-index: var(--z-base);
-        grid-column: 1/-1;
-        height: 100vh;
-        width: 100vw;
+        const styles = new CSSStyleSheet();
+        styles.replaceSync(/*css*/`
+            .map {
+                z-index: var(--z-base);
+                grid-column: 1/-1;
+                height: 100vh;
+                width: 100vw;
 
-        & .maplibregl-popup-close-button {
-            color: var(--clr-black);
-        }
+                & .maplibregl-popup-close-button {
+                    color: var(--clr-black);
+                }
+            }
+            .map__popup {
+                color: var(--clr-black);
+                max-height: 400px;
+                overflow: scroll;
+            }
+        `);
+        document.adoptedStyleSheets.push(styles);
     }
-    .map__popup {
-        color: var(--clr-black);
-        max-height: 400px;
-        overflow: scroll;
-    }
-`);
-
-if (!document.adoptedStyleSheets.includes(Map.styles)) {
-    document.adoptedStyleSheets.push(Map.styles);
 }

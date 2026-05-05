@@ -17,7 +17,6 @@ import MapSettings from "../../core/MapSettings.js";
  */
 //------------------------------------------------------------------------------------
 export default class ControlPanel extends HTMLElement {
-    static styles = new CSSStyleSheet();
 
     connectedCallback() {
         this.classList.add('control-panel');
@@ -269,53 +268,50 @@ export default class ControlPanel extends HTMLElement {
         // Signal that the map settings were updated and attach MapSettings DTO payload
         eventBus.emit(EVENTS.MAP_SETTINGS_UPDATED, mapSettings);
     }
-}
 
-customElements.define('control-panel', ControlPanel);
+    static {
+        customElements.define('control-panel', this);
 
-//------------------------------------------------------------------------------------
-// Styles
-//------------------------------------------------------------------------------------
-ControlPanel.styles.replaceSync(/*css*/`
-    .control-panel {
-        grid-area: control-panel;
-        z-index: var(--z-sidebar);
-        overflow: scroll;
-        background-color: light-dark(var(--clr-white), var(--clr-slate-950));
+        const styles = new CSSStyleSheet();
+        styles.replaceSync(/*css*/`
+            .control-panel {
+                grid-area: control-panel;
+                z-index: var(--z-sidebar);
+                overflow: scroll;
+                background-color: light-dark(var(--clr-white), var(--clr-slate-950));
+            }
+            .control-panel__header {
+                grid-template-columns: auto 1fr;
+                font-size: var(--fs-200);
+                color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
+                background-color: light-dark(var(--clr-slate-50), var(--clr-slate-900));
+                padding-block: 32px;
+                padding-inline: 16px;
+                text-align: center;
+                border-radius: 0px 0px 14px 14px;
+                box-shadow: none;
+            }
+            html:has(meta[name=color-scheme][content=light]) .control-panel__header {
+                box-shadow: var(--shadow-elevation-low);
+            }
+            @media (prefers-color-scheme: light) {
+                html:has(meta[name=color-scheme][content="light dark"]) .control-panel__header {
+                    box-shadow: var(--shadow-elevation-low);
+                }
+            }
+            .control-panel__title {
+                display: inline;
+                font-weight: var(--fw-medium);
+                color: light-dark(var(--clr-slate-700), var(--clr-white));
+            }
+            .control-panel__content {
+                margin: 16px;
+            }
+            .control-panel__footer {
+                margin-block: 48px;
+                padding: 16px;
+            }
+        `);
+        document.adoptedStyleSheets.push(styles);
     }
-    .control-panel__header {
-        grid-template-columns: auto 1fr;
-        font-size: var(--fs-200);
-        color: light-dark(var(--clr-blue-500), var(--clr-blue-400));
-        background-color: light-dark(var(--clr-slate-50), var(--clr-slate-900));
-        padding-block: 32px;
-        padding-inline: 16px;
-        text-align: center;
-        border-radius: 0px 0px 14px 14px;
-        box-shadow: none;
-    }
-    html:has(meta[name=color-scheme][content=light]) .control-panel__header {
-        box-shadow: var(--shadow-elevation-low);
-    }
-    @media (prefers-color-scheme: light) {
-        html:has(meta[name=color-scheme][content="light dark"]) .control-panel__header {
-            box-shadow: var(--shadow-elevation-low);
-        }
-    }
-    .control-panel__title {
-        display: inline;
-        font-weight: var(--fw-medium);
-        color: light-dark(var(--clr-slate-700), var(--clr-white));
-    }
-    .control-panel__content {
-        margin: 16px;
-    }
-    .control-panel__footer {
-        margin-block: 48px;
-        padding: 16px;
-    }
-`);
-
-if (!document.adoptedStyleSheets.includes(ControlPanel.styles)) {
-    document.adoptedStyleSheets.push(ControlPanel.styles);
 }

@@ -10,7 +10,6 @@ import { EVENTS } from "../../core/Events.js";
  */
 // ------------------------------------------------------------------------------------
 class DataImporter extends HTMLElement {
-    static styles = new CSSStyleSheet();
     /** @type {HTMLInputElement} */ #fileInput;
     /** @type {HTMLButtonElement} */ #browseButton; 
 
@@ -88,19 +87,16 @@ class DataImporter extends HTMLElement {
 
         this.#fileInput.value = '';
     }
-}
 
-customElements.define('data-importer', DataImporter);
+    static {
+        customElements.define('data-importer', this);
 
-//------------------------------------------------------------------------------------
-// Styles
-//------------------------------------------------------------------------------------
-DataImporter.styles.replaceSync(/*css*/`
-    .data-importer__file-input {
-        display: none;
+        const styles = new CSSStyleSheet();
+        styles.replaceSync(/*css*/`
+            .data-importer__file-input {
+                display: none;
+            }
+        `);
+        document.adoptedStyleSheets.push(styles);
     }
-`);
-
-if (!document.adoptedStyleSheets.includes(DataImporter.styles)) {
-    document.adoptedStyleSheets.push(DataImporter.styles);
 }
