@@ -114,7 +114,7 @@ class Toaster extends HTMLElement {
     }
 
     static {
-        customElements.define('example-x', this);
+        customElements.define('toaster-x', this);
 
         const styles = new CSSStyleSheet();
         
