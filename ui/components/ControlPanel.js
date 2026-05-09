@@ -273,6 +273,7 @@ export default class ControlPanel extends HTMLElement {
         customElements.define('control-panel', this);
 
         const styles = new CSSStyleSheet();
+        
         styles.replaceSync(/*css*/`
             .control-panel {
                 grid-area: control-panel;

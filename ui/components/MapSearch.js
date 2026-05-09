@@ -50,6 +50,7 @@ class MapSearch extends HTMLElement {
         customElements.define('map-search', this);
 
         const styles = new CSSStyleSheet();
+        
         styles.replaceSync(/*css*/`
             .map-search__container {
                 background-color: light-dark(var(--clr-slate-50), var(--clr-slate-900));

@@ -50,6 +50,7 @@ class Button extends HTMLElement {
         customElements.define('button-x', this);
 
         const styles = new CSSStyleSheet();
+        
         styles.replaceSync(/*css*/`
             .button {
                 display: block;

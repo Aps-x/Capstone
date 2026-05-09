@@ -90,6 +90,7 @@ class MarkerPanel extends HTMLElement {
         customElements.define('marker-panel', this);
 
         const styles = new CSSStyleSheet();
+        
         styles.replaceSync(/*css*/`
             .marker-panel {
                 display: none;

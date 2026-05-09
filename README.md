@@ -31,6 +31,7 @@ Alternatively, you can go to your browser settings > privacy > manage data, and 
 #### Filter Section
 
 * The 'Power Parameters' section consists of optional filters. If a field is left blank, then it is not considered.
+* The bus ranger filter is inclusive. In an inclusive range, both the starting value (the "lower bound") and the ending value (the "upper bound") are counted as part of the set. 1 to 5 (inclusive) = {1, 2, 3, 4, 5}. 1 to 5 (exclusive) = {1, 2, 3, 4}. The lower bound is conventionally inclusive.
 * You can also toggle filters for generation sources and bus types.
 
 #### Data Analysis Section
@@ -49,6 +50,8 @@ Alternatively, you can go to your browser settings > privacy > manage data, and 
 * This website only accepts GeoJSON. If you have a JSON file, you must ensure that it meets the [GeoJSON specification](https://geojson.org/) and has a .geojson file extension. There are numerous free online tools for converting CSV to GeoJSON.
 
 ## License
+
+This project, with the exception of third-party code and data, is released under the MIT license.
 
 The Synthetic NEM dataset is licensed under CC-BY ([https://creativecommons.org/licenses/by/4.0/](https://creativecommons.org/licenses/by/4.0/)). More information on the Synthetic NEM dataset can be found here: [https://github.com/csiro-energy-systems/Synthetic-NEM-2000bus-Data](https://github.com/csiro-energy-systems/Synthetic-NEM-2000bus-Data).
 
@@ -73,10 +76,10 @@ We would like to thank Frederik Geth, Ghulam Mohy Ud Din, and Matt Amos for shar
 * Kevin Powell for the [accordion](https://www.youtube.com/watch?v=B_n4YONte5A) component
 * Josh Comeau for the [3D button](https://www.joshwcomeau.com/animation/3d-button/) component
 * Adam Argyle for the [picklist](https://github.com/argyleink/gui-challenges/tree/main/picklists) and [toast](https://github.com/argyleink/gui-challenges/tree/main/toast) components
-* Wes Bos for the center [truncating text trick](https://www.youtube.com/shorts/cuxbmq07Vxw)
+* Wes Bos for the [center truncating text trick](https://www.youtube.com/shorts/cuxbmq07Vxw)
 * CJ (Coding Garden) for the [MapLibre and OpenFreeMap example](https://github.com/w3cj/openfreemap-examples/)
 * Tabler.io for the [svg icons](https://tabler.io/icons)
-* The entire web development community for being so awesome and open to sharing knowledge
+* The entire web development community for being so awesome and open to sharing knowledge!
 
 ## Developer Guide
 
@@ -114,14 +117,13 @@ Another consideration is where you keep your CSS. I have opted for a Single-File
 
 Yet another consideration was whether or not to use design tokens, or a design system like [Brad Frost’s Atomic Design](https://atomicdesign.bradfrost.com/table-of-contents/). I decided that this project wasn’t large enough to benefit from these more complex development practices, but if this project was to grow past a single page, I would certainly recommend looking into this space.
 
-I am personally a big fan of using [BEM and utility classes together](https://css-tricks.com/building-a-scalable-css-architecture-with-bem-and-utility-classes/). I think that they can complement each other like Yin and Yang. BEM covers components, their elements, and specific variants (Think primary or secondary button), whilst utility classes are great for applying styles to a single instance of a component i.e. exceptions to the rule. I did not end up using that many utility classes in this project, but they would certainly come in handy if the website was to grow and you had components that appeared in more than one context.
-
+I am personally a big fan of using [BEM and utility classes together](https://css-tricks.com/building-a-scalable-css-architecture-with-bem-and-utility-classes/). I think that they can complement each other like yin and yang. BEM covers components, their elements, and specific variants (think primary or secondary button), whilst utility classes are great for applying styles to a single instance of a component i.e. exceptions to the rule. I did not end up using that many utility classes in this project, but they would certainly come in handy if the website was to grow and you had components that appeared in more than one context.
 
 #### Frontend
 
 JavaScript Custom Elements were used to organize the code around components. Web Components and the Shadow DOM were avoided because they prevent the use of utility classes and inheritance, they require workarounds to play nicely with forms and accessibility, and they just feel like they go against the grain of the web despite being a native API (in my opinion). JSDocs was used to help document the code.
 
-I don't think a frontend framework would provide any advantage over this approach. A router is not required, which isn’t too hard to do now with the Navigation API, and there are only two parts of the website that are ‘reactive’: the LayerList and the MapLibre map. Both the LayerList and MapLibre Map listen to mutation events from IndexedDB, as opposed to listening for changes to variables using signals. If this website was to be extended with multiple pages that are highly interactive, then I would recommend converting this project to Vue.
+I don't think a frontend framework would provide any advantage over this approach. A router is not required, which isn’t too hard to do now with the Navigation API, and there are only two parts of the website that are ‘reactive’: the LayerList and the MapLibre map. Both the LayerList and MapLibre Map listen to mutation events from the IndexedDB wrapper Database class, as opposed to listening for changes to variables using signals. If this website was to be extended with multiple pages that are highly interactive, then I would recommend converting this project to Vue.
 
 I follow a convention of having a render function, which renders the template for the component, and an initialize function that gets references to DOM elements and sets up event listeners. Functions that are triggered by events are prefixed with ‘handle’. For future developers, make sure not to put any user input in the render function, as innerHTML() will parse script tags. Perhaps setHTML() will be baseline available when you are further developing the project. The custom element is defined within the static initialization block along with the CSS for the component. The architecture of the web application is ‘siloed’, with each component communicating via the global event bus rather than through direct references.
 

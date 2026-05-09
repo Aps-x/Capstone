@@ -682,6 +682,7 @@ export default class Map extends HTMLElement {
         customElements.define('map-x', this);
 
         const styles = new CSSStyleSheet();
+        
         styles.replaceSync(/*css*/`
             .map {
                 z-index: var(--z-base);

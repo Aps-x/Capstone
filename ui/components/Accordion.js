@@ -83,6 +83,7 @@ class Accordion extends HTMLElement {
         customElements.define('accordion-x', this);
 
         const styles = new CSSStyleSheet();
+        
         styles.replaceSync(/*css*/`
             .accordion {
                 margin-top: 64px;

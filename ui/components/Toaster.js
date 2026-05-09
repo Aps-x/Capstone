@@ -117,6 +117,7 @@ class Toaster extends HTMLElement {
         customElements.define('example-x', this);
 
         const styles = new CSSStyleSheet();
+        
         styles.replaceSync(/*css*/`
             .toaster {
                 position: fixed;

@@ -209,6 +209,7 @@ class LayerList extends HTMLElement {
         customElements.define('layer-list', this);
 
         const styles = new CSSStyleSheet();
+        
         styles.replaceSync(/*css*/`
             .layer-list__list {
                 display: grid;

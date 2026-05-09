@@ -71,6 +71,7 @@ class App extends HTMLElement {
         customElements.define('app-x', this);
 
         const styles = new CSSStyleSheet();
+        
         styles.replaceSync(/*css*/`
             .app {
                 display: grid;

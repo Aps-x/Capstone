@@ -77,6 +77,7 @@ class ColorSchemeSelect extends HTMLElement {
         customElements.define('color-scheme-select', this);
 
         const styles = new CSSStyleSheet();
+        
         styles.replaceSync(/*css*/`
             .color-scheme-select {
                 display: block;

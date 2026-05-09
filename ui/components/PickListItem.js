@@ -34,6 +34,7 @@ class PickListItem extends HTMLElement {
         customElements.define('pick-list-item', this);
 
         const styles = new CSSStyleSheet();
+        
         styles.replaceSync(/*css*/`
             .pick-list-item {
                 --space: 16px;

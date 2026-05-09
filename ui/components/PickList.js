@@ -27,6 +27,7 @@ class PickList extends HTMLElement {
         customElements.define('pick-list', this);
 
         const styles = new CSSStyleSheet();
+        
         styles.replaceSync(/*css*/`
             .pick-list {
                 display: block;

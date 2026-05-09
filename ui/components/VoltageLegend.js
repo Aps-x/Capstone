@@ -48,6 +48,7 @@ class VoltageLegend extends HTMLElement {
         customElements.define('voltage-legend', this);
 
         const styles = new CSSStyleSheet();
+        
         styles.replaceSync(/*css*/`
             .voltage-legend {
                 display: block;

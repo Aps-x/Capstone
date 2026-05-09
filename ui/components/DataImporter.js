@@ -92,6 +92,7 @@ class DataImporter extends HTMLElement {
         customElements.define('data-importer', this);
 
         const styles = new CSSStyleSheet();
+        
         styles.replaceSync(/*css*/`
             .data-importer__file-input {
                 display: none;
