@@ -128,6 +128,7 @@ class Accordion extends HTMLElement {
                 animation: reveal-overflow 350ms forwards;
             }
             .accordion__content > div {
+                min-height: 0;
                 overflow: hidden;
             }
 
