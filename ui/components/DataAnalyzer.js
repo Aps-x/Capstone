@@ -76,7 +76,15 @@ class DataAnalyzer extends HTMLElement {
             // Run the K-Means clustering algorithm
             //
 
+            // NOTE:
+            // K-means cares about distance, not equal group sizes.
+            // There will be, on average, 21 buses per utility node*
+            // Some will have more, some will have less. Sometimes with significant disparities.
+            //
+            // * kmeans requires integers, so we round up the number. This means that there will
+            // be slightly more than 21 buses per utility node on average.
             const averagePointsPerUtilityNode = 21;
+            // k = number of groups to create. Also number of utility control centers to create.
             const k = Math.ceil(coordinates.length / averagePointsPerUtilityNode);
             const kmeansResult = kmeans(coordinates, k);
 
